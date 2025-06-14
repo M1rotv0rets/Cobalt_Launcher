@@ -5,19 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Библиотека</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="icon.png">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" href="icon.png">
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             primary: '#0ea5e9',
-            dark: '#0f172a',
-            emerald: '#10b981',
-            amber: '#f59e0b',
-            indigo: '#6366f1'
+            dark: '#0f172a'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -188,7 +185,7 @@
 </head>
 <body class="bg-dark text-gray-200">
 
-  <header class="bg-gray-950 shadow-md sticky-header">
+   <header class="bg-gray-950 shadow-md sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center animate-fade-in">
         <h1 class="text-2xl font-bold text-white">🌠 Cobalt Launcher</h1>
@@ -197,8 +194,8 @@
       <nav class="hidden md:flex space-x-8">
         <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
         <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Помощь</a>
-        <a href="library.html" class="py-3 text-primary font-bold transition-colors">Библиотека</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
         <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
         <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
         <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
@@ -215,30 +212,30 @@
       <div class="flex flex-col px-6 pb-4">
         <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
         <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Помощь</a>
-        <a href="library.html" class="py-3 text-primary font-bold transition-colors">Библиотека</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
         <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
         <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
         <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
       </div>
     </div>
   </header>
-    
-<main class="max-w-4xl mx-auto px-4 py-8"> 
+
   <section class="relative py-32 px-4 overflow-hidden">
-      <div class="absolute inset-0 z-0">
-        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-dark opacity-90"></div>
-        <div class="absolute top-0 left-0 w-full h-full bg-[url('Index/banner.png')] bg-cover bg-center parallax scale-110"></div>
-        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-dark/90 to-primary/20"></div>
-      </div>
-      
-      <div class="max-w-6xl mx-auto relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
-        <h1 class="text-4xl sm:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="150">
-          Библиотека
-        </h1>
-      </div>
-     
-    <div class="mt-16"></div>
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-dark opacity-90"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-[url('Index/banner.png')] bg-cover bg-center parallax scale-110"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-dark/90 to-primary/20"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
+      <h1 class="text-4xl sm:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="150">
+        Добро Пожаловать!
+      </h1>
+    </div>
+  </section>
+
+  <div class="mt-16"></div>
     
     <section>
       <h2 class="text-2xl font-bold mb-6 text-white category-title" data-aos="fade-up">
@@ -675,9 +672,8 @@
         <i class="fas fa-book mr-2"></i>Читать руководство
       </button>
     </section>
-  </main>
 
-  <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm mt-8">
+    <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm mt-8">
     © 2025 Atlantis Studio. Все права защищены.
   </footer>
 
