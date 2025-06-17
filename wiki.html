@@ -1,51 +1,265 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WikiNova</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <title>FNAF1-like</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; }
+        canvas { display: block; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
-  <!-- Header -->
-  <header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-indigo-600">Cobalt Wiki</h1>
-      <input type="text" placeholder="Поиск..." class="px-3 py-2 border rounded w-64 focus:outline-none focus:ring-2 focus:ring-indigo-400">
-    </div>
-  </header>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-  <!-- Main content -->
-  <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
-    <!-- Sidebar -->
-    <aside class="md:col-span-1">
-      <nav class="space-y-2">
-        <a href="#" class="block px-3 py-2 rounded hover:bg-indigo-100">🏠 Главная</a>
-        <a href="#" class="block px-3 py-2 rounded hover:bg-indigo-100">📚 Статьи</a>
-        <a href="#" class="block px-3 py-2 rounded hover:bg-indigo-100">📝 Новая статья</a>
-        <a href="#" class="block px-3 py-2 rounded hover:bg-indigo-100">👥 Об участниках</a>
-      </nav>
-    </aside>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Игровое состояние
+        const gameState = {
+            power: 100,
+            time: 0,
+            maxTime: 420, // 7 игровых часов
+            currentView: 'office',
+            doors: { left: false, right: false },
+            lights: { left: false, right: false },
+            gameOver: false,
+            win: false,
+            cameras: false,
+            currentCamera: 0
+        };
 
-    <!-- Article content -->
-    <main class="md:col-span-3 bg-white rounded shadow p-6">
-      <article>
-        <h2 class="text-3xl font-semibold mb-4">Что такое WikiNova?</h2>
-        <p class="text-gray-700 mb-4">
-          <strong>Cobalt Wiki</strong> — это современная альтернатива традиционным вики-сайтам. Мы делаем знания доступными в стильной и удобной форме.
-        </p>
-        <p class="text-gray-700">
-          Здесь вы можете читать и создавать статьи, делиться своими знаниями и получать новую информацию в комфортной обстановке.
-        </p>
-      </article>
-    </main>
-  </div>
+        // Аниматроники
+        const animatronics = {
+            bonnie: {
+                location: 'stage',
+                aggression: 1,
+                moveTimer: 0,
+                position: 0
+            },
+            chica: {
+                location: 'stage',
+                aggression: 1,
+                moveTimer: 0,
+                position: 0
+            },
+            foxy: {
+                location: 'pirateCove',
+                aggression: 1,
+                moveTimer: 0,
+                position: 0
+            },
+            freddy: {
+                location: 'stage',
+                aggression: 0.5,
+                moveTimer: 0,
+                position: 0
+            }
+        };
 
-  <!-- Footer -->
-  <footer class="bg-white border-t mt-10">
-    <div class="max-w-7xl mx-auto px-4 py-6 text-center text-sm text-gray-500">
-      © 2025 WikiNova. Сделано с любовью к знаниям.
-    </div>
-  </footer>
+        // Пути для аниматроников
+        const paths = {
+            bonnie: ['stage', 'dining', 'backstage', 'leftHall', 'office'],
+            chica: ['stage', 'dining', 'kitchen', 'rightHall', 'office'],
+            foxy: ['pirateCove', 'westHall', 'office'],
+            freddy: ['stage', 'dining', 'backstage', 'leftHall', 'office']
+        };
+
+        // Изображения (заглушки)
+        const images = {
+            office: drawOffice,
+            camera: drawCameraView,
+            gameOver: () => {
+                ctx.fillStyle = 'red';
+                ctx.font = '48px Arial';
+                ctx.fillText('GAME OVER', 250, 300);
+            }
+        };
+
+        // Основной цикл игры
+        function gameLoop() {
+            update();
+            render();
+            if (!gameState.gameOver && !gameState.win) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Обновление состояния игры
+        function update() {
+            if (gameState.power <= 0) {
+                gameState.gameOver = true;
+                return;
+            }
+
+            // Обновление времени
+            gameState.time++;
+            if (gameState.time >= gameState.maxTime) {
+                gameState.win = true;
+                return;
+            }
+
+            // Потребление энергии
+            if (gameState.doors.left || gameState.doors.right) {
+                gameState.power -= 0.05;
+            }
+            if (gameState.lights.left || gameState.lights.right) {
+                gameState.power -= 0.03;
+            }
+            if (gameState.cameras) {
+                gameState.power -= 0.01;
+            }
+
+            // Движение аниматроников
+            moveAnimatronics();
+            checkForJumpscares();
+        }
+
+        // Логика движения аниматроников
+        function moveAnimatronics() {
+            for (const [name, anim] of Object.entries(animatronics)) {
+                anim.moveTimer--;
+                
+                if (anim.moveTimer <= 0) {
+                    const path = paths[name];
+                    const currentIndex = path.indexOf(anim.location);
+                    
+                    if (currentIndex < path.length - 1 && Math.random() < anim.aggression * 0.1) {
+                        anim.location = path[currentIndex + 1];
+                        anim.position = 0;
+                    }
+                    
+                    anim.moveTimer = 100 - (gameState.time / 10);
+                }
+            }
+        }
+
+        // Проверка на атаку
+        function checkForJumpscares() {
+            if (animatronics.bonnie.location === 'office' && !gameState.doors.left && !gameState.lights.left) {
+                gameState.gameOver = true;
+            }
+            if (animatronics.chica.location === 'office' && !gameState.doors.right && !gameState.lights.right) {
+                gameState.gameOver = true;
+            }
+            if (animatronics.foxy.location === 'office') {
+                gameState.gameOver = true;
+            }
+        }
+
+        // Отрисовка игры
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            if (gameState.gameOver) {
+                images.gameOver();
+                return;
+            }
+            
+            if (gameState.win) {
+                ctx.fillStyle = 'green';
+                ctx.font = '48px Arial';
+                ctx.fillText('YOU SURVIVED!', 250, 300);
+                return;
+            }
+            
+            gameState.cameras ? images.camera() : images.office();
+            drawUI();
+        }
+
+        // Отрисовка офиса
+        function drawOffice() {
+            // Фон
+            ctx.fillStyle = '#333';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Двери
+            ctx.fillStyle = gameState.doors.left ? '#700' : '#500';
+            ctx.fillRect(50, 150, 80, 300);
+            
+            ctx.fillStyle = gameState.doors.right ? '#700' : '#500';
+            ctx.fillRect(670, 150, 80, 300);
+            
+            // Лампы
+            if (gameState.lights.left) {
+                ctx.fillStyle = '#ff9';
+                ctx.fillRect(130, 200, 100, 200);
+            }
+            
+            if (gameState.lights.right) {
+                ctx.fillStyle = '#ff9';
+                ctx.fillRect(570, 200, 100, 200);
+            }
+        }
+
+        // Отрисовка камер
+        function drawCameraView() {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#666';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Camera ${gameState.currentCamera + 1}`, 350, 30);
+        }
+
+        // Отрисовка интерфейса
+        function drawUI() {
+            // Время
+            const hour = 12 + Math.floor(gameState.time / 60);
+            const minute = gameState.time % 60;
+            ctx.fillStyle = '#0f0';
+            ctx.font = '20px Arial';
+            ctx.fillText(`${hour}:${minute < 10 ? '0' : ''}${minute} AM`, 20, 30);
+            
+            // Энергия
+            ctx.fillStyle = '#0f0';
+            ctx.fillText(`Power: ${Math.max(0, Math.floor(gameState.power))}%`, 20, 60);
+            
+            // Индикаторы
+            ctx.fillStyle = '#f00';
+            if (animatronics.bonnie.location === 'leftHall') ctx.fillText('Bonnie is near!', 600, 30);
+            if (animatronics.chica.location === 'rightHall') ctx.fillText('Chica is near!', 600, 60);
+        }
+
+        // Обработка ввода
+        canvas.addEventListener('click', (e) => {
+            if (gameState.cameras) {
+                gameState.cameras = false;
+                return;
+            }
+            
+            const x = e.clientX - canvas.getBoundingClientRect().left;
+            
+            // Левая дверь
+            if (x < 150 && !gameState.doors.right) {
+                gameState.doors.left = !gameState.doors.left;
+            }
+            
+            // Правая дверь
+            if (x > 650 && !gameState.doors.left) {
+                gameState.doors.right = !gameState.doors.right;
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            // Лампы
+            if (e.key === 'a') gameState.lights.left = true;
+            if (e.key === 'd') gameState.lights.right = true;
+            
+            // Камеры
+            if (e.key === 'c') gameState.cameras = !gameState.cameras;
+            
+            // Переключение камер
+            if (e.key === 'ArrowLeft') gameState.currentCamera = Math.max(0, gameState.currentCamera - 1);
+            if (e.key === 'ArrowRight') gameState.currentCamera = Math.min(9, gameState.currentCamera + 1);
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.key === 'a') gameState.lights.left = false;
+            if (e.key === 'd') gameState.lights.right = false;
+        });
+
+        // Запуск игры
+        gameLoop();
+    </script>
 </body>
-</html>
+  </html>
