@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Помощь</title>
+  <title>Главная</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="Images/icon.png">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" href="icon.png">
   <script>
     tailwind.config = {
       theme: {
@@ -15,7 +15,11 @@
           colors: {
             primary: '#0ea5e9',
             dark: '#0f172a',
-            secondary: '#1e293b'
+            bot: '#1e3a8a',
+            user: '#0c4a6e',
+            error: '#b91c1c',
+            warning: '#d97706',
+            info: '#0891b2'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -39,6 +43,9 @@
       scroll-behavior: smooth;
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: #f1f5f9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     
     .sticky-header {
@@ -75,7 +82,6 @@
     
     .feature-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid #334155;
     }
     
     .feature-card:hover {
@@ -109,16 +115,152 @@
       text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
     }
     
-    .help-section {
-      background: rgba(30, 41, 59, 0.7);
-      border-radius: 16px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(100, 116, 139, 0.2);
+    /* Стили для чата */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+      max-width: 100%;
+      overflow: hidden;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    
+    .message {
+      max-width: 85%;
+      padding: 1rem 1.5rem;
+      border-radius: 1.5rem;
+      animation: fadeIn 0.3s ease-out;
+      position: relative;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bot-message {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+      border-bottom-left-radius: 0.25rem;
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #0c4a6e, #075985);
+      border-bottom-right-radius: 0.25rem;
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .typing-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      background-color: #93c5fd;
+      border-radius: 50%;
+      display: inline-block;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .input-container {
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.9);
+      border-top: 1px solid #334155;
+    }
+    
+    .chat-input {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      color: white;
+      transition: all 0.3s;
+    }
+    
+    .chat-input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+    }
+    
+    .send-btn {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s;
+    }
+    
+    .send-btn:hover {
+      transform: scale(1.05);
+    }
+    
+    .send-btn:active {
+      transform: scale(0.95);
+    }
+    
+    .scroll-down-btn {
+      position: absolute;
+      bottom: 5rem;
+      right: 2rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      z-index: 10;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .knowledge-base {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1rem;
+    }
+    
+    .knowledge-card {
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s;
+      border: 1px solid #334155;
+      cursor: pointer;
+    }
+    
+    .knowledge-card:hover {
+      transform: translateY(-5px);
+      background: rgba(30, 41, 59, 0.8);
+      border-color: #0ea5e9;
+    }
+    
+    .path-box {
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: monospace;
+      display: inline-block;
+      margin: 5px 0;
     }
     
     .rule-item {
       position: relative;
       padding-left: 1.5rem;
+      margin-bottom: 0.5rem;
     }
     
     .rule-item::before {
@@ -145,18 +287,16 @@
       margin-right: 12px;
     }
     
-    .path-box {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-family: monospace;
-      display: inline-block;
-    }
-    
     .telegram-btn {
       background: linear-gradient(135deg, #2AABEE, #229ED9);
       transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      margin-top: 10px;
     }
     
     .telegram-btn:hover {
@@ -164,34 +304,43 @@
       box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
     }
     
-    .idea-card {
-      background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
-      border: 1px solid rgba(234, 179, 8, 0.3);
-    }
-    
     .error-card {
       background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
       border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
     }
     
-    .vote-card {
-      background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(34, 197, 94, 0.05));
-      border: 1px solid rgba(34, 197, 94, 0.3);
+    .info-card {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    
+    .warning-card {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
     }
   </style>
 </head>
 <body class="bg-dark text-gray-200">
 
-  <header class="bg-gray-950 shadow-md sticky-header">
+   <header class="bg-gray-950 shadow-md sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center animate-fade-in">
-        <h1 class="text-2xl font-bold text-white">🌠 Cobalt Launcher</h1>
+        <h1 class="text-2xl font-bold text-white">🤖 Cobalt Assistant</h1>
       </div>
       
       <nav class="hidden md:flex space-x-8">
         <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 text-primary font-semibold transition-colors">Помощь</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
         <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
         <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
         <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
@@ -208,8 +357,8 @@
     <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
       <div class="flex flex-col px-6 pb-4">
         <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 text-primary font-semibold transition-colors">Помощь</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
         <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
         <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
         <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
@@ -218,345 +367,129 @@
     </div>
   </header>
 
-  <section class="py-16 px-4 sm:px-6 relative">
-    <div class="max-w-4xl mx-auto">
-      <div class="text-center mb-16" data-aos="fade-up">
-        <h1 class="text-4xl font-bold mb-4 text-white">Помощь по логам и краш-репортам</h1>
-        <p class="text-xl text-gray-300 max-w-2xl mx-auto">Узнайте, как работать с логами и краш-отчетами для решения проблем в Cobalt Launcher</p>
-      </div>
-      
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="100">
-        <div class="flex items-center mb-6">
-          <div class="bg-primary p-3 rounded-lg mr-4">
-            <i class="fas fa-file-alt text-white text-xl"></i>
+  <!-- Основной контент - чат-бот -->
+  <main class="flex-grow">
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <!-- Приветственное сообщение -->
+        <div class="message bot-message" data-aos="fade-up">
+          <div class="flex items-start gap-3">
+            <div class="bg-blue-600 p-2 rounded-full">
+              <i class="fas fa-robot text-white"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-blue-200">Cobalt Assistant</h3>
+              <p class="mt-1">Привет! Я ваш помощник по работе с Cobalt Launcher. Чем могу помочь? Вот что я умею:</p>
+              <ul class="mt-2 ml-4 list-disc space-y-1">
+                <li>Помогать с логами и краш-репортами</li>
+                <li>Объяснять правила обращения за помощью</li>
+                <li>Рассказывать о работе с ошибками</li>
+                <li>Предоставлять информацию о поддержке</li>
+              </ul>
+              <p class="mt-2">Выберите тему из списка ниже или задайте вопрос 👇</p>
+            </div>
           </div>
-          <h2 class="text-2xl font-bold text-white">ЧТО ТАКОЕ ЛОГИ?</h2>
         </div>
         
-        <div class="pl-16">
-          <p class="mb-4 text-gray-200">
-            Логи (logs) - это записи о событиях, которые происходят в системе. Они могут отслеживать действия пользователя, 
-            а также сохранять информацию о произошедших исключениях, ошибках и других важных событиях. 
-            Это позволяет системным администраторам правильно идентифицировать и устранить проблемы, 
-            которые могут возникнуть в системе. В папку с логами можно попасть через меню папок с иконкой папки в главном меню.
-          </p>
-          
-          <div class="mt-8">
-            <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
-              <i class="fas fa-folder-open mr-3 text-primary"></i> Где хранятся логи?
-            </h3>
-            <p class="mb-2">Путь к логам Minecraft:</p>
-            <div class="path-box mb-6">
-              /AppData/Roaming/.Cobalt_Launcher/logs
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="150">
-        <div class="flex items-center mb-6">
-          <div class="bg-red-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-bug text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">ЧТО ТАКОЕ КРАШ-РЕПОРТЫ?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <p class="mb-4 text-gray-200">
-            Краш-репорты (crash_reports) - это дебаг-отчеты, которые используются для отслеживания и диагностики 
-            проблем с программным обеспечением или оборудованием. Они обычно содержат подробную информацию об 
-            исключениях, ошибках, которые произошли и стеке вызовов, который вел к исключению или ошибке. 
-            Они обычно собираются программным обеспечением для диагностики и предоставляются разработчикам 
-            для исследования ошибок и исправления. В папку с краш-репортами можно попасть через меню папок с иконкой папки в главном меню.
-          </p>
-          
-          <div class="mt-8">
-            <h3 class="text-xl font-semibold text-white mb-4 flex items-center">
-              <i class="fas fa-folder-open mr-3 text-red-400"></i> Где хранятся краш-репорты?
-            </h3>
-            <p class="mb-2">Путь к краш-репортам Minecraft:</p>
-            <div class="path-box mb-6">
-              /AppData/Roaming/.Cobalt_Launcher/crash-reports
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="200">
-        <div class="flex items-center mb-6">
-          <div class="bg-yellow-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-exclamation-triangle text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">ПРАВИЛА ОБРАЩЕНИЯ ЗА ПОМОЩЬЮ</h2>
-        </div>
-        
-        <div class="pl-16">
-          <ol class="space-y-4">
-            <li class="rule-item">Если вы будете грубить, оскорблять, помощь вам не будет оказана.</li>
-            <li class="rule-item">Пишите чётко и ясно.</li>
-            <li class="rule-item">С модифицированными версиями не помогаем. Обращайтесь к разработчику модификации.</li>
-            <li class="rule-item">Обязательно указывайте, в какой версии лаунчера случился краш (компьютерная/мобильная).</li>
-          </ol>
-          
-          <div class="mt-8 bg-dark/50 p-5 rounded-xl border border-yellow-700/50">
-            <h3 class="text-xl font-semibold text-yellow-300 mb-3 flex items-center">
-              <i class="fas fa-info-circle mr-2"></i> Зачем нам нужны ваши логи и краш-репорты?
-            </h3>
-            <p class="text-gray-200">
-              Логи и репорты нужны чтобы понять причину вашей проблемы, без них мы этого не сможем!
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="250">
-        <div class="flex items-center mb-6">
-          <div class="bg-green-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-book-open text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">КАК ЧИТАТЬ КРАШ-РЕПОРТЫ?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">1</span>
-              <p class="text-gray-200 flex-1">
-                Для работы с краш-репортами вы можете использовать любой текстовой редактор, 
-                но для удобного использования советуем использовать редактор с поддержкой строк кода 
-                (Пример: <span class="text-blue-400">Visual Studio Code</span>)
-              </p>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">2</span>
-              <p class="text-gray-200 flex-1">
-                Нам потребуется только начало документа, в котором чередуются строки, начинающиеся на <code class="bg-gray-800 px-2 py-1 rounded">at</code>
-              </p>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">3</span>
-              <p class="text-gray-200 flex-1">
-                Нужно знать правило написания краш-репорта. Мы читаем строки <span class="text-red-400 font-semibold">снизу - вверх</span> 
-                (То есть самая последняя <code class="bg-gray-800 px-2 py-1 rounded">at</code> является самой первой.)
-              </p>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">4</span>
-              <div class="flex-1">
-                <p class="text-gray-200 mb-2">
-                  Если вы играете с модами и игра не запускается/вылетает, то в краш-логе можно найти название конфликтного мода. 
-                </p>
-                <p class="text-gray-200">
-                  Например краш вызвал мод JEI, это можно понять по строчкам <code class="bg-gray-800 px-2 py-1 rounded">at mezz.jei</code>.
-                </p>
-                <p class="text-gray-200 mt-2">
-                  Если краш произошел в ванильном майнкрафте, то в краш-логе будет указана конкретная причина.
-                </p>
+        <!-- База знаний -->
+        <div class="knowledge-base" id="knowledgeBase">
+          <div class="knowledge-card" onclick="sendMessage('Что такое логи?')">
+            <div class="flex items-center gap-3">
+              <div class="bg-blue-500 p-2 rounded-lg">
+                <i class="fas fa-file-alt text-white"></i>
               </div>
+              <h3 class="font-bold">Логи</h3>
             </div>
+            <p class="mt-2 text-sm text-gray-300">Информация о записях событий системы</p>
           </div>
           
-          <div class="mb-6">
-            <div class="flex items-start">
-              <span class="step-badge">5</span>
-              <div class="flex-1">
-                <p class="text-gray-200 mb-2">
-                  Если вы не понимаете, что случилось и хотите отправить краш-лог в интернет, то не стоит копировать 
-                  нижнюю часть Краш-лога, начинающуюся <code class="bg-gray-800 px-2 py-1 rounded">-- Initialization --</code>.
-                </p>
-                <p class="text-gray-300 bg-red-900/30 p-3 rounded-lg border border-red-700 mt-3">
-                  <i class="fas fa-exclamation-circle mr-2 text-red-300"></i> Почему? В этой части указываются все ваши данные, 
-                  такие как: Настройки системы, конфигурация вашего лаунчера, ваш ник и вся информация по игровому миру. 
-                  Несмотря на это там же указывается список модов, но он не важен для нахождения ошибки.
-                </p>
+          <div class="knowledge-card" onclick="sendMessage('Что такое краш-репорты?')">
+            <div class="flex items-center gap-3">
+              <div class="bg-red-500 p-2 rounded-lg">
+                <i class="fas fa-bug text-white"></i>
               </div>
+              <h3 class="font-bold">Краш-репорты</h3>
             </div>
+            <p class="mt-2 text-sm text-gray-300">Отчеты об ошибках и сбоях</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Как читать краш-репорты?')">
+            <div class="flex items-center gap-3">
+              <div class="bg-green-500 p-2 rounded-lg">
+                <i class="fas fa-book-open text-white"></i>
+              </div>
+              <h3 class="font-bold">Чтение отчетов</h3>
+            </div>
+            <p class="mt-2 text-sm text-gray-300">Инструкции по анализу ошибок</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Правила обращения за помощью')">
+            <div class="flex items-center gap-3">
+              <div class="bg-yellow-500 p-2 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-white"></i>
+              </div>
+              <h3 class="font-bold">Правила</h3>
+            </div>
+            <p class="mt-2 text-sm text-gray-300">Как правильно запрашивать поддержку</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Как сообщить об ошибке?')">
+            <div class="flex items-center gap-3">
+              <div class="bg-purple-500 p-2 rounded-lg">
+                <i class="fas fa-exclamation-circle text-white"></i>
+              </div>
+              <h3 class="font-bold">Ошибки</h3>
+            </div>
+            <p class="mt-2 text-sm text-gray-300">Процесс сообщения о проблемах</p>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Как предложить идею?')">
+            <div class="flex items-center gap-3">
+              <div class="bg-pink-500 p-2 rounded-lg">
+                <i class="fas fa-lightbulb text-white"></i>
+              </div>
+              <h3 class="font-bold">Идеи</h3>
+            </div>
+            <p class="mt-2 text-sm text-gray-300">Предложение улучшений для лаунчера</p>
           </div>
         </div>
       </div>
       
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="300">
-        <div class="flex items-center mb-6">
-          <div class="bg-purple-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-scroll text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">КАК ЧИТАТЬ ЛОГИ?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">1</span>
-              <p class="text-gray-200 flex-1">
-                Для работы с логами вы можете использовать любой текстовой редактор, 
-                но для удобного использования советуем использовать редактор с поддержкой строк кода 
-                (Пример: <span class="text-blue-400">Visual Studio Code</span>)
-              </p>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">2</span>
-              <p class="text-gray-200 flex-1">
-                Нужно знать правило написания лога. Мы читаем строки <span class="text-red-400 font-semibold">снизу - вверх</span>.
-              </p>
-            </div>
-          </div>
-          
-          <div class="mb-6">
-            <div class="flex items-start mb-4">
-              <span class="step-badge">3</span>
-              <p class="text-gray-200 flex-1">
-                В начале каждого действия в квадратных скобках будет указано время когда это происходило.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="help-section p-6 mb-12" data-aos="fade-up" data-aos-delay="350">
-        <div class="flex items-center mb-6">
-          <div class="bg-blue-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-hands-helping text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">КТО МОЖЕТ ПОМОЧЬ?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <p class="mb-6 text-gray-200">
-            Чтобы мы помогли пишите в тему
-            <span class="bg-blue-900/40 px-2 py-1 rounded font-medium">Поддержка лаунчера</span>. 
-            <span class="text-red-400 font-semibold">В ДРУГИХ ТЕМАХ НЕ ПОМОГАЕМ!</span>
-          </p>
-          
-          <a href="https://t.me/atlantis_studio_chat" class="telegram-btn inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold">
-            <i class="fab fa-telegram-plane mr-3 text-xl"></i> Перейти в Telegram-чат
-          </a>
-        </div>
-      </div>
-      
-      <!-- Новый раздел для предложения идей -->
-      <div class="help-section p-6 mb-12 idea-card" data-aos="fade-up" data-aos-delay="400">
-        <div class="flex items-center mb-6">
-          <div class="bg-yellow-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-lightbulb text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Появилась идея?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <p class="mb-4 text-gray-200">
-            Вот тема для идей по лаунчеру в нашем Telegram.
-          </p>
-          
-          <div class="bg-secondary/50 p-5 rounded-xl mb-6">
-            <h3 class="text-lg font-semibold text-yellow-300 mb-3">Форма анкеты:</h3>
-            <ol class="list-decimal pl-5 space-y-2">
-              <li>Ваш пинг</li>
-              <li>Ваша идея</li>
-              <li>Укажите для какой версии лаунчера идея (компьютерной или мобильной?)</li>
-              <li>Пинг кого-то из разработчиков:</li>
-            </ol>
-            <div class="mt-3 text-gray-300">
-              <p>• Если идея связана с дизайном или сайтом: <span class="text-blue-400 font-semibold">@M1rotv0rets</span></p>
-              <p>• Если с кодом или функционалом: <span class="text-blue-400 font-semibold">@WaterBucket_smt</span></p>
-            </div>
-          </div>
-          
-          <a href="https://t.me/atlantis_studio_chat" class="telegram-btn inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold mt-4">
-            <i class="fab fa-telegram-plane mr-3 text-xl"></i> Предложить идею в Telegram
-          </a>
-        </div>
-      </div>
-      
-      <!-- Новый раздел для отчетов об ошибках -->
-      <div class="help-section p-6 mb-12 error-card" data-aos="fade-up" data-aos-delay="450">
-        <div class="flex items-center mb-6">
-          <div class="bg-red-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-exclamation-circle text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Нашли ошибку?</h2>
-        </div>
-        
-        <div class="pl-16">
-          <p class="mb-4 text-gray-200">
-            Вот тема для найденных ошибок в лаунчере в нашем Telegram.
-          </p>
-          
-          <div class="bg-secondary/50 p-5 rounded-xl mb-6">
-            <h3 class="text-lg font-semibold text-red-300 mb-3">Форма анкеты:</h3>
-            <ol class="list-decimal pl-5 space-y-2">
-              <li>Ваш пинг</li>
-              <li>Описание ошибки</li>
-              <li>Укажите в какой версии лаунчера вы нашли ошибку (компьютерной или мобильной?)</li>
-              <li>Пинг кого-то из разработчиков:</li>
-            </ol>
-            <div class="mt-3 text-gray-300">
-              <p>• Если ошибка связана с дизайном или сайтом: <span class="text-blue-400 font-semibold">@M1rotv0rets</span></p>
-              <p>• Если с кодом или функционалом: <span class="text-blue-400 font-semibold">@WaterBucket_smt</span></p>
-            </div>
-          </div>
-          
-          <a href="https://t.me/atlantis_studio_chat" class="telegram-btn inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold mt-4">
-            <i class="fab fa-telegram-plane mr-3 text-xl"></i> Сообщить об ошибке
-          </a>
-        </div>
-      </div>
-      
-      <!-- Новый раздел для голосований -->
-      <div class="help-section p-6 mb-12 vote-card" data-aos="fade-up" data-aos-delay="500">
-        <div class="flex items-center mb-6">
-          <div class="bg-green-500 p-3 rounded-lg mr-4">
-            <i class="fas fa-vote-yea text-white text-xl"></i>
-          </div>
-          <h2 class="text-2xl font-bold text-white">Участвуйте в голосованиях</h2>
-        </div>
-        
-        <div class="pl-16">
-          <div class="bg-secondary/50 p-5 rounded-xl mb-6">
-            <p class="mb-4 text-gray-200">
-              Рекомендуем участвовать в голосованиях в теме "Опросы по лаунчеру" (поллы).
-            </p>
-            <p class="mb-4 text-gray-200">
-              Там можете проголосовать за добавление чего-либо в лаунчер или на сайт.
-            </p>
-            <p class="text-gray-200">
-              Тему для опроса вы можете сами предложить - напишите 
-              <span class="text-blue-400 font-semibold">@M1rotv0rets</span> 
-              в нашей группе Telegram.
-            </p>
-          </div>
-          
-          <a href="https://t.me/atlantis_studio_chat" class="telegram-btn inline-flex items-center px-6 py-3 rounded-lg text-white font-semibold mt-4">
-            <i class="fab fa-telegram-plane mr-3 text-xl"></i> Участвовать в голосованиях
-          </a>
+      <div class="input-container">
+        <div class="max-w-4xl mx-auto flex gap-3">
+          <input 
+            type="text" 
+            id="userInput" 
+            class="chat-input flex-grow rounded-full px-5 py-3 focus:ring-2 focus:ring-primary" 
+            placeholder="Введите сообщение..."
+            autocomplete="off"
+          >
+          <button id="sendBtn" class="send-btn w-12 h-12 rounded-full flex items-center justify-center">
+            <i class="fas fa-paper-plane text-white"></i>
+          </button>
         </div>
       </div>
     </div>
-  </section>
-  
+    
+    <button id="scrollDownBtn" class="scroll-down-btn w-10 h-10 rounded-full flex items-center justify-center opacity-0 transition-opacity">
+      <i class="fas fa-arrow-down text-blue-300"></i>
+    </button>
+  </main>
+
   <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm">
     © 2025 Atlantis Studio. Все права защищены.
   </footer>
 
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
+    // Инициализация библиотек
     AOS.init({
       duration: 800,
       once: true,
       offset: 50
     });
 
+    // Обработчики скролла и меню
     window.addEventListener('scroll', function() {
       const header = document.querySelector('header');
       if (window.scrollY > 10) {
@@ -594,6 +527,362 @@
         lines[2].style.transform = 'none';
       });
     });
+
+    // Логика чат-бота
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const scrollDownBtn = document.getElementById('scrollDownBtn');
+
+    // Фокус на поле ввода при загрузке
+    userInput.focus();
+
+    // Функция для прокрутки вниз
+    function scrollToBottom() {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      scrollDownBtn.classList.add('opacity-0');
+    }
+
+    // Показать кнопку прокрутки, если пользователь прокрутил вверх
+    chatMessages.addEventListener('scroll', () => {
+      const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 50;
+      scrollDownBtn.classList.toggle('opacity-0', isAtBottom);
+      scrollDownBtn.classList.toggle('opacity-70', !isAtBottom);
+    });
+
+    // Обработчик кнопки прокрутки
+    scrollDownBtn.addEventListener('click', scrollToBottom);
+
+    // Добавление сообщения в чат
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+      
+      const messageContent = `
+        <div class="flex items-start gap-3">
+          <div class="${isUser ? 'bg-blue-700' : 'bg-blue-600'} p-2 rounded-full">
+            <i class="${isUser ? 'fas fa-user' : 'fas fa-robot'} text-white"></i>
+          </div>
+          <div>
+            <h3 class="font-bold ${isUser ? 'text-blue-300' : 'text-blue-200'}">
+              ${isUser ? 'Вы' : 'Cobalt Assistant'}
+            </h3>
+            <div class="mt-1">${text}</div>
+          </div>
+        </div>
+      `;
+      
+      messageDiv.innerHTML = messageContent;
+      chatMessages.appendChild(messageDiv);
+      messageDiv.scrollIntoView({ behavior: 'smooth' });
+      return messageDiv;
+    }
+
+    // Добавление индикатора набора сообщения
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('message', 'bot-message', 'typing-indicator');
+      typingDiv.id = 'typingIndicator';
+      
+      typingDiv.innerHTML = `
+        <div class="flex items-start gap-3">
+          <div class="bg-blue-600 p-2 rounded-full">
+            <i class="fas fa-robot text-white"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-blue-200">Cobalt Assistant</h3>
+            <div class="mt-2 flex gap-1">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      chatMessages.appendChild(typingDiv);
+      typingDiv.scrollIntoView({ behavior: 'smooth' });
+      return typingDiv;
+    }
+
+    // Удаление индикатора набора
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Генерация ответа бота
+    function generateBotResponse(userMessage) {
+      const responses = {
+        "привет": "Привет! Чем могу помочь по Cobalt Launcher?",
+        "как дела": "У меня всё отлично! Готов помочь вам с логами, краш-репортами и другими вопросами по лаунчеру.",
+        "спасибо": "Всегда пожалуйста! Обращайтесь, если понадобится помощь.",
+        "помощь": "Я могу помочь с работой с логами, краш-репортами, чтением отчетов и обращением за поддержкой. Задайте конкретный вопрос!",
+        
+        // Логи
+        "логи": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Что такое логи?</h3>
+            <p class="mb-3">Логи (logs) - это записи о событиях, которые происходят в системе. Они отслеживают действия пользователя, сохраняют информацию о произошедших исключениях, ошибках и других важных событиях.</p>
+            <p class="font-semibold">Путь к логам:</p>
+            <div class="path-box">/AppData/Roaming/.Cobalt_Launcher/logs</div>
+            <p class="mt-3">В папку с логами можно попасть через меню папок с иконкой папки в главном меню.</p>
+          </div>
+        `,
+        
+        // Краш-репорты
+        "краш": `
+          <div class="error-card">
+            <h3 class="font-bold text-red-300 mb-2">Что такое краш-репорты?</h3>
+            <p class="mb-3">Краш-репорты (crash_reports) - это дебаг-отчеты, которые используются для отслеживания и диагностики проблем с программным обеспечением. Они содержат подробную информацию об исключениях, ошибках и стеке вызовов.</p>
+            <p class="font-semibold">Путь к краш-репортам:</p>
+            <div class="path-box">/AppData/Roaming/.Cobalt_Launcher/crash-reports</div>
+            <p class="mt-3">В папку с краш-репортами можно попасть через меню папок с иконкой папки в главном меню.</p>
+          </div>
+        `,
+        
+        // Правила обращения
+        "правила": `
+          <div class="warning-card">
+            <h3 class="font-bold text-yellow-300 mb-2">Правила обращения за помощью</h3>
+            <ol class="space-y-2">
+              <li class="rule-item">Если вы будете грубить или оскорблять, помощь вам не будет оказана</li>
+              <li class="rule-item">Пишите чётко и ясно</li>
+              <li class="rule-item">С модифицированными версиями не помогаем - обращайтесь к разработчику модификации</li>
+              <li class="rule-item">Обязательно указывайте версию лаунчера (компьютерная/мобильная)</li>
+            </ol>
+            <div class="mt-3 bg-dark/50 p-3 rounded-lg">
+              <p class="text-yellow-200"><i class="fas fa-info-circle mr-2"></i> Без логов и краш-репортов мы не сможем понять причину проблемы!</p>
+            </div>
+          </div>
+        `,
+        
+        // Чтение краш-репортов
+        "читать краш": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Как читать краш-репорты?</h3>
+            
+            <div class="mt-4">
+              <div class="flex items-start mb-4">
+                <span class="step-badge">1</span>
+                <p>Используйте редактор с поддержкой кода (например, <span class="text-blue-400">Visual Studio Code</span>)</p>
+              </div>
+              
+              <div class="flex items-start mb-4">
+                <span class="step-badge">2</span>
+                <p>Нам нужны строки, начинающиеся на <code class="bg-gray-800 px-1 py-0.5 rounded">at</code></p>
+              </div>
+              
+              <div class="flex items-start mb-4">
+                <span class="step-badge">3</span>
+                <p>Читаем строки <span class="text-red-400 font-semibold">снизу вверх</span> (последняя строка с <code class="bg-gray-800 px-1 py-0.5 rounded">at</code> - первая)</p>
+              </div>
+              
+              <div class="flex items-start mb-4">
+                <span class="step-badge">4</span>
+                <p>Если игра с модами не запускается, ищите название конфликтного мода в строках (например <code class="bg-gray-800 px-1 py-0.5 rounded">at mezz.jei</code>)</p>
+              </div>
+              
+              <div class="flex items-start">
+                <span class="step-badge">5</span>
+                <div>
+                  <p>Не копируйте часть краш-лога, начинающуюся с <code class="bg-gray-800 px-1 py-0.5 rounded">-- Initialization --</code></p>
+                  <p class="text-red-300 mt-2"><i class="fas fa-exclamation-triangle mr-2"></i> В этой части содержатся ваши личные данные!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        // Чтение логов
+        "читать логи": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Как читать логи?</h3>
+            
+            <div class="mt-4">
+              <div class="flex items-start mb-4">
+                <span class="step-badge">1</span>
+                <p>Используйте редактор с поддержкой кода (например, <span class="text-blue-400">Visual Studio Code</span>)</p>
+              </div>
+              
+              <div class="flex items-start mb-4">
+                <span class="step-badge">2</span>
+                <p>Читаем строки <span class="text-red-400 font-semibold">снизу вверх</span></p>
+              </div>
+              
+              <div class="flex items-start mb-4">
+                <span class="step-badge">3</span>
+                <p>В начале каждого действия в квадратных скобках указано время события</p>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        // Сообщение об ошибке
+        "ошибка": `
+          <div class="error-card">
+            <h3 class="font-bold text-red-300 mb-2">Как сообщить об ошибке?</h3>
+            <p class="mb-3">Используйте тему для найденных ошибок в Telegram-чате:</p>
+            
+            <div class="bg-dark/50 p-4 rounded-lg mb-3">
+              <h4 class="font-semibold text-red-300 mb-2">Форма анкеты:</h4>
+              <ol class="list-decimal pl-5 space-y-1">
+                <li>Ваш пинг</li>
+                <li>Описание ошибки</li>
+                <li>Версия лаунчера (компьютерная/мобильная)</li>
+                <li>Пинг разработчика:
+                  <ul class="list-disc pl-5 mt-1">
+                    <li>Дизайн/сайт: <span class="text-blue-400">@M1rotv0rets</span></li>
+                    <li>Код/функционал: <span class="text-blue-400">@WaterBucket_smt</span></li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            
+            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
+              <i class="fab fa-telegram-plane mr-2"></i> Сообщить об ошибке
+            </a>
+          </div>
+        `,
+        
+        // Предложение идей
+        "идея": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Как предложить идею?</h3>
+            <p class="mb-3">Используйте тему для идей в Telegram-чате:</p>
+            
+            <div class="bg-dark/50 p-4 rounded-lg mb-3">
+              <h4 class="font-semibold text-blue-300 mb-2">Форма анкеты:</h4>
+              <ol class="list-decimal pl-5 space-y-1">
+                <li>Ваш пинг</li>
+                <li>Ваша идея</li>
+                <li>Версия лаунчера (компьютерная/мобильная)</li>
+                <li>Пинг разработчика:
+                  <ul class="list-disc pl-5 mt-1">
+                    <li>Дизайн/сайт: <span class="text-blue-400">@M1rotv0rets</span></li>
+                    <li>Код/функционал: <span class="text-blue-400">@WaterBucket_smt</span></li>
+                  </ul>
+                </li>
+              </ol>
+            </div>
+            
+            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
+              <i class="fab fa-telegram-plane mr-2"></i> Предложить идею
+            </a>
+          </div>
+        `,
+        
+        // Голосования
+        "голосование": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Участие в голосованиях</h3>
+            <p class="mb-3">Рекомендуем участвовать в голосованиях в теме "Опросы по лаунчеру" (поллы).</p>
+            <p class="mb-3">Там вы можете проголосовать за добавление чего-либо в лаунчер или на сайт.</p>
+            <p class="mb-4">Чтобы предложить тему для опроса - напишите <span class="text-blue-400 font-semibold">@M1rotv0rets</span></p>
+            
+            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
+              <i class="fab fa-telegram-plane mr-2"></i> Участвовать в голосованиях
+            </a>
+          </div>
+        `,
+        
+        // Кто может помочь
+        "помощь": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Кто может помочь?</h3>
+            <p class="mb-3">Чтобы получить помощь, пишите в тему <span class="bg-blue-900/40 px-2 py-1 rounded">Поддержка лаунчера</span>.</p>
+            <p class="text-red-400 font-semibold mb-4">В ДРУГИХ ТЕМАХ ПОМОЩЬ НЕ ОКАЗЫВАЕТСЯ!</p>
+            
+            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
+              <i class="fab fa-telegram-plane mr-2"></i> Перейти в Telegram-чат
+            </a>
+          </div>
+        `
+      };
+
+      // Поиск подходящего ответа
+      const lowerMessage = userMessage.toLowerCase();
+      for (const [key, value] of Object.entries(responses)) {
+        if (lowerMessage.includes(key)) {
+          return value;
+        }
+      }
+      
+      // Дополнительные варианты для схожих запросов
+      if (lowerMessage.includes("краш") || lowerMessage.includes("краш-репорт")) {
+        return responses["краш"];
+      }
+      if (lowerMessage.includes("правил")) {
+        return responses["правила"];
+      }
+      if (lowerMessage.includes("читать отчет")) {
+        return responses["читать краш"];
+      }
+      if (lowerMessage.includes("сообщить об ошибке") || lowerMessage.includes("нашел ошибку")) {
+        return responses["ошибка"];
+      }
+      if (lowerMessage.includes("предложить идею") || lowerMessage.includes("есть идея")) {
+        return responses["идея"];
+      }
+      if (lowerMessage.includes("голосование") || lowerMessage.includes("опрос")) {
+        return responses["голосование"];
+      }
+      if (lowerMessage.includes("кто может помочь") || lowerMessage.includes("поддержка")) {
+        return responses["помощь"];
+      }
+
+      // Стандартные ответы
+      const defaultResponses = [
+        "Интересный вопрос! Я еще учусь, но скоро смогу лучше отвечать на такие вопросы.",
+        "Пока я не могу ответить на этот вопрос, но вы можете найти информацию в нашей документации.",
+        "Хороший вопрос! Уточните, пожалуйста, что именно вас интересует?",
+        "Я пока не знаю ответ на этот вопрос, но вы можете спросить что-то другое.",
+        "Попробуйте задать вопрос по-другому или выберите тему из базы знаний выше."
+      ];
+
+      return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+
+    // Отправка сообщения
+    function sendMessage(text) {
+      if (!text.trim()) return;
+      
+      // Добавляем сообщение пользователя
+      addMessage(text, true);
+      
+      // Очищаем поле ввода
+      userInput.value = '';
+      userInput.focus();
+      
+      // Показываем индикатор набора
+      const typingIndicator = showTypingIndicator();
+      
+      // Имитируем задержку ответа
+      setTimeout(() => {
+        hideTypingIndicator();
+        
+        // Генерируем ответ
+        const botResponse = generateBotResponse(text);
+        addMessage(botResponse);
+      }, 1500 + Math.random() * 1000);
+    }
+
+    // Обработчики событий
+    sendBtn.addEventListener('click', () => {
+      sendMessage(userInput.value);
+    });
+
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage(userInput.value);
+      }
+    });
+
+    // Прокрутка вниз при загрузке
+    setTimeout(scrollToBottom, 500);
   </script>
 </body>
-  </html>
+</html>
