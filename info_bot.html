@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Помощник</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="icon.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a',
+            bot: '#1e3a8a',
+            user: '#0c4a6e',
+            warning: '#d97706',
+            error: '#b91c1c'
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .burger-line {
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-out;
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+      max-width: 100%;
+      overflow: hidden;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .message {
+      max-width: 85%;
+      padding: 0.8rem 1.2rem;
+      border-radius: 1.2rem;
+      position: relative;
+    }
+    
+    .bot-message {
+      align-self: flex-start;
+      background: linear-gradient(135deg, #1e3a8a, #1e40af);
+    }
+    
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #0c4a6e, #075985);
+    }
+    
+    .typing-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .typing-dot {
+      width: 0.4rem;
+      height: 0.4rem;
+      background-color: #93c5fd;
+      border-radius: 50%;
+      display: inline-block;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    
+    .typing-dot:nth-child(1) { animation-delay: 0s; }
+    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    
+    @keyframes typing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .input-container {
+      padding: 0.8rem;
+      background: rgba(15, 23, 42, 0.9);
+      border-top: 1px solid #334155;
+    }
+    
+    .chat-input {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      color: white;
+    }
+    
+    .send-btn {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    }
+    
+    .scroll-down-btn {
+      position: absolute;
+      bottom: 4rem;
+      right: 1.5rem;
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      z-index: 10;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .knowledge-base {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1.2rem;
+    }
+    
+    .knowledge-card {
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 0.6rem;
+      padding: 0.8rem;
+      border: 1px solid #334155;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    
+    .knowledge-card:hover {
+      transform: translateY(-3px);
+      background: rgba(30, 41, 59, 0.8);
+      border-color: #0ea5e9;
+    }
+    
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      color: white;
+      font-weight: bold;
+      margin-right: 8px;
+      font-size: 0.8rem;
+    }
+    
+    .solution-card {
+      background: rgba(30, 41, 59, 0.3);
+      border-left: 3px solid #0ea5e9;
+      padding: 8px 12px;
+      margin: 8px 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+    }
+    
+    .solution-card.warning {
+      border-left-color: #d97706;
+    }
+    
+    .solution-card.error {
+      border-left-color: #b91c1c;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+    
+    .tab-button {
+      padding: 6px 12px;
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid #334155;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+    
+    .tab-button:hover {
+      background: rgba(56, 71, 97, 0.6);
+    }
+    
+    .tab-button.active {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      border-bottom: none;
+    }
+    
+    .tab-content {
+      display: none;
+      padding: 12px;
+      border: 1px solid #334155;
+      border-radius: 0 4px 4px 4px;
+      font-size: 0.9rem;
+      background: rgba(15, 23, 42, 0.3);
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    pre {
+      background: rgba(15, 23, 42, 0.5);
+      padding: 8px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      margin: 8px 0;
+      font-family: 'Courier New', monospace;
+    }
+    
+    code {
+      background: rgba(15, 23, 42, 0.5);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .info-card {
+      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    
+    .warning-card {
+      background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
+      border: 1px solid rgba(234, 179, 8, 0.3);
+      padding: 15px;
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    
+    .tab-widget {
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+    
+    .tab-header {
+      display: flex;
+      background: rgba(30, 41, 59, 0.5);
+    }
+    
+    .tab-header-item {
+      padding: 10px 15px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .tab-header-item.active {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    }
+    
+    .tab-content-panel {
+      padding: 15px;
+      background: rgba(15, 23, 42, 0.4);
+      display: none;
+    }
+    
+    .tab-content-panel.active {
+      display: block;
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200">
+
+  <header class="bg-gray-950 shadow-md sticky-header">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <h1 class="text-xl font-bold text-white">🤖 Cobalt Assistant</h1>
+      </div>
+      
+      <nav class="hidden md:flex space-x-6">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+      </nav>
+      
+      <button id="burgerBtn" class="md:hidden text-white focus:outline-none">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
+      <div class="flex flex-col px-4 pb-3">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+      </div>
+    </div>
+  </header>
+
+   <section class="relative py-32 px-4 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-dark opacity-90"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-[url('Images/banner.png')] bg-cover bg-center parallax scale-110"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-dark/90 to-primary/20"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
+      <h1 class="text-4xl sm:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="150">
+        Ваш бот помощник
+      </h1>
+    </div>
+  </section>
+
+  <main class="flex-grow">
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+          <div class="flex items-start gap-2">
+            <div class="bg-blue-600 p-1.5 rounded-full">
+              <i class="fas fa-robot text-white text-sm"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-blue-200 text-sm">Cobalt Assistant</h3>
+              <p class="mt-1 text-sm">Привет! Я ваш помощник по работе с Cobalt Launcher. Чем могу помочь?</p>
+              <p class="mt-2 text-sm">Выберите тему из списка ниже или задайте вопрос 👇</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="knowledge-base" id="knowledgeBase">
+          <div class="knowledge-card" onclick="sendMessage('Скины')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-user text-blue-300 mb-1"></i>
+              <span>Скины</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Сетевая игра')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-network-wired text-green-300 mb-1"></i>
+              <span>Сеть</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Шейдеры')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-magic text-purple-300 mb-1"></i>
+              <span>Шейдеры</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Требования')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-microchip text-yellow-300 mb-1"></i>
+              <span>Требования</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Java')">
+            <div class="flex flex-col items-center">
+              <i class="fab fa-java text-red-300 mb-1"></i>
+              <span>Java</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Проблемы')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-tools text-orange-300 mb-1"></i>
+              <span>Проблемы</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Fabric')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-tshirt text-purple-300 mb-1"></i>
+              <span>Fabric</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Forge')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-hammer text-orange-300 mb-1"></i>
+              <span>Forge</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Сборки')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-box-open text-green-300 mb-1"></i>
+              <span>Сборки</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('OptiFine')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-bolt text-blue-300 mb-1"></i>
+              <span>OptiFine</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Quilt')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-blanket text-pink-300 mb-1"></i>
+              <span>Quilt</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('NeoForge')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-rabbit text-teal-300 mb-1"></i>
+              <span>NeoForge</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Логи')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-file-alt text-yellow-300 mb-1"></i>
+              <span>Логи</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Краш-репорты')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-bug text-red-300 mb-1"></i>
+              <span>Краш-репорты</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Правила')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-gavel text-blue-300 mb-1"></i>
+              <span>Правила</span>
+            </div>
+          </div>
+          
+          <div class="knowledge-card" onclick="sendMessage('Идеи и ошибки')">
+            <div class="flex flex-col items-center">
+              <i class="fas fa-lightbulb text-green-300 mb-1"></i>
+              <span>Идеи и ошибки</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-container">
+        <div class="max-w-4xl mx-auto flex gap-2">
+          <input 
+            type="text" 
+            id="userInput" 
+            class="chat-input flex-grow rounded-full px-4 py-2 text-sm" 
+            placeholder="Введите сообщение..."
+            autocomplete="off"
+          >
+          <button id="sendBtn" class="send-btn w-10 h-10 rounded-full flex items-center justify-center">
+            <i class="fas fa-paper-plane text-white text-sm"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <button id="scrollDownBtn" class="scroll-down-btn w-8 h-8 rounded-full flex items-center justify-center opacity-0 transition-opacity">
+      <i class="fas fa-arrow-down text-blue-300 text-sm"></i>
+    </button>
+  </main>
+
+  <footer class="bg-gray-950 py-4 text-center text-gray-500 text-xs">
+    © 2025 Atlantis Studio. Все права защищены.
+  </footer>
+
+  <script>
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    burgerBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('open');
+      
+      const lines = document.querySelectorAll('.burger-line');
+      if (mobileMenu.classList.contains('open')) {
+        lines[0].style.transform = 'translateY(6px) rotate(45deg)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'translateY(-6px) rotate(-45deg)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+    
+    const menuItems = mobileMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        const lines = document.querySelectorAll('.burger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      });
+    });
+
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const scrollDownBtn = document.getElementById('scrollDownBtn');
+
+    userInput.focus();
+
+    function scrollToBottom() {
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      scrollDownBtn.classList.add('opacity-0');
+    }
+
+    chatMessages.addEventListener('scroll', () => {
+      const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 50;
+      scrollDownBtn.classList.toggle('opacity-0', isAtBottom);
+      scrollDownBtn.classList.toggle('opacity-70', !isAtBottom);
+    });
+
+    scrollDownBtn.addEventListener('click', scrollToBottom);
+
+    function addMessage(text, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+      
+      const messageContent = `
+        <div class="flex items-start gap-2">
+          <div class="${isUser ? 'bg-blue-700' : 'bg-blue-600'} p-1.5 rounded-full">
+            <i class="${isUser ? 'fas fa-user' : 'fas fa-robot'} text-white text-sm"></i>
+          </div>
+          <div>
+            <h3 class="font-bold ${isUser ? 'text-blue-300' : 'text-blue-200'} text-sm">
+              ${isUser ? 'Вы' : 'Cobalt Assistant'}
+            </h3>
+            <div class="mt-1 text-sm">${text}</div>
+          </div>
+        </div>
+      `;
+      
+      messageDiv.innerHTML = messageContent;
+      chatMessages.appendChild(messageDiv);
+      messageDiv.scrollIntoView({ behavior: 'smooth' });
+      return messageDiv;
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('message', 'bot-message', 'typing-indicator');
+      typingDiv.id = 'typingIndicator';
+      
+      typingDiv.innerHTML = `
+        <div class="flex items-start gap-2">
+          <div class="bg-blue-600 p-1.5 rounded-full">
+            <i class="fas fa-robot text-white text-sm"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-blue-200 text-sm">Cobalt Assistant</h3>
+            <div class="mt-2 flex gap-1">
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+              <span class="typing-dot"></span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      chatMessages.appendChild(typingDiv);
+      typingDiv.scrollIntoView({ behavior: 'smooth' });
+      return typingDiv;
+    }
+
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    function generateBotResponse(userMessage) {
+      const responses = {
+        "привет": "Привет! Чем могу помочь по Cobalt Launcher?",
+        "как дела": "У меня всё отлично! Готов помочь вам с настройкой Minecraft.",
+        "спасибо": "Всегда пожалуйста! Обращайтесь, если понадобится помощь.",
+        "помощь": "Я могу помочь с установкой скинов, настройкой сетевой игры, установкой шейдеров и многим другим. Задайте конкретный вопрос!",
+        
+        "скины": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка скинов</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('license', this.parentElement.parentElement)">Лицензия</div>
+                <div class="tab-header-item" onclick="switchTabWidget('nolicense', this.parentElement.parentElement)">Без лицензии</div>
+                <div class="tab-header-item" onclick="switchTabWidget('capes', this.parentElement.parentElement)">Плащи</div>
+                <div class="tab-header-item" onclick="switchTabWidget('issues', this.parentElement.parentElement)">Проблемы</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="license">
+                <h4 class="font-semibold mb-2">Есть лицензия:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Зайдите на <a href="https://minecraft.net" class="text-blue-400 underline" target="_blank">Minecraft.net</a></li>
+                  <li>В карточке "Minecraft: Java Edition" выберите "Изменить скин"</li>
+                  <li>Загрузите файл скина (PNG, 64x64 пикселей)</li>
+                  <li>Сохраните изменения</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="nolicense">
+                <h4 class="font-semibold mb-2">Нет лицензии:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Зарегистрируйтесь на <a href="https://ely.by" class="text-blue-400 underline" target="_blank">Ely.by</a></li>
+                  <li>Выберите или загрузите скин</li>
+                  <li>Активируйте скин (кнопка с галочкой)</li>
+                  <li>В Cobalt Launcher:
+                    <ul class="list-disc pl-5 mt-1">
+                      <li>Менеджер аккаунтов → Добавить аккаунт Ely.by</li>
+                      <li>Авторизуйтесь через браузер</li>
+                    </ul>
+                  </li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="capes">
+                <h4 class="font-semibold mb-2">Плащи:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Лицензия:</b> Выберите плащ на странице профиля Minecraft.net</li>
+                  <li><b>Ely.by:</b> Плащи не поддерживаются</li>
+                  <li>В Cobalt Launcher:
+                    <ul class="list-disc pl-5 mt-1">
+                      <li>Используйте аккаунт Microsoft для доступа к плащам</li>
+                      <li>Выйдите из всех аккаунтов в браузере перед авторизацией</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="issues">
+                <h4 class="font-semibold mb-2">Проблемы со скинами:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Скин не отображается:</b> Перезапустите игру</li>
+                  <li><b>Другие игроки не видят скин:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Лицензионные игроки не видят скины Ely.by</li>
+                      <li>Используйте /skin на серверах с поддержкой</li>
+                    </ul>
+                  </li>
+                  <li><b>Конфликты модов:</b> Откажитесь от Ely.by при использовании SkinShuffle</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "сетевая игра": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Сетевая игра</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('methods', this.parentElement.parentElement)">Методы</div>
+                <div class="tab-header-item" onclick="switchTabWidget('mods', this.parentElement.parentElement)">Моды</div>
+                <div class="tab-header-item" onclick="switchTabWidget('issues', this.parentElement.parentElement)">Проблемы</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="methods">
+                <h4 class="font-semibold mb-2">Способы подключения:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Публичные серверы:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Добавьте сервер в списке "Сетевая игра"</li>
+                      <li>Используйте адрес вида: <code>mc.example.com</code></li>
+                    </ul>
+                  </li>
+                  <li><b>Локальная сеть:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Один игрок открывает мир через "Открыть для LAN"</li>
+                      <li>Остальные подключаются через локальную сеть</li>
+                    </ul>
+                  </li>
+                  <li><b>Эмуляция сети (Hamachi/Radmin VPN):</b>
+                    <ul class="list-disc pl-5">
+                      <li>Создайте виртуальную сеть</li>
+                      <li>Подключите друзей</li>
+                      <li>Используйте IP-адрес из программы</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="mods">
+                <h4 class="font-semibold mb-2">Моды для сети:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b><a href="https://modrinth.com/plugin/worldhost" class="text-blue-400 underline" target="_blank">WorldHost</a>:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Используйте /worldhost tempip (временный IP)</li>
+                      <li>/worldhost ip (постоянный IP)</li>
+                    </ul>
+                  </li>
+                  <li><b><a href="https://modrinth.com/plugin/e4mc" class="text-blue-400 underline" target="_blank">e4mc</a>:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Откройте мир через меню паузы</li>
+                      <li>Адрес появится в чате</li>
+                    </ul>
+                  </li>
+                  <li><b><a href="https://modrinth.com/plugin/lan-world-plug-n-play" class="text-blue-400 underline" target="_blank">LAN World Plug-n-Play</a>:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Требует uPnP на роутере</li>
+                      <li>Настройка через игровое меню</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="issues">
+                <h4 class="font-semibold mb-2">Распространенные проблемы:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Invalid session:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Сервер требует лицензию</li>
+                      <li>Решение: <code>online-mode=false</code> в server.properties</li>
+                    </ul>
+                  </li>
+                  <li><b>Connection refused:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Добавьте Java в исключения брандмауэра</li>
+                      <li>Отключите VPN/GoodbyeDPI</li>
+                    </ul>
+                  </li>
+                  <li><b>Краши при подключении:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Удалите OptiFine</li>
+                      <li>Убедитесь в одинаковых версиях модов</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "шейдеры": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка шейдеров</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('install', this.parentElement.parentElement)">Установка</div>
+                <div class="tab-header-item" onclick="switchTabWidget('optimize', this.parentElement.parentElement)">Оптимизация</div>
+                <div class="tab-header-item" onclick="switchTabWidget('popular', this.parentElement.parentElement)">Популярные</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="install">
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Убедитесь что у вас установлен OptiFine или Iris Shaders</li>
+                  <li>Скачайте шейдерпак с <a href="https://modrinth.com/shaders" class="text-blue-400 underline" target="_blank">Modrinth</a> или <a href="https://www.curseforge.com/minecraft/customization/shaders" class="text-blue-400 underline" target="_blank">CurseForge</a></li>
+                  <li>Поместите файл .zip в папку shaderpacks (в директории игры)</li>
+                  <li>Запустите игру и откройте настройки видео (Options → Video Settings)</li>
+                  <li>Перейдите на вкладку "Shaders"</li>
+                  <li>Выберите установленный шейдерпак из списка</li>
+                  <li>Нажмите "Apply" и наслаждайтесь улучшенной графикой</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="optimize">
+                <h4 class="font-semibold mb-2">Оптимизация производительности:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Уменьшите Render Distance (дистанцию прорисовки)</li>
+                  <li>Отключите Shadow Quality (качество теней)</li>
+                  <li>Снизьте Antialiasing (сглаживание)</li>
+                  <li>Используйте легкие шейдеры (BSL Lite, Sildur's Enhanced Default)</li>
+                  <li>Обновите драйвера видеокарты</li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Для слабых ПК:</b> Шейдеры требуют мощную видеокарту. Для интегрированной графики используйте шейдеры без сложных эффектов</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="popular">
+                <h4 class="font-semibold mb-2">Популярные шейдеры:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Sildur's Vibrant Shaders</b> - баланс качества и производительности</li>
+                  <li><b>BSL Shaders</b> - реалистичное освещение и эффекты</li>
+                  <li><b>Complementary Shaders</b> - высокая настраиваемость</li>
+                  <li><b>SEUS Renewed</b> - для мощных ПК, кинематографичный вид</li>
+                  <li><b>Iris + Sodium</b> - для Fabric, максимальная оптимизация</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "требования": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Системные требования</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('game', this.parentElement.parentElement)">Игра</div>
+                <div class="tab-header-item" onclick="switchTabWidget('launcher', this.parentElement.parentElement)">Лаунчер</div>
+                <div class="tab-header-item" onclick="switchTabWidget('modded', this.parentElement.parentElement)">Моды</div>
+                <div class="tab-header-item" onclick="switchTabWidget('macos', this.parentElement.parentElement)">macOS</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="game">
+                <h4 class="font-semibold mb-2">Minecraft Java Edition:</h4>
+                <table class="w-full border-collapse mt-2">
+                  <thead>
+                    <tr>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Компонент</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Минимальные</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Рекомендуемые</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Процессор</td>
+                      <td class="border border-gray-600 p-2">Intel Core i3-3210 / AMD A8-7600</td>
+                      <td class="border border-gray-600 p-2">Intel Core i5-4690 / AMD A10-7800</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Оперативная память</td>
+                      <td class="border border-gray-600 p-2">4 GB</td>
+                      <td class="border border-gray-600 p-2">8 GB</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Видеокарта</td>
+                      <td class="border border-gray-600 p-2">Intel HD Graphics 4000 / AMD Radeon R5</td>
+                      <td class="border border-gray-600 p-2">NVIDIA GeForce 700 / AMD Radeon Rx 200</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Место на диске</td>
+                      <td class="border border-gray-600 p-2">1 GB</td>
+                      <td class="border border-gray-600 p-2">4 GB</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">ОС</td>
+                      <td class="border border-gray-600 p-2" colspan="2">Windows 10, macOS 10.12, Linux (64-bit)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="tab-content-panel" id="launcher">
+                <h4 class="font-semibold mb-2">Cobalt Launcher:</h4>
+                <table class="w-full border-collapse mt-2">
+                  <thead>
+                    <tr>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Компонент</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Минимальные</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Рекомендуемые</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Процессор</td>
+                      <td class="border border-gray-600 p-2">1.5 GHz dual-core</td>
+                      <td class="border border-gray-600 p-2">2.0 GHz quad-core</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Оперативная память</td>
+                      <td class="border border-gray-600 p-2">512 MB</td>
+                      <td class="border border-gray-600 p-2">1 GB</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Видеокарта</td>
+                      <td class="border border-gray-600 p-2">Любая с поддержкой OpenGL 2.1</td>
+                      <td class="border border-gray-600 p-2">Intel HD Graphics 3000+</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Место на диске</td>
+                      <td class="border border-gray-600 p-2">100 MB</td>
+                      <td class="border border-gray-600 p-2">500 MB</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">ОС</td>
+                      <td class="border border-gray-600 p-2" colspan="2">Windows 7+, macOS 10.12+, Linux с GTK+ 3.0</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="solution-card mt-3">
+                  <p><b>Примечание:</b> Лаунчер может работать на слабых ПК, но для игры с модами требуются более высокие характеристики</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="modded">
+                <h4 class="font-semibold mb-2">Модифицированная игра:</h4>
+                <table class="w-full border-collapse mt-2">
+                  <thead>
+                    <tr>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Сборка</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">RAM</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Видеокарта</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Легкие (50+ модов)</td>
+                      <td class="border border-gray-600 p-2">4-6 GB</td>
+                      <td class="border border-gray-600 p-2">GTX 750 Ti / RX 460</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Средние (100+ модов)</td>
+                      <td class="border border-gray-600 p-2">6-8 GB</td>
+                      <td class="border border-gray-600 p-2">GTX 1050 Ti / RX 570</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Тяжелые (200+ модов)</td>
+                      <td class="border border-gray-600 p-2">8-12 GB</td>
+                      <td class="border border-gray-600 p-2">GTX 1660 / RX 580</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">С шейдерами</td>
+                      <td class="border border-gray-600 p-2">+2 GB RAM</td>
+                      <td class="border border-gray-600 p-2">GTX 1060 / RX 5600 XT</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> <b>Важно:</b> Для модов 1.17+ требуется Java 17, для 1.16.5 и ниже - Java 8</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="macos">
+                <h4 class="font-semibold mb-2">Требования для macOS:</h4>
+                <table class="w-full border-collapse mt-2">
+                  <thead>
+                    <tr>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Компонент</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Минимальные</th>
+                      <th class="border border-gray-600 p-2 bg-gray-800">Рекомендуемые</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Операционная система</td>
+                      <td class="border border-gray-600 p-2">macOS 10.12.6 (Sierra)</td>
+                      <td class="border border-gray-600 p-2">macOS 10.14.5 (Mojave)+</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Архитектура</td>
+                      <td class="border border-gray-600 p-2">x64, ARM (M1+)</td>
+                      <td class="border border-gray-600 p-2">ARM (M1+)</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Оперативная память</td>
+                      <td class="border border-gray-600 p-2">2 GB</td>
+                      <td class="border border-gray-600 p-2">4 GB</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Процессор</td>
+                      <td class="border border-gray-600 p-2">Apple M1</td>
+                      <td class="border border-gray-600 p-2">Apple M1+</td>
+                    </tr>
+                    <tr>
+                      <td class="border border-gray-600 p-2">Видеокарта</td>
+                      <td class="border border-gray-600 p-2">Интегрированная</td>
+                      <td class="border border-gray-600 p-2">Дискретная</td>
+                    </tr>
+                    <tr class="bg-gray-800/30">
+                      <td class="border border-gray-600 p-2">Место на диске</td>
+                      <td class="border border-gray-600 p-2">1 GB</td>
+                      <td class="border border-gray-600 p-2">4 GB</td>
+                    </tr>
+                  </tbody>
+                </table>
+              
+              <div class="solution-card mt-3">
+                <p><b>Требования для лаунчера:</b></p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>JAR-версия:</b> Java 8+ (рекомендуется Java 11+)</li>
+                  <li><b>Linux:</b> Поддержка Flatpak и xdg-desktop-portal</li>
+                  <li><b>Примечание:</b> Не поддерживает Bedrock Edition и мобильные устройства</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+        
+        "java": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка и настройка Java</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('windows', this.parentElement.parentElement)">Windows</div>
+                <div class="tab-header-item" onclick="switchTabWidget('linux', this.parentElement.parentElement)">Linux</div>
+                <div class="tab-header-item" onclick="switchTabWidget('macos', this.parentElement.parentElement)">macOS</div>
+                <div class="tab-header-item" onclick="switchTabWidget('versions', this.parentElement.parentElement)">Версии</div>
+                <div class="tab-header-item" onclick="switchTabWidget('custom', this.parentElement.parentElement)">Пользовательские</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="windows">
+                <h4 class="font-semibold mb-2">Установка Java на Windows:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте Java с <a href="https://adoptium.net/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик и следуйте инструкциям</li>
+                  <li>После установки откройте настройки лаунчера</li>
+                  <li>Перейдите в раздел "Java"</li>
+                  <li>Выберите "Настроить" и укажите путь к установленной Java (обычно C:\Program Files\Java)</li>
+                  <li>Для старых версий Minecraft (1.16 и ниже) используйте Java 8</li>
+                  <li>Для новых версий (1.17+) используйте Java 17</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Проверка установки:</b> Откройте командную строку и введите <code>java -version</code> чтобы увидеть версию Java</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="linux">
+                <h4 class="font-semibold mb-2">Установка Java на Linux:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Откройте терминал</li>
+                  <li>Установите OpenJDK: 
+                    <pre class="mt-1">sudo apt install openjdk-17-jdk</pre>
+                  </li>
+                  <li>Для старых версий также установите Java 8:
+                    <pre class="mt-1">sudo apt install openjdk-8-jdk</pre>
+                  </li>
+                  <li>В настройках лаунчера выберите нужную версию Java</li>
+                  <li>Проверьте путь: <code>/usr/lib/jvm/java-17-openjdk-amd64/bin/java</code></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="macos">
+                <h4 class="font-semibold mb-2">Установка Java на macOS:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте .dmg установщик с <a href="https://adoptium.net/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите скачанный файл и следуйте инструкциям</li>
+                  <li>После установки Java будет автоматически обнаружена лаунчером</li>
+                  <li>При необходимости можно указать путь вручную в настройках</li>
+                  <li>Стандартный путь: <code>/Library/Java/JavaVirtualMachines</code></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="versions">
+                <h4 class="font-semibold mb-2">Выбор версии Java:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Minecraft 1.17+</b>: Java 17</li>
+                  <li><b>Minecraft 1.12-1.16.5</b>: Java 8</li>
+                  <li><b>Minecraft 1.7.10 и ниже</b>: Java 8 (64-bit)</li>
+                  <li><b>Для модпаков</b>: Следуйте рекомендациям автора сборки</li>
+                </ul>
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> Не используйте Java 32-bit для Minecraft - это вызовет проблемы с памятью</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="custom">
+                <h4 class="font-semibold mb-2">Использование собственных версий Java:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите нужную версию Minecraft</li>
+                  <li>Настройки лаунчера → Minecraft → Java → "Настроить"</li>
+                  <li>Выберите "Рекомендуемая" → "Открыть папку"</li>
+                  <li>Создайте файл <code>override.txt</code> в папке</li>
+                  <li>Теперь можно заменять файлы Java в этой папке</li>
+                </ol>
+                
+                <div class="solution-card mt-3">
+                  <p><b>Упрощенный способ (Windows):</b></p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li><a href="#" class="text-blue-400 underline">Скачать для 32-бит Windows</a></li>
+                    <li><a href="#" class="text-blue-400 underline">Скачать для 64-бит Windows</a></li>
+                    <li>Замените содержимое папки java-runtime на скачанный архив</li>
+                  </ul>
+                </div>
+                
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> <b>Важно:</b> Скачивайте Java только с официальных сайтов: <a href="https://adoptium.net" class="text-blue-400 underline" target="_blank">Adoptium</a>, <a href="https://azul.com" class="text-blue-400 underline" target="_blank">Azul</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "проблемы": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Решение частых проблем</h3>
+            <div class="solution-card">
+              <p><i class="fas fa-file-alt mr-1"></i> <b>Перед обращением в поддержку:</b></p>
+              <ol class="list-decimal pl-5 mt-2">
+                <li>Соберите логи из: <code>/AppData/Roaming/.Cobalt_Launcher/logs</code></li>
+                <li>При крашах найдите отчет в: <code>/AppData/Roaming/.Cobalt_Launcher/crash-reports</code></li>
+                <li>Проанализируйте по <a href="#" onclick="sendMessage('Логи')" class="text-blue-400 underline">инструкции</a></li>
+              </ol>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('launcher', this.parentElement.parentElement)">Лаунчер</div>
+                <div class="tab-header-item" onclick="switchTabWidget('game', this.parentElement.parentElement)">Игра</div>
+                <div class="tab-header-item" onclick="switchTabWidget('mods', this.parentElement.parentElement)">Моды</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="launcher">
+                <div class="solution-card">
+                  <p><b>Пропали все миры, аккаунты, версии!</b></p>
+                  <ol class="list-decimal pl-5 mt-2">
+                    <li>Зайдите в настройки лаунчера</li>
+                    <li>Укажите правильный путь к папке игры</li>
+                    <li>Проверьте папку на наличие папок assets, libraries, versions</li>
+                    <li>Проверьте жесткий диск на ошибки</li>
+                    <li>Попробуйте галочку "обновить клиент"</li>
+                  </ol>
+                </div>
+                
+                <div class="solution-card warning">
+                  <p><b>Лаунчер долго запускается!</b></p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li>Используйте VPN</li>
+                    <li>Проверьте интернет-соединение</li>
+                    <li>Отключите антивирус на время запуска</li>
+                    <li>Попробуйте переустановить лаунчер</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="game">
+                <div class="solution-card">
+                  <p><b>Проблемы со входом в мир/на сервер</b></p>
+                  <ol class="list-decimal pl-5 mt-2">
+                    <li>Проверьте никнейм (длина до 16 символов, латинские буквы, цифры)</li>
+                    <li>Проверьте интернет-подключение</li>
+                    <li>Отключите прокси, VPN, GoodbyeDPI</li>
+                    <li>Добавьте Java в исключения антивируса</li>
+                    <li>Обновите сетевые драйвера</li>
+                  </ol>
+                </div>
+                
+                <div class="solution-card error">
+                  <p><b>Краши при установке ресурспака</b></p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li>Установите ресурспак вручную</li>
+                    <li>Попробуйте другую версию игры</li>
+                    <li>Проверьте целостность файлов</li>
+                    <li>Убедитесь что ресурспак совместим с версией игры</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="mods">
+                <div class="solution-card">
+                  <p><b>Конфликтующие моды</b></p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li>Моды от Topka</li>
+                    <li>Моды от Sacura и Xorek</li>
+                    <li>Darkness Visual</li>
+                    <li>OptiFabric (не используйте с Fabric)</li>
+                    <li>MemoryLeakFix и NotEnoughCrashes</li>
+                    <li>ModernFix</li>
+                  </ul>
+                </div>
+                
+                <div class="solution-card warning">
+                  <p><b>Решение проблем с модами:</b></p>
+                  <ol class="list-decimal pl-5 mt-2">
+                    <li>Удалите дубликаты модов</li>
+                    <li>Удалите OptiFine (часто конфликтует)</li>
+                    <li>Проверьте моды на конфликты</li>
+                    <li>Сбросьте файлы конфигурации</li>
+                    <li>Обновите моды до актуальных версий</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "fabric": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка Fabric</h3>
+            <div class="solution-card">
+              <p><i class="fas fa-info-circle mr-1"></i> В Cobalt Launcher доступны версии с предустановленным Fabric</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('install', this.parentElement.parentElement)">Установка</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Вручную</div>
+                <div class="tab-header-item" onclick="switchTabWidget('api', this.parentElement.parentElement)">Fabric API</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="install">
+                <h4 class="font-semibold mb-2">Установка через лаунчер:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Убедитесь, что установлена Java</li>
+                  <li>В Cobalt Launcher выберите версию вида: <code>fabric-loader-0.15.7-1.20.4</code></li>
+                  <li>Установите <a href="https://modrinth.com/mod/fabric-api" class="text-blue-400 underline" target="_blank">Fabric API</a></li>
+                  <li>Запустите игру</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручная установка:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте установщик с <a href="https://fabricmc.net/use/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик</li>
+                  <li>Выберите "Клиент" и нужную версию</li>
+                  <li>Укажите путь к папке игры (из настроек лаунчера)</li>
+                  <li>Нажмите "Установить"</li>
+                  <li>В лаунчере выберите созданную версию</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="api">
+                <h4 class="font-semibold mb-2">Fabric API:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Требуется для большинства модов</li>
+                  <li>Скачайте с <a href="https://modrinth.com/mod/fabric-api" class="text-blue-400 underline" target="_blank">Modrinth</a></li>
+                  <li>Поместите в папку <code>mods</code></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "forge": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка Forge</h3>
+            <div class="solution-card">
+              <p><i class="fas fa-info-circle mr-1"></i> В Cobalt Launcher доступны версии с предустановленным Forge</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('install', this.parentElement.parentElement)">Установка</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Вручную</div>
+                <div class="tab-header-item" onclick="switchTabWidget('versions', this.parentElement.parentElement)">Версии</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="install">
+                <h4 class="font-semibold mb-2">Установка через лаунчер:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Убедитесь, что установлена Java</li>
+                  <li>В Cobalt Launcher выберите версию вида: <code>1.20.2-forge-48.1.0</code></li>
+                  <li>Запустите игру</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручная установка:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте установщик с <a href="https://files.minecraftforge.net/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик</li>
+                  <li>Выберите "Install client"</li>
+                  <li>Укажите путь к папке игры (из настроек лаунчера)</li>
+                  <li>Нажмите "OK"</li>
+                  <li>В лаунчере выберите созданную версию</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="versions">
+                <h4 class="font-semibold mb-2">Поддерживаемые версии:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Все версии Minecraft с 1.5.2 до последней</li>
+                  <li>Для старых версий (1.5.2 и ниже) используйте <a href="#" onclick="sendMessage('Forge старые')" class="text-blue-400 underline">специальную инструкцию</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "сборки": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка сборок</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('curseforge', this.parentElement.parentElement)">CurseForge</div>
+                <div class="tab-header-item" onclick="switchTabWidget('modrinth', this.parentElement.parentElement)">Modrinth</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Вручную</div>
+                <div class="tab-header-item" onclick="switchTabWidget('recommended', this.parentElement.parentElement)">Рекомендуемые</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="curseforge">
+                <h4 class="font-semibold mb-2">Установка с CurseForge</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте и установите <a href="https://download.curseforge.com/" class="text-blue-400 underline" target="_blank">CurseForge App</a></li>
+                  <li>Выберите "Minecraft" → "Browse"</li>
+                  <li>Найдите нужный модпак и нажмите "Install"</li>
+                  <li>Дождитесь скачивания всех файлов</li>
+                  <li>Откройте папку сборки: <code>C:\Users\[Ваше имя]\CurseForge\Minecraft\Instances\[Название сборки]</code></li>
+                  <li>Установите требуемый загрузчик модов (Forge/Fabric)</li>
+                  <li>Переместите файлы сборки в папку игры</li>
+                  <li>Запустите игру через Cobalt Launcher</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Совет:</b> Для автоматической установки используйте <a href="https://www.curseforge.com/download/app" class="text-blue-400 underline" target="_blank">CurseForge App</a></p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="modrinth">
+                <h4 class="font-semibold mb-2">Установка с Modrinth</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Найдите сборку на <a href="https://modrinth.com/modpacks" class="text-blue-400 underline" target="_blank">Modrinth</a></li>
+                  <li>Скачайте файл сборки (.mrpack)</li>
+                  <li>Используйте <a href="https://packwiz.in/tools/importer/" class="text-blue-400 underline" target="_blank">онлайн-конвертер</a> для преобразования в ZIP</li>
+                  <li>Дождитесь конвертации и скачайте ZIP-архив</li>
+                  <li>Установите требуемый загрузчик модов (Forge/Fabric)</li>
+                  <li>Распакуйте архив в папку игры</li>
+                  <li>Запустите игру через Cobalt Launcher</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Альтернатива:</b> Используйте <a href="https://modrinth.com/app" class="text-blue-400 underline" target="_blank">Modrinth App</a> для автоматической установки</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручная установка сборок</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте ZIP-архив сборки</li>
+                  <li>Установите требуемый загрузчик модов (Forge/Fabric)</li>
+                  <li>Распакуйте архив в папку игры</li>
+                  <li>Запустите игру через Cobalt Launcher</li>
+                </ol>
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> <b>Важно:</b> Убедитесь что все моды совместимы с версией игры и друг с другом</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="recommended">
+                <h4 class="font-semibold mb-2">Рекомендуемые сборки</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Технические</b>: Create: Above and Beyond, Omnifactory</li>
+                  <li><b>Магические</b>: Hexxit Updated, Mage Quest</li>
+                  <li><b>Приключенческие</b>: RLCraft, Better Minecraft</li>
+                  <li><b>Оптимизация</b>: Fabulously Optimized, Simply Optimized</li>
+                  <li><b>SkyBlock</b>: SkyFactory 4, Project Ozone 3</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "optifine": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка OptiFine</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('standalone', this.parentElement.parentElement)">Отдельная</div>
+                <div class="tab-header-item" onclick="switchTabWidget('forge', this.parentElement.parentElement)">С Forge</div>
+                <div class="tab-header-item" onclick="switchTabWidget('fabric', this.parentElement.parentElement)">С Fabric</div>
+                <div class="tab-header-item" onclick="switchTabWidget('notes', this.parentElement.parentElement)">Примечания</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="standalone">
+                <h4 class="font-semibold mb-2">Установка без загрузчика модов:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите версию Minecraft через лаунчер</li>
+                  <li>Скачайте OptiFine с <a href="https://optifine.net" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик</li>
+                  <li>Укажите путь к папке игры</li>
+                  <li>Нажмите "Install"</li>
+                  <li>В лаунчере выберите версию вида: <code>1.20.1-OptiFine_HD_U_I6</code></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="forge">
+                <h4 class="font-semibold mb-2">Установка с Forge:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите Forge</li>
+                  <li>Запустите установщик OptiFine</li>
+                  <li>Выберите "Extract" вместо "Install"</li>
+                  <li>Укажите папку <code>mods</code> в директории игры</li>
+                  <li>Выберите версию Forge в лаунчере</li>
+                </ol>
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> Проверьте поддержку Forge на странице загрузки OptiFine</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="fabric">
+                <h4 class="font-semibold mb-2">Установка с Fabric (не рекомендуется):</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите Fabric</li>
+                  <li>Установите мод <a href="https://www.curseforge.com/minecraft/mc-mods/optifabric" class="text-blue-400 underline" target="_blank">OptiFabric</a></li>
+                  <li>Поместите OptiFine.jar и OptiFabric.jar в папку <code>mods</code></li>
+                  <li>Выберите версию Fabric в лаунчере</li>
+                </ol>
+                <div class="solution-card error mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> Этот метод неофициальный и может вызывать проблемы! Рекомендуется использовать Sodium + Iris</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="notes">
+                <h4 class="font-semibold mb-2">Важные примечания:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Используйте кнопку "Mirror" для скачивания без рекламы</li>
+                  <li>Предварительные версии (preview) нестабильны</li>
+                  <li>OptiFine часто конфликтует с другими модами</li>
+                  <li>Для лучшей совместимости используйте альтернативы: Sodium + Iris</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "quilt": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка Quilt</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('install', this.parentElement.parentElement)">Установка</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Вручную</div>
+                <div class="tab-header-item" onclick="switchTabWidget('api', this.parentElement.parentElement)">QSL</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="install">
+                <h4 class="font-semibold mb-2">Установка через лаунчер:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Убедитесь, что установлена Java</li>
+                  <li>В Cobalt Launcher выберите версию вида: <code>quilt-loader-0.15.7-1.20.4</code></li>
+                  <li>Установите <a href="https://modrinth.com/mod/qsl" class="text-blue-400 underline" target="_blank">QSL</a></li>
+                  <li>Запустите игру</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручная установка:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте установщик с <a href="https://quiltmc.org/install/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик</li>
+                  <li>Выберите "Клиент" и нужную версию</li>
+                  <li>Укажите путь к папке игры (из настроек лаунчера)</li>
+                  <li>Нажмите "Установить"</li>
+                  <li>В лаунчере выберите созданную версию</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="api">
+                <h4 class="font-semibold mb-2">QSL (Quilt Standard Libraries):</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Аналог Fabric API для Quilt</li>
+                  <li>Требуется для большинства модов</li>
+                  <li>Скачайте с <a href="https://modrinth.com/mod/qsl" class="text-blue-400 underline" target="_blank">Modrinth</a></li>
+                  <li>Поместите в папку <code>mods</code></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "neoforge": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Установка NeoForge</h3>
+            <div class="solution-card warning">
+              <p><i class="fas fa-exclamation-triangle mr-1"></i> NeoForge находится в бета-тестировании и может быть нестабилен</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('install', this.parentElement.parentElement)">Установка</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Вручную</div>
+                <div class="tab-header-item" onclick="switchTabWidget('requirements', this.parentElement.parentElement)">Требования</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="install">
+                <h4 class="font-semibold mb-2">Установка через лаунчер:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Убедитесь, что установлена Java</li>
+                  <li>В Cobalt Launcher выберите версию вида: <code>neoforge-20.4.162-beta</code></li>
+                  <li>Запустите игру</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручная установка:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте установщик с <a href="https://neoforged.net/" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Запустите установщик</li>
+                  <li>Выберите "Install client"</li>
+                  <li>Укажите путь к папке игры (из настроек лаунчера)</li>
+                  <li>Нажмите "Proceed"</li>
+                  <li>В лаунчере выберите созданную версию</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="requirements">
+                <h4 class="font-semibold mb-2">Требования:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Cobalt Launcher версии 161.0+</li>
+                  <li>Minecraft 1.20.1+</li>
+                  <li>Java 17+</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "логи": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Логи Minecraft</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('what', this.parentElement.parentElement)">Что это</div>
+                <div class="tab-header-item" onclick="switchTabWidget('location', this.parentElement.parentElement)">Расположение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('read', this.parentElement.parentElement)">Как читать</div>
+                <div class="tab-header-item" onclick="switchTabWidget('analyze', this.parentElement.parentElement)">Анализ</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="what">
+                <p>Логи (logs) - это записи о событиях, которые происходят в системе. Они могут отслеживать:</p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Действия пользователя</li>
+                  <li>Загрузку модов и ресурсов</li>
+                  <li>Произошедшие ошибки</li>
+                  <li>Производительность игры</li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Для чего нужны:</b> Помогают понять причину проблем в игре, без них невозможно диагностировать большинство ошибок</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="location">
+                <h4 class="font-semibold mb-2">Расположение логов:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Windows:</b> <code>%appdata%\\.Cobalt_Launcher\\logs</code></li>
+                  <li><b>Linux:</b> <code>~/.Cobalt_Launcher/logs</code></li>
+                  <li><b>macOS:</b> <code>~/Library/Application Support/Cobalt_Launcher/logs</code></li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Имена файлов:</b> latest.log (текущая сессия), debug.log (подробные данные), [дата].log (архив)</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="read">
+                <h4 class="font-semibold mb-2">Как читать логи:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Откройте файл в текстовом редакторе (VS Code, Notepad++)</li>
+                  <li>Ищите ключевые слова: <code>ERROR</code>, <code>WARN</code>, <code>CRASH</code></li>
+                  <li>Обращайте внимание на время в квадратных скобках [12:34:56]</li>
+                  <li>Читайте снизу вверх - последние события в конце файла</li>
+                  <li>Конфликт модов виден по записям вида: <code>at mezz.jei...</code></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="analyze">
+                <h4 class="font-semibold mb-2">Пример анализа:</h4>
+                <pre class="text-xs">[12:34:56] [Render thread/ERROR]: Couldn't load texture minecraft:textures/block/stone.png
+java.io.FileNotFoundException: minecraft:textures/block/stone.png
+  at net.minecraft.client.resources.DefaultClientPackResources...
+  at net.minecraft.client.renderer.texture.TextureManager...</pre>
+                <p class="mt-2">В этом случае игра не может найти текстуру камня, что может указывать на повреждение ресурсов</p>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "краш": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Краш-репорты</h3>
+            <div class="tab-widget">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('what', this.parentElement.parentElement)">Что это</div>
+                <div class="tab-header-item" onclick="switchTabWidget('location', this.parentElement.parentElement)">Расположение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('read', this.parentElement.parentElement)">Как читать</div>
+                <div class="tab-header-item" onclick="switchTabWidget('analyze', this.parentElement.parentElement)">Анализ</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="what">
+                <p>Краш-репорты (crash_reports) - это отчеты об аварийном завершении игры. Они содержат:</p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Точное время и причину сбоя</li>
+                  <li>Стек вызовов (последовательность ошибок)</li>
+                  <li>Информацию о загруженных модах</li>
+                  <li>Данные о системе и версии Java</li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Для чего нужны:</b> Без них невозможно диагностировать причину краша игры</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="location">
+                <h4 class="font-semibold mb-2">Расположение краш-репортов:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Windows:</b> <code>%appdata%\\.Cobalt_Launcher\\crash-reports</code></li>
+                  <li><b>Linux:</b> <code>~/.Cobalt_Launcher/crash-reports</code></li>
+                  <li><b>macOS:</b> <code>~/Library/Application Support/Cobalt_Launcher/crash-reports</code></li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Имена файлов:</b> crash-[дата]-[время]-client.txt</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="read">
+                <h4 class="font-semibold mb-2">Как читать краш-репорты:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Откройте файл в текстовом редакторе</li>
+                  <li>Ищите строки, начинающиеся с <code>at</code> - это стек вызовов</li>
+                  <li>Читайте снизу вверх - последняя строка в стеке указывает на источник проблемы</li>
+                  <li>Ищите названия модов в путях: <code>at mezz.jei...</code> = мод JEI</li>
+                  <li>Ванильные краши содержат указание на класс Minecraft (net.minecraft)</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="analyze">
+                <h4 class="font-semibold mb-2">Пример анализа:</h4>
+                <pre class="text-xs">java.lang.NoSuchMethodError: net.minecraftforge.fluids.FluidStack.getFluid()
+at mezz.jei.plugins.vanilla.ingredients.fluid.FluidStackHelper.getErrorInfo(FluidStackHelper.java:127)
+at mezz.jei.util.ErrorUtil.getIngredientInfo(ErrorUtil.java:123)</pre>
+                <p class="mt-2">В этом случае ошибка вызвана модом JEI (mezz.jei) из-за несовместимости версий</p>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "правила": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Правила получения помощи</h3>
+            <div class="solution-card error">
+              <p><i class="fas fa-exclamation-circle mr-1"></i> Нарушение правил приведет к отказу в помощи!</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('communication', this.parentElement.parentElement)">Общение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('technical', this.parentElement.parentElement)">Технические</div>
+                <div class="tab-header-item" onclick="switchTabWidget('cheats', this.parentElement.parentElement)">Читы</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="communication">
+                <h4 class="font-semibold mb-2">Правила общения:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li><b>Вежливость:</b> Запрещены грубость, оскорбления и агрессивное поведение</li>
+                  <li><b>Четкость:</b> Описывайте проблему ясно и полно</li>
+                  <li><b>Терпение:</b> Помощь оказывается добровольцами, отвечайте вовремя</li>
+                  <li><b>Тематика:</b> Только вопросы по Cobalt Launcher и Minecraft</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="technical">
+                <h4 class="font-semibold mb-2">Технические требования:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li><b>Версия:</b> Всегда указывайте:
+                    <ul class="list-disc pl-5 mt-1">
+                      <li>Версию Cobalt Launcher</li>
+                      <li>Тип платформы (ПК/мобильная)</li>
+                      <li>Версию Minecraft</li>
+                    </ul>
+                  </li>
+                  <li><b>Логи:</b> Прикрепляйте логи и краш-репорты при обращении</li>
+                  <li><b>Модификации:</b> С проблемами в модах обращайтесь к их разработчикам</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="cheats">
+                <h4 class="font-semibold mb-2">Политика относительно читов:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>С проблемами в читерских клиентах не помогаем</li>
+                  <li>При блокировке за читы помощь не оказывается</li>
+                  <li>Читы нарушают правила большинства серверов</li>
+                  <li>Читы часто содержат вредоносный код</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Где получить помощь:</b> Только в теме "Нужна помощь?" в нашем Telegram от помощников с соответствующей должностью</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "идеи": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Предложить идею или сообщить об ошибке</h3>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('ideas', this.parentElement.parentElement)">Идеи</div>
+                <div class="tab-header-item" onclick="switchTabWidget('bugs', this.parentElement.parentElement)">Ошибки</div>
+                <div class="tab-header-item" onclick="switchTabWidget('voting', this.parentElement.parentElement)">Голосования</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="ideas">
+                <h4 class="font-semibold mb-2">Для предложения идей:</h4>
+                <div class="solution-card mt-3">
+                  <p>Используйте специальную тему в нашем Telegram для идей по лаунчеру.</p>
+                  <p class="mt-2"><b>Форма анкеты:</b></p>
+                  <ol class="list-decimal pl-5 mt-2">
+                    <li>Ваш пинг в Telegram</li>
+                    <li>Подробное описание идеи</li>
+                    <li>Укажите для какой версии лаунчера идея (компьютерная или мобильная)</li>
+                    <li>Пинг разработчика:
+                      <ul class="list-disc pl-5 mt-1">
+                        <li>Для дизайна/сайта: @M1rotv0rets</li>
+                        <li>Для кода/функционала: @WaterBucket_smt</li>
+                      </ul>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="bugs">
+                <h4 class="font-semibold mb-2">Для сообщения об ошибках:</h4>
+                <div class="solution-card mt-3">
+                  <p>Используйте специальную тему в нашем Telegram для найденных ошибок.</p>
+                  <p class="mt-2"><b>Форма анкеты:</b></p>
+                  <ol class="list-decimal pl-5 mt-2">
+                    <li>Ваш пинг в Telegram</li>
+                    <li>Подробное описание ошибки</li>
+                    <li>Укажите в какой версии лаунчера найдена ошибка (компьютерная или мобильная)</li>
+                    <li>Пинг разработчика:
+                      <ul class="list-disc pl-5 mt-1">
+                        <li>Для ошибок дизайна/сайта: @M1rotv0rets</li>
+                        <li>Для ошибок кода/функционала: @WaterBucket_smt</li>
+                      </ul>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="voting">
+                <h4 class="font-semibold mb-2">Участие в голосованиях:</h4>
+                <div class="solution-card mt-3">
+                  <p>Рекомендуем участвовать в голосованиях в теме "Опросы по лаунчеру" (поллы).</p>
+                  <p class="mt-2">Там вы можете проголосовать за:</p>
+                  <ul class="list-disc pl-5 mt-2">
+                    <li>Добавление новых функций в лаунчер</li>
+                    <li>Изменения на сайте</li>
+                    <li>Улучшения интерфейса</li>
+                  </ul>
+                  <div class="mt-3">
+                    <p><b>Хотите предложить тему для опроса?</b></p>
+                    <ol class="list-decimal pl-5 mt-2">
+                      <li>Напишите @M1rotv0rets в нашей группе Telegram</li>
+                      <li>Опишите вашу идею для голосования</li>
+                      <li>Укажите возможные варианты ответов</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "краши java": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Краши Java (Windows)</h3>
+            <div class="solution-card warning">
+              <p><i class="fas fa-exclamation-triangle mr-1"></i> Эта инструкция только для ошибок типа EXCEPTION_ACCESS_VIOLATION или кодов завершения с цифрами</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('solutions', this.parentElement.parentElement)">Решения</div>
+                <div class="tab-header-item" onclick="switchTabWidget('unstable', this.parentElement.parentElement)">Нестабильные моды</div>
+                <div class="tab-header-item" onclick="switchTabWidget('drivers', this.parentElement.parentElement)">Драйверы</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="solutions">
+                <h4 class="font-semibold mb-2">Основные решения:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li><b>Проверьте загруженность ПК:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Убедитесь в наличии свободной оперативной памяти</li>
+                      <li>Проверьте, что файл подкачки включен и настроен автоматически</li>
+                    </ul>
+                  </li>
+                  <li><b>Установите другую версию Java:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Используйте <a href="#" onclick="sendMessage('Java')" class="text-blue-400 underline">готовый пакет замены Java</a></li>
+                    </ul>
+                  </li>
+                  <li><b>Отключите оптимизированные аргументы:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Настройки лаунчера → Minecraft → Java → "Настроить"</li>
+                      <li>Снимите галочку "Добавлять оптимизированные аргументы"</li>
+                    </ul>
+                  </li>
+                  <li><b>Проверьте целостность Windows:</b>
+                    <ol class="list-decimal pl-5 mt-1">
+                      <li>Откройте командную строку от имени администратора</li>
+                      <li>Выполните: <code>sfc /scannow</code></li>
+                      <li>Дождитесь завершения проверки</li>
+                    </ol>
+                  </li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="unstable">
+                <h4 class="font-semibold mb-2">Нестабильные моды:</h4>
+                <p>Удалите следующие проблемные моды:</p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Моды от Topka, Sacura, Xorek</li>
+                  <li>Darkness Visual</li>
+                  <li>Графические моды (OptiFine, Sodium, Iris)</li>
+                  <li>MemoryLeakFix, NotEnoughCrashes</li>
+                  <li>ModernFix</li>
+                </ul>
+                <div class="solution-card mt-3">
+                  <p><b>Проверьте конфликты:</b> <a href="#" onclick="sendMessage('Проблемы')" class="text-blue-400 underline">Инструкция по проверке конфликтов модов</a></p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="drivers">
+                <h4 class="font-semibold mb-2">Проблемы с драйверами:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Обновите драйвер видеокарты</b></li>
+                  <li><b>Откатите драйвер:</b>
+                    <ul class="list-disc pl-5">
+                      <li><a href="https://www.nvidia.com/Download/Find.aspx" class="text-blue-400 underline" target="_blank">Архив драйверов NVIDIA</a></li>
+                      <li><a href="https://www.amd.com/en/support" class="text-blue-400 underline" target="_blank">Предыдущие драйверы AMD</a></li>
+                    </ul>
+                  </li>
+                  <li><b>Отключите программы:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Оверлеи (Discord, GeForce Experience)</li>
+                      <li>RivaTuner, MSI Afterburner</li>
+                      <li>VPN/прокси (особенно SafeIP)</li>
+                      <li>Антивирус (временно)</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "частые проблемы": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Решение частых проблем</h3>
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('launcher', this.parentElement.parentElement)">Лаунчер</div>
+                <div class="tab-header-item" onclick="switchTabWidget('connection', this.parentElement.parentElement)">Подключение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('crashes', this.parentElement.parentElement)">Краши</div>
+                <div class="tab-header-item" onclick="switchTabWidget('mods-conflict', this.parentElement.parentElement)">Конфликты</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="launcher">
+                <h4 class="font-semibold mb-2">Проблемы с лаунчером:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Пропали миры/аккаунты:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Укажите правильный путь в настройках</li>
+                      <li>Папка должна содержать assets, libraries, versions</li>
+                    </ul>
+                  </li>
+                  <li><b>Лаунчер долго запускается:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Используйте VPN</li>
+                      <li>Проверьте интернет-соединение</li>
+                    </ul>
+                  </li>
+                  <li><b>Не устанавливаются новые версии:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Включите "Загружать с сервера"</li>
+                      <li>Отключите "Только установленные"</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="connection">
+                <h4 class="font-semibold mb-2">Проблемы с подключением:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Некорректный никнейм:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Макс. 16 символов (латиница, цифры, _-)</li>
+                    </ul>
+                  </li>
+                  <li><b>Проверьте интернет:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Отключите прокси/VPN/GoodbyeDPI</li>
+                      <li>Попробуйте подключиться к другим серверам</li>
+                    </ul>
+                  </li>
+                  <li><b>Антивирусы:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Добавьте лаунчер в исключения</li>
+                      <li>Временно отключите антивирус</li>
+                    </ul>
+                  </li>
+                  <li><b>Краши при установке ресурспака:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Установите ресурспак вручную</li>
+                      <li>Попробуйте другую версию игры</li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="crashes">
+                <h4 class="font-semibold mb-2">Проблемы с крашами:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Проверьте устройства:</b> Отключите геймпады/рули</li>
+                  <li><b>Место на диске:</b> Убедитесь в наличии свободного места</li>
+                  <li><b>Версия игры:</b> Убедитесь, что моды соответствуют версии</li>
+                  <li><b>Версия Java:</b> Используйте "рекомендуемую" версию Java</li>
+                  <li><b>Удаление OptiFine:</b> Частая причина конфликтов</li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="mods-conflict">
+                <h4 class="font-semibold mb-2">Конфликты модов:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Дубликаты модов:</b> Убедитесь, что каждый мод установлен единожды</li>
+                  <li><b>Известные конфликты:</b>
+                    <ul class="list-disc pl-5">
+                      <li>BetterPVP и Xaero Minimap</li>
+                      <li>OptiFine в версии и в папке модов</li>
+                      <li>Разные порты Sodium (Rubidium, Embeddium)</li>
+                    </ul>
+                  </li>
+                  <li><b>Неработоспособные моды:</b>
+                    <ul class="list-disc pl-5">
+                      <li>Моды от Topka, Sacura, Xorek</li>
+                      <li>OptiFabric</li>
+                      <li>VulkanMod</li>
+                    </ul>
+                  </li>
+                  <li><b>Сброс конфигурации:</b> Переименуйте папку config</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "forge старые": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Forge для 1.5.2 и старее</h3>
+            <div class="solution-card warning">
+              <p><i class="fas fa-exclamation-triangle mr-1"></i> Старые версии Forge пытаются скачать уже несуществующие файлы</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('solution', this.parentElement.parentElement)">Решение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('downloads', this.parentElement.parentElement)">Скачать</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="solution">
+                <h4 class="font-semibold mb-2">Установка старых версий Forge:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите требуемую версию Forge через лаунчер</li>
+                  <li>Скачайте архив с файлами для вашей версии (см. вкладку "Скачать")</li>
+                  <li>Переместите папку <code>lib</code> из архива в папку игры</li>
+                  <li>Запустите игру</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Важно:</b> Некоторые старые версии игнорируют настройки папки игры. Возможно, потребуется перенести файлы в папку по умолчанию</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="downloads">
+                <h4 class="font-semibold mb-2">Архивы для старых версий:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><a href="#" class="text-blue-400 underline">Forge 1.3-1.3.2</a></li>
+                  <li><a href="#" class="text-blue-400 underline">Forge 1.4-1.4.7</a></li>
+                  <li><a href="#" class="text-blue-400 underline">Forge 1.5</a></li>
+                  <li><a href="#" class="text-blue-400 underline">Forge 1.5.1</a></li>
+                  <li><a href="#" class="text-blue-400 underline">Forge 1.5.2</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "exe проблемы": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Проблемы старой exe-версии</h3>
+            <div class="solution-card error">
+              <p><i class="fas fa-exclamation-circle mr-1"></i> Ошибки: "Не удалось найти загрузчик", "Не удалось найти JRE", "Запуск"</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('solution', this.parentElement.parentElement)">Решение</div>
+                <div class="tab-header-item" onclick="switchTabWidget('portable', this.parentElement.parentElement)">Портативная</div>
+                <div class="tab-header-item" onclick="switchTabWidget('minemodpacks', this.parentElement.parentElement)">MineModPacks</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="solution">
+                <h4 class="font-semibold mb-2">Решение проблем:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте актуальную версию лаунчера с <a href="https://cobalt-launcher.com" class="text-blue-400 underline" target="_blank">официального сайта</a></li>
+                  <li>Установите новый лаунчер</li>
+                  <li>В настройках укажите правильный путь к папке игры</li>
+                </ol>
+                <div class="solution-card mt-3">
+                  <p><b>Безопасность данных:</b> Перед установкой скопируйте папку игры в другое место</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="portable">
+                <h4 class="font-semibold mb-2">Для портативных сборок:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте актуальную портативную сборку</li>
+                  <li>Переместите файлы и настройки в новую папку</li>
+                  <li>Используйте <a href="#" class="text-blue-400 underline">инструкцию по созданию портативного клиента</a></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="minemodpacks">
+                <h4 class="font-semibold mb-2">Для сборок с MineModPacks:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Удалите exe-файл лаунчера и .pbargs</li>
+                  <li>Скачайте портативную сборку</li>
+                  <li>Скопируйте файлы в папку сборки</li>
+                  <li>Отредактируйте <code>tl.args</code>:
+                    <pre class="mt-2">--packageMode
+portable
+--targetJar
+launcher/launcher.jar
+--targetLibFolder
+launcher/libraries
+--
+--settings
+Launcher/Launcher.properties
+--background
+Launcher/Background.png
+--directory
+./Minecraft
+--version
+MineModPacks</pre>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "industrial craft": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Industrial Craft 2 (IC2)</h3>
+            <div class="solution-card warning">
+              <p><i class="fas fa-exclamation-triangle mr-1"></i> Аддоны часто заброшены и не обновлены под актуальные версии</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('patches', this.parentElement.parentElement)">Патчеры</div>
+                <div class="tab-header-item" onclick="switchTabWidget('rollback', this.parentElement.parentElement)">Откат</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="patches">
+                <h4 class="font-semibold mb-2">Установка патчеров:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><a href="#" class="text-blue-400 underline">Для Advanced Solar Panels</a></li>
+                  <li><a href="#" class="text-blue-400 underline">Для Advanced Machines</a></li>
+                  <li>Установите патчер вместо оригинального аддона</li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="rollback">
+                <h4 class="font-semibold mb-2">Откат версии IC2:</h4>
+                <p>Проблемы начинаются с версии 2.8.191+. Используйте более старые версии:</p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>IC2 2.8.190 или ниже</li>
+                  <li>Убедитесь в совместимости аддонов</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "vic's modern warfare": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Vic's Modern Warfare</h3>
+            <div class="solution-card">
+              <p><i class="fas fa-info-circle mr-1"></i> Частичная несовместимость с последними версиями Forge</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('settings', this.parentElement.parentElement)">Настройки</div>
+                <div class="tab-header-item" onclick="switchTabWidget('optifine', this.parentElement.parentElement)">OptiFine</div>
+                <div class="tab-header-item" onclick="switchTabWidget('forge', this.parentElement.parentElement)">Forge</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="settings">
+                <h4 class="font-semibold mb-2">Изменение настроек:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Откройте папку игры → config</li>
+                  <li>Найдите файл <code>forge.cfg</code></li>
+                  <li>Замените <code>allowEmissiveItems=true</code> на <code>false</code></li>
+                  <li>Сохраните файл</li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="optifine">
+                <h4 class="font-semibold mb-2">Установка OptiFine:</h4>
+                <p>Установите OptiFine по <a href="#" onclick="sendMessage('OptiFine')" class="text-blue-400 underline">инструкции</a></p>
+                <div class="solution-card warning mt-3">
+                  <p><i class="fas fa-exclamation-triangle mr-1"></i> Не рекомендуется из-за возможных конфликтов</p>
+                </div>
+              </div>
+              
+              <div class="tab-content-panel" id="forge">
+                <h4 class="font-semibold mb-2">Установка старой версии Forge:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите Forge 14.23.4.2759</li>
+                  <li>Убедитесь в совместимости других модов</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "arcania": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Arcania 1.3 (Bosses Of Mass Destruction)</h3>
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('update', this.parentElement.parentElement)">Обновление</div>
+                <div class="tab-header-item" onclick="switchTabWidget('fabric', this.parentElement.parentElement)">Fabric</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="update">
+                <h4 class="font-semibold mb-2">Обновление мода:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Скачайте последнюю версию с <a href="https://modrinth.com/mod/bosses-of-mass-destruction" class="text-blue-400 underline" target="_blank">Modrinth</a></li>
+                  <li>Удалите старый файл: <code>BOMD-1.7.x-1.20.1.jar</code></li>
+                  <li>Поместите новый файл в папку <code>mods</code></li>
+                </ol>
+              </div>
+              
+              <div class="tab-content-panel" id="fabric">
+                <h4 class="font-semibold mb-2">Установка старой версии Fabric:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Установите Fabric 0.14.25</li>
+                  <li>Убедитесь в совместимости других модов</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "читы": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Политика относительно читов</h3>
+            <div class="solution-card error">
+              <p><i class="fas fa-ban mr-1"></i> Мы не поддерживаем и не помогаем с читами!</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('policy', this.parentElement.parentElement)">Политика</div>
+                <div class="tab-header-item" onclick="switchTabWidget('problems', this.parentElement.parentElement)">Проблемы</div>
+                <div class="tab-header-item" onclick="switchTabWidget('alternatives', this.parentElement.parentElement)">Альтернативы</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="policy">
+                <h4 class="font-semibold mb-2">Наша позиция:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Cobalt Launcher не содержит встроенных читов</li>
+                  <li>Не предоставляем поддержку читерским клиентам</li>
+                  <li>Использование читов нарушает правила серверов</li>
+                  <li>Читы могут содержать вирусы и майнеры</li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="problems">
+                <h4 class="font-semibold mb-2">Распространенные проблемы:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><b>Блокировка на серверах:</b> Обратитесь к администрации сервера</li>
+                  <li><b>Ошибки скачивания:</b> Автор читов не предоставил рабочие ссылки</li>
+                  <li><b>Требует -noverify:</b> Признак некачественной модификации</li>
+                  <li><b>Краши:</b> Обращайтесь к автору читов</li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="alternatives">
+                <h4 class="font-semibold mb-2">Легальные альтернативы:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Клиенты с оптимизацией (Lunar, Badlion)</li>
+                  <li>Моды улучшения интерфейса (Xaero's Minimap)</li>
+                  <li>Инвентарные твики (Inventory Tweaks)</li>
+                  <li>Визуальные улучшения (OptiFine, Sodium)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `,
+        
+        "codechickencore": `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">CodeChickenCore 1.7.10</h3>
+            <div class="solution-card">
+              <p><i class="fas fa-info-circle mr-1"></i> Проблема: попытка скачать удаленную библиотеку</p>
+            </div>
+            
+            <div class="tab-widget mt-4">
+              <div class="tab-header">
+                <div class="tab-header-item active" onclick="switchTabWidget('unofficial', this.parentElement.parentElement)">Неофициальная версия</div>
+                <div class="tab-header-item" onclick="switchTabWidget('manual', this.parentElement.parentElement)">Ручное решение</div>
+              </div>
+              
+              <div class="tab-content-panel active" id="unofficial">
+                <h4 class="font-semibold mb-2">Использование неофициальных версий:</h4>
+                <ul class="list-disc pl-5 mt-2">
+                  <li><a href="#" class="text-blue-400 underline">CodeChickenCore Unofficial</a></li>
+                  <li><a href="#" class="text-blue-400 underline">CodeChickenLib Unofficial</a></li>
+                  <li>Установите вместо оригинальных модов</li>
+                </ul>
+              </div>
+              
+              <div class="tab-content-panel" id="manual">
+                <h4 class="font-semibold mb-2">Ручное решение:</h4>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Найдите оригинальную версию CodeChickenLib</li>
+                  <li>Замените файл в папке <code>mods/1.7.10</code></li>
+                  <li>Убедитесь, что версия совпадает</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        `
+      };
+
+      // Синонимы для лучшего распознавания
+      responses["плащи"] = responses["скины"];
+      responses["capes"] = responses["скины"];
+      responses["network"] = responses["сетевая игра"];
+      responses["multiplayer"] = responses["сетевая игра"];
+      responses["system requirements"] = responses["требования"];
+      responses["java crashes"] = responses["краши java"];
+      responses["access violation"] = responses["краши java"];
+      responses["common issues"] = responses["частые проблемы"];
+      responses["frequent problems"] = responses["частые проблемы"];
+      responses["старый forge"] = responses["forge старые"];
+      responses["legacy forge"] = responses["forge старые"];
+      responses["exe ошибки"] = responses["exe проблемы"];
+      responses["jre ошибка"] = responses["exe проблемы"];
+      responses["ic2"] = responses["industrial craft"];
+      responses["industrialcraft"] = responses["industrial craft"];
+      responses["vic modern warfare"] = responses["vic's modern warfare"];
+      responses["vics modern warfare"] = responses["vic's modern warfare"];
+      responses["читерство"] = responses["читы"];
+      responses["читы и читы"] = responses["читы"];
+      responses["codechicken core"] = responses["codechickencore"];
+      responses["краш-репорты"] = responses["краш"];
+      responses["краш репорты"] = responses["краш"];
+      responses["crash"] = responses["краш"];
+      responses["crash report"] = responses["краш"];
+      responses["лог"] = responses["логи"];
+      responses["log"] = responses["логи"];
+      responses["logs"] = responses["логи"];
+      responses["правило"] = responses["правила"];
+      responses["rules"] = responses["правила"];
+      responses["ошибки"] = responses["идеи"];
+      responses["баги"] = responses["идеи"];
+      responses["идея"] = responses["идеи"];
+      responses["предложение"] = responses["идеи"];
+      responses["неофордж"] = responses["neoforge"];
+      responses["neoforge"] = responses["neoforge"];
+      responses["neo forge"] = responses["neoforge"];
+      
+      const lowerMessage = userMessage.toLowerCase();
+      for (const [key, value] of Object.entries(responses)) {
+        if (lowerMessage.includes(key)) {
+          return value;
+        }
+      }
+      
+      // Дополнительные обработчики
+      if (lowerMessage.includes("industrial craft") || lowerMessage.includes("ic2")) {
+        return `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Industrial Craft 2</h3>
+            <div class="solution-card">
+              <p><b>Проблема с аддонами:</b> Аддоны часто заброшены и не обновлены под актуальную версию мода</p>
+              <p class="mt-2"><b>Решение:</b></p>
+              <ul class="list-disc pl-5 mt-2">
+                <li>Установите специальные моды-патчеры:
+                  <ul class="list-disc pl-5">
+                    <li>Для Advanced Solar Panels</li>
+                    <li>Для Advanced Machines</li>
+                  </ul>
+                </li>
+                <li>Или откатитесь на более старую версию IC2 (например, 2.8.190 или ниже)</li>
+              </ul>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (lowerMessage.includes("vic") || lowerMessage.includes("modern warfare")) {
+        return `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Vic's Modern Warfare</h3>
+            <div class="solution-card">
+              <p><b>Проблема:</b> Частичная несовместимость с последней версией Forge</p>
+              <p class="mt-2"><b>Рекомендуемое решение:</b></p>
+              <ol class="list-decimal pl-5 mt-2">
+                <li>Откройте папку игры → config</li>
+                <li>Найдите файл <code>forge.cfg</code> и откройте его</li>
+                <li>Замените <code>allowEmissiveItems=true</code> на <code>allowEmissiveItems=false</code></li>
+                <li>Сохраните файл и запустите игру</li>
+              </ol>
+            </div>
+          </div>
+        `;
+      }
+      
+      if (lowerMessage.includes("читы") || lowerMessage.includes("читер")) {
+        return `
+          <div class="info-card">
+            <h3 class="font-bold text-blue-300 mb-2">Политика относительно читов</h3>
+            <div class="solution-card error">
+              <p><i class="fas fa-ban mr-1"></i> <b>Важно:</b> Мы не поддерживаем и не помогаем с читами!</p>
+              <div class="mt-3">
+                <p><b>Наша позиция:</b></p>
+                <ol class="list-decimal pl-5 mt-2">
+                  <li>Cobalt Launcher не содержит встроенных читов</li>
+                  <li>Мы не предоставляем поддержку для читерских клиентов</li>
+                  <li>Использование читов нарушает правила большинства серверов</li>
+                  <li>Читы могут содержать вирусы и майнеры</li>
+                </ol>
+              </div>
+              <div class="mt-3">
+                <p><b>Если вас забанили:</b></p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Обратитесь к администрации сервера</li>
+                  <li>Удалите читерские клиенты и моды</li>
+                  <li>Переустановите Minecraft с чистой версией Cobalt Launcher</li>
+                </ul>
+              </div>
+              <div class="mt-3">
+                <p><b>Легальные альтернативы:</b></p>
+                <ul class="list-disc pl-5 mt-2">
+                  <li>Клиенты с оптимизацией (Lunar, Badlion)</li>
+                  <li>Моды улучшения интерфейса (Xaero's Minimap, Inventory Tweaks)</li>
+                  <li>Визуальные улучшения (OptiFine, Sodium)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      const defaultResponses = [
+        "Я еще учусь, но скоро смогу отвечать на такие вопросы.",
+        "Пока не могу ответить, но вы можете найти информацию в нашей документации.",
+        "Уточните, пожалуйста, что именно вас интересует?",
+        "Попробуйте задать вопрос по-другому или выберите тему из базы знаний выше."
+      ];
+
+      return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+    }
+
+    function switchTab(tabId, tabGroup) {
+      const tabs = document.querySelectorAll(`#${tabGroup} .tab-content`);
+      const buttons = document.querySelectorAll(`#${tabGroup} .tab-button`);
+      
+      tabs.forEach(tab => tab.classList.remove('active'));
+      buttons.forEach(button => button.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+    
+    function switchTabWidget(tabId, widget) {
+      const panels = widget.querySelectorAll('.tab-content-panel');
+      const items = widget.querySelectorAll('.tab-header-item');
+      
+      panels.forEach(panel => panel.classList.remove('active'));
+      items.forEach(item => item.classList.remove('active'));
+      
+      widget.querySelector(`#${tabId}`).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function sendMessage(text) {
+      if (!text.trim()) return;
+      
+      addMessage(text, true);
+      userInput.value = '';
+      userInput.focus();
+      
+      const typingIndicator = showTypingIndicator();
+      
+      setTimeout(() => {
+        hideTypingIndicator();
+        
+        const botResponse = generateBotResponse(text);
+        addMessage(botResponse);
+        
+        // Инициализация табов
+        document.querySelectorAll('.tab-button').forEach(button => {
+          button.onclick = function() {
+            const tabGroup = this.parentElement.id;
+            const tabId = this.textContent.toLowerCase().replace(/\s+/g, '');
+            switchTab(tabId, tabGroup);
+          };
+        });
+        
+        // Инициализация виджетов табов
+        document.querySelectorAll('.tab-header-item').forEach(item => {
+          item.onclick = function() {
+            const widget = this.closest('.tab-widget');
+            const tabId = this.getAttribute('onclick').match(/'(.*?)'/)[1];
+            switchTabWidget(tabId, widget);
+          };
+        });
+      }, 1000 + Math.random() * 500);
+    }
+
+    sendBtn.addEventListener('click', () => {
+      sendMessage(userInput.value);
+    });
+
+    userInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        sendMessage(userInput.value);
+      }
+    });
+
+    setTimeout(scrollToBottom, 300);
+  </script>
+</body>
+</html>
