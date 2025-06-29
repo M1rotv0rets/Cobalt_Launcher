@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Главная страница</title>
+  <title>Cobalt Launcher - Minecraft Вики</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="Images/icon.png">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -14,7 +13,8 @@
         extend: {
           colors: {
             primary: '#0ea5e9',
-            dark: '#0f172a'
+            dark: '#0f172a',
+            minecraft: '#4CAF50'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -72,13 +72,16 @@
       max-height: 300px;
     }
     
-    .feature-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .wiki-card {
+      background: rgba(30, 41, 59, 0.7);
+      border-left: 4px solid #0ea5e9;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
     }
     
-    .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    .wiki-card:hover {
+      transform: translateX(5px);
+      background: rgba(30, 41, 59, 0.85);
     }
     
     .btn-download {
@@ -106,75 +109,451 @@
     .glow {
       text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
     }
+    
+    .minecraft-text {
+      color: #4CAF50;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    }
+    
+    .category-badge {
+      background: rgba(14, 165, 233, 0.15);
+      transition: all 0.3s ease;
+    }
+    
+    .category-badge:hover {
+      background: rgba(14, 165, 233, 0.25);
+      transform: translateY(-2px);
+    }
+    
+    .grid-pattern {
+      background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    .search-box {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(10px);
+    }
+    
+    .toc-item {
+      position: relative;
+      padding-left: 1.5rem;
+    }
+    
+    .toc-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      background: #0ea5e9;
+      border-radius: 50%;
+    }
+    
+    .toc-item:hover::before {
+      box-shadow: 0 0 8px #0ea5e9;
+    }
+    
+    .minecraft-block {
+      background: #2d3748;
+      border: 2px solid #4a5568;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .minecraft-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .minecraft-block::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 4px;
+      background: rgba(255, 255, 255, 0.1);
+    }
   </style>
 </head>
 <body class="bg-dark text-gray-200">
-
-   <header class="bg-gray-950 shadow-md sticky-header">
+  <!-- Шапка с бургер-меню -->
+  <header class="sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center animate-fade-in">
-        <h1 class="text-2xl font-bold text-white">🌠 Cobalt Launcher</h1>
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fas fa-book text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Minecraft Вики</h1>
       </div>
       
-     <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
-      <div class="flex flex-col px-6 pb-4">
-        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
-        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
-        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
-        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
-        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
-      </div>
-    </div>
-      
-      <button id="burgerBtn" class="md:hidden text-white focus:outline-none">
+      <!-- Кнопка бургер-меню -->
+      <button id="burgerBtn" class="text-white focus:outline-none z-50">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
         <div class="burger-line"></div>
       </button>
     </div>
     
-    <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
-      <div class="flex flex-col px-6 pb-4">
-        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
-        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
-        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
-        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
-        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+    <!-- Выпадающее меню -->
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-newspaper mr-3 w-5"></i> Новости
+        </a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-headset mr-3 w-5"></i> Поддержка
+        </a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-tools mr-3 w-5"></i> Инструменты
+        </a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-book mr-3 w-5"></i> Библиотека
+        </a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors flex items-center border-l-2 border-primary pl-3 -ml-3">
+          <i class="fas fa-book-open mr-3 w-5"></i> Вики
+        </a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-project-diagram mr-3 w-5"></i> Проекты
+        </a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-telegram mr-3 w-5"></i> Сообщество
+        </a>
       </div>
     </div>
   </header>
 
-  <section class="relative py-32 px-4 overflow-hidden">
-    <div class="absolute inset-0 z-0">
-      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-dark opacity-90"></div>
-      <div class="absolute top-0 left-0 w-full h-full bg-[url('Images/banner.png')] bg-cover bg-center parallax scale-110"></div>
-      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-dark/90 to-primary/20"></div>
-    </div>
+  <!-- Герой-баннер -->
+  <section class="relative py-24 md:py-32 px-4 overflow-hidden">
+    <div class="absolute inset-0 z-0 grid-pattern"></div>
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-dark/70 to-dark"></div>
     
-    <div class="max-w-6xl mx-auto relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
-      <h1 class="text-4xl sm:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="150">
-        Добро Пожаловать!
-      </h1>
-      
+    <div class="max-w-6xl mx-auto relative z-10 px-4" data-aos="fade-up">
+      <div class="flex flex-col md:flex-row gap-8 items-center">
+        <div class="md:w-2/3">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="100">
+            <span class="minecraft-text">Minecraft</span> Википедия
+          </h1>
+          <p class="text-xl mb-8 text-gray-300" data-aos="fade-up" data-aos-delay="150">
+            Полное руководство по блокам, мобам, предметам, крафту и игровым механикам. Стань экспертом в мире Minecraft!
+          </p>
+          
+          <div class="search-box p-4 rounded-xl mb-8" data-aos="fade-up" data-aos-delay="200">
+            <div class="flex">
+              <input type="text" placeholder="Поиск по вики (блоки, мобы, предметы...)" class="w-full bg-gray-800 text-white px-4 py-3 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary">
+              <button class="bg-primary px-6 py-3 rounded-r-lg font-medium">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="md:w-1/3 flex justify-center" data-aos="fade-left" data-aos-delay="250">
+          <div class="minecraft-block p-6 rounded-lg transform rotate-3 shadow-2xl">
+            <div class="text-center">
+              <i class="fas fa-cube text-5xl text-yellow-400 mb-4"></i>
+              <h3 class="text-xl font-bold text-white">Знаете ли вы?</h3>
+              <p class="text-gray-300 mt-2">Крипер был создан случайно при попытке сделать свинью</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm">
-    © 2025 Atlantis Studio. Все права защищены.
+  <!-- Основной контент Вики -->
+  <section class="py-16 px-4 relative">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Боковая навигация -->
+        <div class="lg:w-1/4">
+          <div class="bg-gray-800/50 rounded-xl p-6 sticky top-24">
+            <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+              <i class="fas fa-list mr-2"></i> Содержание
+            </h3>
+            
+            <div class="space-y-3">
+              <a href="#blocks" class="toc-item block py-2 hover:text-primary transition-colors">Блоки</a>
+              <a href="#mobs" class="toc-item block py-2 hover:text-primary transition-colors">Мобы</a>
+              <a href="#items" class="toc-item block py-2 hover:text-primary transition-colors">Предметы</a>
+              <a href="#crafting" class="toc-item block py-2 hover:text-primary transition-colors">Крафтинг</a>
+              <a href="#structures" class="toc-item block py-2 hover:text-primary transition-colors">Структуры</a>
+              <a href="#mechanics" class="toc-item block py-2 hover:text-primary transition-colors">Игровые механики</a>
+              <a href="#biomes" class="toc-item block py-2 hover:text-primary transition-colors">Биомы</a>
+              <a href="#dimensions" class="toc-item block py-2 hover:text-primary transition-colors">Измерения</a>
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-gray-700">
+              <h3 class="text-lg font-bold mb-3 text-white">Популярные статьи</h3>
+              <ul class="space-y-2">
+                <li><a href="#" class="text-gray-300 hover:text-primary transition-colors flex items-center"><i class="fas fa-fire text-red-400 mr-2 text-sm"></i> Как найти Алмазы</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-primary transition-colors flex items-center"><i class="fas fa-fire text-red-400 mr-2 text-sm"></i> Победить Эндер Дракона</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-primary transition-colors flex items-center"><i class="fas fa-fire text-red-400 mr-2 text-sm"></i> Создание ферм</a></li>
+                <li><a href="#" class="text-gray-300 hover:text-primary transition-colors flex items-center"><i class="fas fa-fire text-red-400 mr-2 text-sm"></i> Зельеварение</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Основной контент -->
+        <div class="lg:w-3/4">
+          <!-- Категории -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <a href="#blocks" class="category-badge p-4 rounded-lg text-center">
+              <i class="fas fa-cubes text-3xl text-blue-400 mb-2"></i>
+              <h3 class="font-bold">Блоки</h3>
+            </a>
+            <a href="#mobs" class="category-badge p-4 rounded-lg text-center">
+              <i class="fas fa-dragon text-3xl text-green-400 mb-2"></i>
+              <h3 class="font-bold">Мобы</h3>
+            </a>
+            <a href="#items" class="category-badge p-4 rounded-lg text-center">
+              <i class="fas fa-gem text-3xl text-yellow-400 mb-2"></i>
+              <h3 class="font-bold">Предметы</h3>
+            </a>
+            <a href="#crafting" class="category-badge p-4 rounded-lg text-center">
+              <i class="fas fa-hammer text-3xl text-red-400 mb-2"></i>
+              <h3 class="font-bold">Крафтинг</h3>
+            </a>
+          </div>
+          
+          <!-- Раздел "Блоки" -->
+          <div id="blocks" class="mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 text-white flex items-center">
+              <i class="fas fa-cubes text-blue-400 mr-3"></i> Блоки
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="wiki-card p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-3 text-white">Руда</h3>
+                <p class="text-gray-300 mb-4">Минералы, которые можно добывать для получения ресурсов. Самые ценные - алмазная и изумрудная руда.</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-blue-800 text-blue-100 px-3 py-1 rounded-full text-sm">Уголь</span>
+                  <span class="bg-gray-700 text-gray-100 px-3 py-1 rounded-full text-sm">Железо</span>
+                  <span class="bg-yellow-700 text-yellow-100 px-3 py-1 rounded-full text-sm">Золото</span>
+                  <span class="bg-cyan-800 text-cyan-100 px-3 py-1 rounded-full text-sm">Алмаз</span>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-3 text-white">Строительные</h3>
+                <p class="text-gray-300 mb-4">Блоки, используемые для строительства сооружений. Включают дерево, камень, кирпичи и декоративные блоки.</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-amber-800 text-amber-100 px-3 py-1 rounded-full text-sm">Дерево</span>
+                  <span class="bg-stone-600 text-stone-100 px-3 py-1 rounded-full text-sm">Камень</span>
+                  <span class="bg-red-800 text-red-100 px-3 py-1 rounded-full text-sm">Кирпич</span>
+                  <span class="bg-purple-800 text-purple-100 px-3 py-1 rounded-full text-sm">Шерсть</span>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-3 text-white">Механизмы</h3>
+                <p class="text-gray-300 mb-4">Блоки с функциональностью: поршни, воронки, раздатчики, наблюдатели и другие элементы для создания механизмов.</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-gray-800 text-gray-100 px-3 py-1 rounded-full text-sm">Поршень</span>
+                  <span class="bg-gray-800 text-gray-100 px-3 py-1 rounded-full text-sm">Воронка</span>
+                  <span class="bg-gray-800 text-gray-100 px-3 py-1 rounded-full text-sm">Раздатчик</span>
+                  <span class="bg-gray-800 text-gray-100 px-3 py-1 rounded-full text-sm">Наблюдатель</span>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <h3 class="text-xl font-bold mb-3 text-white">Растения</h3>
+                <p class="text-gray-300 mb-4">Флора Minecraft: деревья, цветы, грибы, кактусы и сельскохозяйственные культуры для фермерства.</p>
+                <div class="flex flex-wrap gap-2">
+                  <span class="bg-green-800 text-green-100 px-3 py-1 rounded-full text-sm">Дуб</span>
+                  <span class="bg-green-800 text-green-100 px-3 py-1 rounded-full text-sm">Пшеница</span>
+                  <span class="bg-green-800 text-green-100 px-3 py-1 rounded-full text-sm">Кактус</span>
+                  <span class="bg-green-800 text-green-100 px-3 py-1 rounded-full text-sm">Гриб</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Раздел "Мобы" -->
+          <div id="mobs" class="mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 text-white flex items-center">
+              <i class="fas fa-dragon text-green-400 mr-3"></i> Мобы
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="wiki-card p-6 rounded-xl">
+                <div class="flex items-start">
+                  <div class="bg-red-500 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-skull"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Враждебные</h3>
+                    <p class="text-gray-300">Зомби, скелеты, криперы, ведьмы и другие опасные мобы, атакующие игрока.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <div class="flex items-start">
+                  <div class="bg-green-500 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-heart"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Дружелюбные</h3>
+                    <p class="text-gray-300">Коровы, свиньи, овцы, куры и другие мирные мобы, которых можно разводить.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <div class="flex items-start">
+                  <div class="bg-purple-500 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-paw"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Нейтральные</h3>
+                    <p class="text-gray-300">Эндермены, пчелы, панды - атакуют только в ответ на провокацию.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl md:col-span-2">
+                <div class="flex items-start">
+                  <div class="bg-yellow-500 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-crown"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Боссы</h3>
+                    <p class="text-gray-300">Эндер Дракон и Иссушитель - самые сильные противники в игре, требующие тщательной подготовки.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="wiki-card p-6 rounded-xl">
+                <div class="flex items-start">
+                  <div class="bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold mb-2 text-white">Деревенские</h3>
+                    <p class="text-gray-300">Жители, торговцы, железные големы - населяют деревни и взаимодействуют с игроком.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Раздел "Предметы" -->
+          <div id="items" class="mb-16" data-aos="fade-up">
+            <h2 class="text-3xl font-bold mb-6 text-white flex items-center">
+              <i class="fas fa-gem text-yellow-400 mr-3"></i> Предметы
+            </h2>
+            
+            <div class="overflow-x-auto">
+              <table class="w-full bg-gray-800/50 rounded-xl overflow-hidden">
+                <thead>
+                  <tr class="bg-gray-700">
+                    <th class="py-3 px-4 text-left">Предмет</th>
+                    <th class="py-3 px-4 text-left">Описание</th>
+                    <th class="py-3 px-4 text-left">Редкость</th>
+                    <th class="py-3 px-4 text-left">Использование</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                    <td class="py-3 px-4 font-medium">Алмаз</td>
+                    <td class="py-3 px-4">Один из самых ценных ресурсов</td>
+                    <td class="py-3 px-4"><span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Редкий</span></td>
+                    <td class="py-3 px-4">Инструменты, броня, оружие</td>
+                  </tr>
+                  <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                    <td class="py-3 px-4 font-medium">Эндер-жемчуг</td>
+                    <td class="py-3 px-4">Выпадает с эндерменов</td>
+                    <td class="py-3 px-4"><span class="bg-purple-500 text-white px-2 py-1 rounded text-xs">Необычный</span></td>
+                    <td class="py-3 px-4">Телепортация, создание глаз эндера</td>
+                  </tr>
+                  <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                    <td class="py-3 px-4 font-medium">Незерит</td>
+                    <td class="py-3 px-4">Обновляет алмазные инструменты</td>
+                    <td class="py-3 px-4"><span class="bg-green-500 text-white px-2 py-1 rounded text-xs">Обычный</span></td>
+                    <td class="py-3 px-4">Улучшение инструментов и брони</td>
+                  </tr>
+                  <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                    <td class="py-3 px-4 font-medium">Сердце моря</td>
+                    <td class="py-3 px-4">Находится в затонувших сундуках</td>
+                    <td class="py-3 px-4"><span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Редкий</span></td>
+                    <td class="py-3 px-4">Создание проводника</td>
+                  </tr>
+                  <tr class="hover:bg-gray-700/50">
+                    <td class="py-3 px-4 font-medium">Элитра</td>
+                    <td class="py-3 px-4">Крылья для полета</td>
+                    <td class="py-3 px-4"><span class="bg-purple-500 text-white px-2 py-1 rounded text-xs">Очень редкий</span></td>
+                    <td class="py-3 px-4">Полет в Краю</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Футер -->
+  <footer class="bg-gray-950 py-8 text-center">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div class="mb-4 md:mb-0">
+          <h3 class="text-xl font-bold text-white flex items-center justify-center md:justify-start">
+            <i class="fas fa-book text-primary mr-2"></i> Minecraft Вики
+          </h3>
+          <p class="text-gray-400 mt-2">Часть экосистемы Cobalt Launcher</p>
+        </div>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-telegram text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-discord text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-youtube text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-github text-xl"></i>
+          </a>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-gray-800">
+        <p class="text-gray-500 text-sm">© 2025 Atlantis Studio. Все права защищены. Minecraft является товарным знаком Mojang Synergies AB.</p>
+      </div>
+    </div>
   </footer>
+
+  <!-- Кнопка "Наверх" -->
+  <button id="toTop" class="fixed bottom-6 right-6 bg-primary w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg opacity-0 invisible transition-all">
+    <i class="fas fa-arrow-up"></i>
+  </button>
 
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
+    // Инициализация AOS
     AOS.init({
       duration: 800,
       once: true,
       offset: 50
     });
 
+    // Эффект при скролле для шапки
     window.addEventListener('scroll', function() {
       const header = document.querySelector('header');
       if (window.scrollY > 10) {
@@ -182,8 +561,19 @@
       } else {
         header.classList.remove('scrolled');
       }
+      
+      // Кнопка "Наверх"
+      const toTop = document.getElementById('toTop');
+      if (window.scrollY > 300) {
+        toTop.classList.remove('opacity-0', 'invisible');
+        toTop.classList.add('opacity-100', 'visible');
+      } else {
+        toTop.classList.remove('opacity-100', 'visible');
+        toTop.classList.add('opacity-0', 'invisible');
+      }
     });
-
+    
+    // Логика бургер-меню
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
@@ -202,6 +592,7 @@
       }
     });
     
+    // Закрытие меню при клике на пункт
     const menuItems = mobileMenu.querySelectorAll('a');
     menuItems.forEach(item => {
       item.addEventListener('click', () => {
@@ -212,7 +603,28 @@
         lines[2].style.transform = 'none';
       });
     });
+    
+    // Плавный скролл к якорям
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Кнопка "Наверх"
+    document.getElementById('toTop').addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
   </script>
 </body>
-</html>
 </html>
