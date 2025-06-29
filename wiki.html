@@ -1,265 +1,218 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>FNAF1-like</title>
-    <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-        canvas { display: block; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Главная страница</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="Images/icon.png">
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a'
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .burger-line {
+      display: block;
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-out;
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    
+    .btn-download {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-download:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+    
+    .btn-download:active {
+      transform: translateY(1px);
+    }
+    
+    .parallax {
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+    
+    .glow {
+      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
+    }
+  </style>
 </head>
-<body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+<body class="bg-dark text-gray-200">
 
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        // Игровое состояние
-        const gameState = {
-            power: 100,
-            time: 0,
-            maxTime: 420, // 7 игровых часов
-            currentView: 'office',
-            doors: { left: false, right: false },
-            lights: { left: false, right: false },
-            gameOver: false,
-            win: false,
-            cameras: false,
-            currentCamera: 0
-        };
+   <header class="bg-gray-950 shadow-md sticky-header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center animate-fade-in">
+        <h1 class="text-2xl font-bold text-white">🌠 Cobalt Launcher</h1>
+      </div>
+      
+     <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
+      <div class="flex flex-col px-6 pb-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+      </div>
+    </div>
+      
+      <button id="burgerBtn" class="md:hidden text-white focus:outline-none">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
+      <div class="flex flex-col px-6 pb-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors">Новости</a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+      </div>
+    </div>
+  </header>
 
-        // Аниматроники
-        const animatronics = {
-            bonnie: {
-                location: 'stage',
-                aggression: 1,
-                moveTimer: 0,
-                position: 0
-            },
-            chica: {
-                location: 'stage',
-                aggression: 1,
-                moveTimer: 0,
-                position: 0
-            },
-            foxy: {
-                location: 'pirateCove',
-                aggression: 1,
-                moveTimer: 0,
-                position: 0
-            },
-            freddy: {
-                location: 'stage',
-                aggression: 0.5,
-                moveTimer: 0,
-                position: 0
-            }
-        };
+  <section class="relative py-32 px-4 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-dark opacity-90"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-[url('Images/banner.png')] bg-cover bg-center parallax scale-110"></div>
+      <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-dark/90 to-primary/20"></div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto relative z-10 text-center" data-aos="fade-up" data-aos-delay="100">
+      <h1 class="text-4xl sm:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="150">
+        Добро Пожаловать!
+      </h1>
+      
 
-        // Пути для аниматроников
-        const paths = {
-            bonnie: ['stage', 'dining', 'backstage', 'leftHall', 'office'],
-            chica: ['stage', 'dining', 'kitchen', 'rightHall', 'office'],
-            foxy: ['pirateCove', 'westHall', 'office'],
-            freddy: ['stage', 'dining', 'backstage', 'leftHall', 'office']
-        };
+  <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm">
+    © 2025 Atlantis Studio. Все права защищены.
+  </footer>
 
-        // Изображения (заглушки)
-        const images = {
-            office: drawOffice,
-            camera: drawCameraView,
-            gameOver: () => {
-                ctx.fillStyle = 'red';
-                ctx.font = '48px Arial';
-                ctx.fillText('GAME OVER', 250, 300);
-            }
-        };
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 50
+    });
 
-        // Основной цикл игры
-        function gameLoop() {
-            update();
-            render();
-            if (!gameState.gameOver && !gameState.win) {
-                requestAnimationFrame(gameLoop);
-            }
-        }
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
 
-        // Обновление состояния игры
-        function update() {
-            if (gameState.power <= 0) {
-                gameState.gameOver = true;
-                return;
-            }
-
-            // Обновление времени
-            gameState.time++;
-            if (gameState.time >= gameState.maxTime) {
-                gameState.win = true;
-                return;
-            }
-
-            // Потребление энергии
-            if (gameState.doors.left || gameState.doors.right) {
-                gameState.power -= 0.05;
-            }
-            if (gameState.lights.left || gameState.lights.right) {
-                gameState.power -= 0.03;
-            }
-            if (gameState.cameras) {
-                gameState.power -= 0.01;
-            }
-
-            // Движение аниматроников
-            moveAnimatronics();
-            checkForJumpscares();
-        }
-
-        // Логика движения аниматроников
-        function moveAnimatronics() {
-            for (const [name, anim] of Object.entries(animatronics)) {
-                anim.moveTimer--;
-                
-                if (anim.moveTimer <= 0) {
-                    const path = paths[name];
-                    const currentIndex = path.indexOf(anim.location);
-                    
-                    if (currentIndex < path.length - 1 && Math.random() < anim.aggression * 0.1) {
-                        anim.location = path[currentIndex + 1];
-                        anim.position = 0;
-                    }
-                    
-                    anim.moveTimer = 100 - (gameState.time / 10);
-                }
-            }
-        }
-
-        // Проверка на атаку
-        function checkForJumpscares() {
-            if (animatronics.bonnie.location === 'office' && !gameState.doors.left && !gameState.lights.left) {
-                gameState.gameOver = true;
-            }
-            if (animatronics.chica.location === 'office' && !gameState.doors.right && !gameState.lights.right) {
-                gameState.gameOver = true;
-            }
-            if (animatronics.foxy.location === 'office') {
-                gameState.gameOver = true;
-            }
-        }
-
-        // Отрисовка игры
-        function render() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            if (gameState.gameOver) {
-                images.gameOver();
-                return;
-            }
-            
-            if (gameState.win) {
-                ctx.fillStyle = 'green';
-                ctx.font = '48px Arial';
-                ctx.fillText('YOU SURVIVED!', 250, 300);
-                return;
-            }
-            
-            gameState.cameras ? images.camera() : images.office();
-            drawUI();
-        }
-
-        // Отрисовка офиса
-        function drawOffice() {
-            // Фон
-            ctx.fillStyle = '#333';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Двери
-            ctx.fillStyle = gameState.doors.left ? '#700' : '#500';
-            ctx.fillRect(50, 150, 80, 300);
-            
-            ctx.fillStyle = gameState.doors.right ? '#700' : '#500';
-            ctx.fillRect(670, 150, 80, 300);
-            
-            // Лампы
-            if (gameState.lights.left) {
-                ctx.fillStyle = '#ff9';
-                ctx.fillRect(130, 200, 100, 200);
-            }
-            
-            if (gameState.lights.right) {
-                ctx.fillStyle = '#ff9';
-                ctx.fillRect(570, 200, 100, 200);
-            }
-        }
-
-        // Отрисовка камер
-        function drawCameraView() {
-            ctx.fillStyle = '#111';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#666';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Camera ${gameState.currentCamera + 1}`, 350, 30);
-        }
-
-        // Отрисовка интерфейса
-        function drawUI() {
-            // Время
-            const hour = 12 + Math.floor(gameState.time / 60);
-            const minute = gameState.time % 60;
-            ctx.fillStyle = '#0f0';
-            ctx.font = '20px Arial';
-            ctx.fillText(`${hour}:${minute < 10 ? '0' : ''}${minute} AM`, 20, 30);
-            
-            // Энергия
-            ctx.fillStyle = '#0f0';
-            ctx.fillText(`Power: ${Math.max(0, Math.floor(gameState.power))}%`, 20, 60);
-            
-            // Индикаторы
-            ctx.fillStyle = '#f00';
-            if (animatronics.bonnie.location === 'leftHall') ctx.fillText('Bonnie is near!', 600, 30);
-            if (animatronics.chica.location === 'rightHall') ctx.fillText('Chica is near!', 600, 60);
-        }
-
-        // Обработка ввода
-        canvas.addEventListener('click', (e) => {
-            if (gameState.cameras) {
-                gameState.cameras = false;
-                return;
-            }
-            
-            const x = e.clientX - canvas.getBoundingClientRect().left;
-            
-            // Левая дверь
-            if (x < 150 && !gameState.doors.right) {
-                gameState.doors.left = !gameState.doors.left;
-            }
-            
-            // Правая дверь
-            if (x > 650 && !gameState.doors.left) {
-                gameState.doors.right = !gameState.doors.right;
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            // Лампы
-            if (e.key === 'a') gameState.lights.left = true;
-            if (e.key === 'd') gameState.lights.right = true;
-            
-            // Камеры
-            if (e.key === 'c') gameState.cameras = !gameState.cameras;
-            
-            // Переключение камер
-            if (e.key === 'ArrowLeft') gameState.currentCamera = Math.max(0, gameState.currentCamera - 1);
-            if (e.key === 'ArrowRight') gameState.currentCamera = Math.min(9, gameState.currentCamera + 1);
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.key === 'a') gameState.lights.left = false;
-            if (e.key === 'd') gameState.lights.right = false;
-        });
-
-        // Запуск игры
-        gameLoop();
-    </script>
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    burgerBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('open');
+      
+      const lines = document.querySelectorAll('.burger-line');
+      if (mobileMenu.classList.contains('open')) {
+        lines[0].style.transform = 'translateY(7px) rotate(45deg)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+    
+    const menuItems = mobileMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        const lines = document.querySelectorAll('.burger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      });
+    });
+  </script>
 </body>
-  </html>
+</html>
+</html>
