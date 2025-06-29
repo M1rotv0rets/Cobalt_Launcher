@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Главная</title>
+  <title>Cobalt Launcher - Minecraft Боты</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="Images/icon.png">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -15,11 +14,7 @@
           colors: {
             primary: '#0ea5e9',
             dark: '#0f172a',
-            bot: '#1e3a8a',
-            user: '#0c4a6e',
-            error: '#b91c1c',
-            warning: '#d97706',
-            info: '#0891b2'
+            minecraft: '#4CAF50'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -43,9 +38,6 @@
       scroll-behavior: smooth;
       background: linear-gradient(135deg, #0f172a, #1e293b);
       color: #f1f5f9;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
     }
     
     .sticky-header {
@@ -82,11 +74,34 @@
     
     .feature-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
     }
     
     .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
+      z-index: -1;
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .feature-card:hover::before {
+      opacity: 1;
     }
     
     .btn-download {
@@ -115,381 +130,234 @@
       text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
     }
     
-    /* Стили для чата */
-    .chat-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 120px);
-      max-width: 100%;
-      overflow: hidden;
+    .minecraft-text {
+      color: #4CAF50;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
     }
     
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
+    .bot-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      transition: transform 0.3s ease;
     }
     
-    .message {
-      max-width: 85%;
-      padding: 1rem 1.5rem;
-      border-radius: 1.5rem;
-      animation: fadeIn 0.3s ease-out;
-      position: relative;
+    .feature-card:hover .bot-icon {
+      transform: scale(1.1);
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    .bot-message {
-      align-self: flex-start;
-      background: linear-gradient(135deg, #1e3a8a, #1e40af);
-      border-bottom-left-radius: 0.25rem;
-    }
-    
-    .user-message {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #0c4a6e, #075985);
-      border-bottom-right-radius: 0.25rem;
-    }
-    
-    .typing-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    
-    .typing-dot {
-      width: 0.5rem;
-      height: 0.5rem;
-      background-color: #93c5fd;
-      border-radius: 50%;
-      display: inline-block;
-      animation: typing 1.4s infinite ease-in-out;
-    }
-    
-    .typing-dot:nth-child(1) { animation-delay: 0s; }
-    .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-    .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-    
-    @keyframes typing {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-    
-    .input-container {
-      padding: 1rem;
-      background: rgba(15, 23, 42, 0.9);
-      border-top: 1px solid #334155;
-    }
-    
-    .chat-input {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid #334155;
-      color: white;
-      transition: all 0.3s;
-    }
-    
-    .chat-input:focus {
-      outline: none;
-      border-color: #0ea5e9;
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
-    }
-    
-    .send-btn {
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      transition: all 0.3s;
-    }
-    
-    .send-btn:hover {
-      transform: scale(1.05);
-    }
-    
-    .send-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .scroll-down-btn {
-      position: absolute;
-      bottom: 5rem;
-      right: 2rem;
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid #334155;
-      z-index: 10;
-      animation: float 3s ease-in-out infinite;
-    }
-    
-    .knowledge-base {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-top: 2rem;
-      padding: 1rem;
-    }
-    
-    .knowledge-card {
-      background: rgba(30, 41, 59, 0.5);
-      border-radius: 0.75rem;
-      padding: 1rem;
-      transition: all 0.3s;
-      border: 1px solid #334155;
-      cursor: pointer;
-    }
-    
-    .knowledge-card:hover {
-      transform: translateY(-5px);
-      background: rgba(30, 41, 59, 0.8);
-      border-color: #0ea5e9;
-    }
-    
-    .path-box {
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid #334155;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-family: monospace;
-      display: inline-block;
-      margin: 5px 0;
-    }
-    
-    .rule-item {
-      position: relative;
-      padding-left: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-    
-    .rule-item::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0.6rem;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: #0ea5e9;
-    }
-    
-    .step-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      color: white;
-      font-weight: bold;
-      margin-right: 12px;
-    }
-    
-    .telegram-btn {
-      background: linear-gradient(135deg, #2AABEE, #229ED9);
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      padding: 10px 20px;
-      border-radius: 8px;
-      color: white;
-      font-weight: 600;
-      margin-top: 10px;
-    }
-    
-    .telegram-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(42, 171, 238, 0.4);
-    }
-    
-    .error-card {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 10px 0;
-    }
-    
-    .info-card {
-      background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
-      border: 1px solid rgba(14, 165, 233, 0.3);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 10px 0;
-    }
-    
-    .warning-card {
-      background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(234, 179, 8, 0.05));
-      border: 1px solid rgba(234, 179, 8, 0.3);
-      padding: 15px;
-      border-radius: 12px;
-      margin: 10px 0;
+    .grid-pattern {
+      background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
     }
   </style>
 </head>
 <body class="bg-dark text-gray-200">
-
-   <header class="bg-gray-950 shadow-md sticky-header">
+  <!-- Шапка с бургер-меню -->
+  <header class="sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div class="flex items-center animate-fade-in">
-        <h1 class="text-2xl font-bold text-white">🤖 Cobalt Assistant</h1>
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fas fa-rocket text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Cobalt Launcher</h1>
       </div>
       
-      <nav class="hidden md:flex space-x-8">
-        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
-        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
-        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
-        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
-        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
-      </nav>
-      
-      <button id="burgerBtn" class="md:hidden text-white focus:outline-none">
+      <!-- Кнопка бургер-меню -->
+      <button id="burgerBtn" class="text-white focus:outline-none z-50">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
         <div class="burger-line"></div>
       </button>
     </div>
     
-    <div id="mobileMenu" class="mobile-menu bg-gray-950 md:hidden">
-      <div class="flex flex-col px-6 pb-4">
-        <a href="index.html" class="py-3 hover:text-primary transition-colors">Главная</a> 
-        <a href="help.html" class="py-3 hover:text-primary transition-colors">Поддержка</a>
-        <a href="tools.html" class="py-3 hover:text-primary transition-colors">Инструменты</a>
-        <a href="libraly.html" class="py-3 hover:text-primary transition-colors">Библиотека</a>
-        <a href="wiki.html" class="py-3 hover:text-primary transition-colors">Вики</a>
-        <a href="projects.html" class="py-3 hover:text-primary transition-colors">Проекты</a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors">Сообщество</a>
+    <!-- Выпадающее меню -->
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="news.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-newspaper mr-3 w-5"></i> Новости
+        </a>
+        <a href="help.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-headset mr-3 w-5"></i> Поддержка
+        </a>
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-tools mr-3 w-5"></i> Инструменты
+        </a>
+        <a href="libraly.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-book mr-3 w-5"></i> Библиотека
+        </a>
+        <a href="wiki.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-book-open mr-3 w-5"></i> Вики
+        </a>
+        <a href="projects.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-project-diagram mr-3 w-5"></i> Проекты
+        </a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-telegram mr-3 w-5"></i> Сообщество
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- Основной контент - чат-бот -->
-  <main class="flex-grow">
-    <div class="chat-container">
-      <div class="chat-messages" id="chatMessages">
-        <!-- Приветственное сообщение -->
-        <div class="message bot-message" data-aos="fade-up">
-          <div class="flex items-start gap-3">
-            <div class="bg-blue-600 p-2 rounded-full">
-              <i class="fas fa-robot text-white"></i>
+  <!-- Герой-баннер -->
+  <section class="relative py-24 md:py-32 px-4 overflow-hidden">
+    <div class="absolute inset-0 z-0 grid-pattern"></div>
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-dark/70 to-dark"></div>
+    
+    <div class="max-w-6xl mx-auto relative z-10 text-center px-4" data-aos="fade-up">
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="100">
+        <span class="minecraft-text">Minecraft</span> Боты
+      </h1>
+      <p class="text-xl max-w-2xl mx-auto mb-10 text-gray-300" data-aos="fade-up" data-aos-delay="150">
+        Улучшите свой игровой опыт с помощью наших умных ботов. Найдите моды, ресурспаки, узнайте о предметах и мобах, и многое другое!
+      </p>
+      <div class="animate-float mt-10" data-aos="fade-up" data-aos-delay="200">
+        <i class="fas fa-arrow-down text-primary text-3xl"></i>
+      </div>
+    </div>
+  </section>
+
+  <!-- Секция с карточками ботов -->
+  <section class="py-16 px-4 relative">
+    <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-dark to-transparent z-0"></div>
+    <div class="max-w-6xl mx-auto relative z-10">
+      <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 text-white" data-aos="fade-up">
+        Выберите <span class="text-primary">бота</span> для своих нужд
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Карточка 1: Бот-помощник -->
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="100">
+          <div class="text-center">
+            <div class="bot-icon text-blue-400">
+              <i class="fas fa-robot"></i>
             </div>
-            <div>
-              <h3 class="font-bold text-blue-200">Cobalt Assistant</h3>
-              <p class="mt-1">Привет! Я ваш помощник по работе с Cobalt Launcher. Чем могу помочь? Вот что я умею:</p>
-              <ul class="mt-2 ml-4 list-disc space-y-1">
-                <li>Помогать с логами и краш-репортами</li>
-                <li>Объяснять правила обращения за помощью</li>
-                <li>Рассказывать о работе с ошибками</li>
-                <li>Предоставлять информацию о поддержке</li>
-              </ul>
-              <p class="mt-2">Выберите тему из списка ниже или задайте вопрос 👇</p>
-            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Бот-Помощник</h3>
+            <p class="text-gray-300 mb-5">
+              Ваш персональный помощник в мире Minecraft. Отвечает на вопросы, помогает с рецептами крафта и дает советы по игре.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
         
-        <!-- База знаний -->
-        <div class="knowledge-base" id="knowledgeBase">
-          <div class="knowledge-card" onclick="sendMessage('Что такое логи?')">
-            <div class="flex items-center gap-3">
-              <div class="bg-blue-500 p-2 rounded-lg">
-                <i class="fas fa-file-alt text-white"></i>
-              </div>
-              <h3 class="font-bold">Логи</h3>
+        <!-- Карточка 2: Бот-анализатор -->
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="text-center">
+            <div class="bot-icon text-green-400">
+              <i class="fas fa-chart-line"></i>
             </div>
-            <p class="mt-2 text-sm text-gray-300">Информация о записях событий системы</p>
-          </div>
-          
-          <div class="knowledge-card" onclick="sendMessage('Что такое краш-репорты?')">
-            <div class="flex items-center gap-3">
-              <div class="bg-red-500 p-2 rounded-lg">
-                <i class="fas fa-bug text-white"></i>
-              </div>
-              <h3 class="font-bold">Краш-репорты</h3>
-            </div>
-            <p class="mt-2 text-sm text-gray-300">Отчеты об ошибках и сбоях</p>
-          </div>
-          
-          <div class="knowledge-card" onclick="sendMessage('Как читать краш-репорты?')">
-            <div class="flex items-center gap-3">
-              <div class="bg-green-500 p-2 rounded-lg">
-                <i class="fas fa-book-open text-white"></i>
-              </div>
-              <h3 class="font-bold">Чтение отчетов</h3>
-            </div>
-            <p class="mt-2 text-sm text-gray-300">Инструкции по анализу ошибок</p>
-          </div>
-          
-          <div class="knowledge-card" onclick="sendMessage('Правила обращения за помощью')">
-            <div class="flex items-center gap-3">
-              <div class="bg-yellow-500 p-2 rounded-lg">
-                <i class="fas fa-exclamation-triangle text-white"></i>
-              </div>
-              <h3 class="font-bold">Правила</h3>
-            </div>
-            <p class="mt-2 text-sm text-gray-300">Как правильно запрашивать поддержку</p>
-          </div>
-          
-          <div class="knowledge-card" onclick="sendMessage('Как сообщить об ошибке?')">
-            <div class="flex items-center gap-3">
-              <div class="bg-purple-500 p-2 rounded-lg">
-                <i class="fas fa-exclamation-circle text-white"></i>
-              </div>
-              <h3 class="font-bold">Ошибки</h3>
-            </div>
-            <p class="mt-2 text-sm text-gray-300">Процесс сообщения о проблемах</p>
-          </div>
-          
-          <div class="knowledge-card" onclick="sendMessage('Как предложить идею?')">
-            <div class="flex items-center gap-3">
-              <div class="bg-pink-500 p-2 rounded-lg">
-                <i class="fas fa-lightbulb text-white"></i>
-              </div>
-              <h3 class="font-bold">Идеи</h3>
-            </div>
-            <p class="mt-2 text-sm text-gray-300">Предложение улучшений для лаунчера</p>
+            <h3 class="text-xl font-bold mb-3 text-white">Бот-Анализатор</h3>
+            <p class="text-gray-300 mb-5">
+              Анализирует серверы, игровые миры и производительность. Помогает оптимизировать настройки для лучшего геймплея.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
           </div>
         </div>
-      </div>
-      
-      <div class="input-container">
-        <div class="max-w-4xl mx-auto flex gap-3">
-          <input 
-            type="text" 
-            id="userInput" 
-            class="chat-input flex-grow rounded-full px-5 py-3 focus:ring-2 focus:ring-primary" 
-            placeholder="Введите сообщение..."
-            autocomplete="off"
-          >
-          <button id="sendBtn" class="send-btn w-12 h-12 rounded-full flex items-center justify-center">
-            <i class="fas fa-paper-plane text-white"></i>
-          </button>
+        
+        <!-- Карточка 3: Поисковик модов -->
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="text-center">
+            <div class="bot-icon text-purple-400">
+              <i class="fas fa-search"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Поисковик Модов</h3>
+            <p class="text-gray-300 mb-5">
+              Находит лучшие моды, ресурспаки, датапаки и шейдеры для вашей версии Minecraft. Сортировка по рейтингу и совместимости.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Карточка 4: Энциклопедия -->
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="text-center">
+            <div class="bot-icon text-yellow-400">
+              <i class="fas fa-book"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Энциклопедия</h3>
+            <p class="text-gray-300 mb-5">
+              Полная информация о предметах, мобах, блоках и их характеристиках. Идеально для новичков и опытных игроков.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
         </div>
       </div>
     </div>
-    
-    <button id="scrollDownBtn" class="scroll-down-btn w-10 h-10 rounded-full flex items-center justify-center opacity-0 transition-opacity">
-      <i class="fas fa-arrow-down text-blue-300"></i>
-    </button>
-  </main>
+  </section>
 
-  <footer class="bg-gray-950 py-6 text-center text-gray-500 text-sm">
-    © 2025 Atlantis Studio. Все права защищены.
+  <!-- Дополнительная информация -->
+  <section class="py-16 px-4 bg-dark/70">
+    <div class="max-w-4xl mx-auto text-center">
+      <div class="inline-block p-4 rounded-full bg-primary/20 mb-8" data-aos="zoom-in">
+        <i class="fas fa-cubes text-3xl text-primary"></i>
+      </div>
+      <h2 class="text-3xl font-bold mb-6 text-white" data-aos="fade-up">
+        Расширьте возможности Minecraft
+      </h2>
+      <p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+        Наши боты интегрированы с Cobalt Launcher для максимального удобства. Получайте актуальную информацию, находите лучшие моды и улучшайте игровой процесс без лишних усилий.
+      </p>
+      <div data-aos="fade-up" data-aos-delay="200">
+        <a href="#" class="btn-download inline-block px-8 py-4 rounded-full font-medium text-white text-lg">
+          <i class="fas fa-download mr-3"></i> Скачать Cobalt Launcher
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Футер -->
+  <footer class="bg-gray-950 py-8 text-center">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div class="mb-4 md:mb-0">
+          <h3 class="text-xl font-bold text-white flex items-center justify-center md:justify-start">
+            <i class="fas fa-rocket text-primary mr-2"></i> Cobalt Launcher
+          </h3>
+          <p class="text-gray-400 mt-2">Лучший опыт Minecraft</p>
+        </div>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-telegram text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-discord text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-youtube text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-github text-xl"></i>
+          </a>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-gray-800">
+        <p class="text-gray-500 text-sm">© 2025 Atlantis Studio. Все права защищены. Minecraft является товарным знаком Mojang Synergies AB.</p>
+      </div>
+    </div>
   </footer>
 
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
-    // Инициализация библиотек
+    // Инициализация AOS
     AOS.init({
       duration: 800,
       once: true,
       offset: 50
     });
 
-    // Обработчики скролла и меню
+    // Эффект при скролле для шапки
     window.addEventListener('scroll', function() {
       const header = document.querySelector('header');
       if (window.scrollY > 10) {
@@ -498,7 +366,8 @@
         header.classList.remove('scrolled');
       }
     });
-
+    
+    // Логика бургер-меню
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
@@ -517,6 +386,7 @@
       }
     });
     
+    // Закрытие меню при клике на пункт
     const menuItems = mobileMenu.querySelectorAll('a');
     menuItems.forEach(item => {
       item.addEventListener('click', () => {
@@ -527,362 +397,6 @@
         lines[2].style.transform = 'none';
       });
     });
-
-    // Логика чат-бота
-    const chatMessages = document.getElementById('chatMessages');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const scrollDownBtn = document.getElementById('scrollDownBtn');
-
-    // Фокус на поле ввода при загрузке
-    userInput.focus();
-
-    // Функция для прокрутки вниз
-    function scrollToBottom() {
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-      scrollDownBtn.classList.add('opacity-0');
-    }
-
-    // Показать кнопку прокрутки, если пользователь прокрутил вверх
-    chatMessages.addEventListener('scroll', () => {
-      const isAtBottom = chatMessages.scrollTop + chatMessages.clientHeight >= chatMessages.scrollHeight - 50;
-      scrollDownBtn.classList.toggle('opacity-0', isAtBottom);
-      scrollDownBtn.classList.toggle('opacity-70', !isAtBottom);
-    });
-
-    // Обработчик кнопки прокрутки
-    scrollDownBtn.addEventListener('click', scrollToBottom);
-
-    // Добавление сообщения в чат
-    function addMessage(text, isUser = false) {
-      const messageDiv = document.createElement('div');
-      messageDiv.classList.add('message');
-      messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
-      
-      const messageContent = `
-        <div class="flex items-start gap-3">
-          <div class="${isUser ? 'bg-blue-700' : 'bg-blue-600'} p-2 rounded-full">
-            <i class="${isUser ? 'fas fa-user' : 'fas fa-robot'} text-white"></i>
-          </div>
-          <div>
-            <h3 class="font-bold ${isUser ? 'text-blue-300' : 'text-blue-200'}">
-              ${isUser ? 'Вы' : 'Cobalt Assistant'}
-            </h3>
-            <div class="mt-1">${text}</div>
-          </div>
-        </div>
-      `;
-      
-      messageDiv.innerHTML = messageContent;
-      chatMessages.appendChild(messageDiv);
-      messageDiv.scrollIntoView({ behavior: 'smooth' });
-      return messageDiv;
-    }
-
-    // Добавление индикатора набора сообщения
-    function showTypingIndicator() {
-      const typingDiv = document.createElement('div');
-      typingDiv.classList.add('message', 'bot-message', 'typing-indicator');
-      typingDiv.id = 'typingIndicator';
-      
-      typingDiv.innerHTML = `
-        <div class="flex items-start gap-3">
-          <div class="bg-blue-600 p-2 rounded-full">
-            <i class="fas fa-robot text-white"></i>
-          </div>
-          <div>
-            <h3 class="font-bold text-blue-200">Cobalt Assistant</h3>
-            <div class="mt-2 flex gap-1">
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-              <span class="typing-dot"></span>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      chatMessages.appendChild(typingDiv);
-      typingDiv.scrollIntoView({ behavior: 'smooth' });
-      return typingDiv;
-    }
-
-    // Удаление индикатора набора
-    function hideTypingIndicator() {
-      const typingIndicator = document.getElementById('typingIndicator');
-      if (typingIndicator) {
-        typingIndicator.remove();
-      }
-    }
-
-    // Генерация ответа бота
-    function generateBotResponse(userMessage) {
-      const responses = {
-        "привет": "Привет! Чем могу помочь по Cobalt Launcher?",
-        "как дела": "У меня всё отлично! Готов помочь вам с логами, краш-репортами и другими вопросами по лаунчеру.",
-        "спасибо": "Всегда пожалуйста! Обращайтесь, если понадобится помощь.",
-        "помощь": "Я могу помочь с работой с логами, краш-репортами, чтением отчетов и обращением за поддержкой. Задайте конкретный вопрос!",
-        
-        // Логи
-        "логи": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Что такое логи?</h3>
-            <p class="mb-3">Логи (logs) - это записи о событиях, которые происходят в системе. Они отслеживают действия пользователя, сохраняют информацию о произошедших исключениях, ошибках и других важных событиях.</p>
-            <p class="font-semibold">Путь к логам:</p>
-            <div class="path-box">/AppData/Roaming/.Cobalt_Launcher/logs</div>
-            <p class="mt-3">В папку с логами можно попасть через меню папок с иконкой папки в главном меню.</p>
-          </div>
-        `,
-        
-        // Краш-репорты
-        "краш": `
-          <div class="error-card">
-            <h3 class="font-bold text-red-300 mb-2">Что такое краш-репорты?</h3>
-            <p class="mb-3">Краш-репорты (crash_reports) - это дебаг-отчеты, которые используются для отслеживания и диагностики проблем с программным обеспечением. Они содержат подробную информацию об исключениях, ошибках и стеке вызовов.</p>
-            <p class="font-semibold">Путь к краш-репортам:</p>
-            <div class="path-box">/AppData/Roaming/.Cobalt_Launcher/crash-reports</div>
-            <p class="mt-3">В папку с краш-репортами можно попасть через меню папок с иконкой папки в главном меню.</p>
-          </div>
-        `,
-        
-        // Правила обращения
-        "правила": `
-          <div class="warning-card">
-            <h3 class="font-bold text-yellow-300 mb-2">Правила обращения за помощью</h3>
-            <ol class="space-y-2">
-              <li class="rule-item">Если вы будете грубить или оскорблять, помощь вам не будет оказана</li>
-              <li class="rule-item">Пишите чётко и ясно</li>
-              <li class="rule-item">С модифицированными версиями не помогаем - обращайтесь к разработчику модификации</li>
-              <li class="rule-item">Обязательно указывайте версию лаунчера (компьютерная/мобильная)</li>
-            </ol>
-            <div class="mt-3 bg-dark/50 p-3 rounded-lg">
-              <p class="text-yellow-200"><i class="fas fa-info-circle mr-2"></i> Без логов и краш-репортов мы не сможем понять причину проблемы!</p>
-            </div>
-          </div>
-        `,
-        
-        // Чтение краш-репортов
-        "читать краш": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Как читать краш-репорты?</h3>
-            
-            <div class="mt-4">
-              <div class="flex items-start mb-4">
-                <span class="step-badge">1</span>
-                <p>Используйте редактор с поддержкой кода (например, <span class="text-blue-400">Visual Studio Code</span>)</p>
-              </div>
-              
-              <div class="flex items-start mb-4">
-                <span class="step-badge">2</span>
-                <p>Нам нужны строки, начинающиеся на <code class="bg-gray-800 px-1 py-0.5 rounded">at</code></p>
-              </div>
-              
-              <div class="flex items-start mb-4">
-                <span class="step-badge">3</span>
-                <p>Читаем строки <span class="text-red-400 font-semibold">снизу вверх</span> (последняя строка с <code class="bg-gray-800 px-1 py-0.5 rounded">at</code> - первая)</p>
-              </div>
-              
-              <div class="flex items-start mb-4">
-                <span class="step-badge">4</span>
-                <p>Если игра с модами не запускается, ищите название конфликтного мода в строках (например <code class="bg-gray-800 px-1 py-0.5 rounded">at mezz.jei</code>)</p>
-              </div>
-              
-              <div class="flex items-start">
-                <span class="step-badge">5</span>
-                <div>
-                  <p>Не копируйте часть краш-лога, начинающуюся с <code class="bg-gray-800 px-1 py-0.5 rounded">-- Initialization --</code></p>
-                  <p class="text-red-300 mt-2"><i class="fas fa-exclamation-triangle mr-2"></i> В этой части содержатся ваши личные данные!</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        `,
-        
-        // Чтение логов
-        "читать логи": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Как читать логи?</h3>
-            
-            <div class="mt-4">
-              <div class="flex items-start mb-4">
-                <span class="step-badge">1</span>
-                <p>Используйте редактор с поддержкой кода (например, <span class="text-blue-400">Visual Studio Code</span>)</p>
-              </div>
-              
-              <div class="flex items-start mb-4">
-                <span class="step-badge">2</span>
-                <p>Читаем строки <span class="text-red-400 font-semibold">снизу вверх</span></p>
-              </div>
-              
-              <div class="flex items-start mb-4">
-                <span class="step-badge">3</span>
-                <p>В начале каждого действия в квадратных скобках указано время события</p>
-              </div>
-            </div>
-          </div>
-        `,
-        
-        // Сообщение об ошибке
-        "ошибка": `
-          <div class="error-card">
-            <h3 class="font-bold text-red-300 mb-2">Как сообщить об ошибке?</h3>
-            <p class="mb-3">Используйте тему для найденных ошибок в Telegram-чате:</p>
-            
-            <div class="bg-dark/50 p-4 rounded-lg mb-3">
-              <h4 class="font-semibold text-red-300 mb-2">Форма анкеты:</h4>
-              <ol class="list-decimal pl-5 space-y-1">
-                <li>Ваш пинг</li>
-                <li>Описание ошибки</li>
-                <li>Версия лаунчера (компьютерная/мобильная)</li>
-                <li>Пинг разработчика:
-                  <ul class="list-disc pl-5 mt-1">
-                    <li>Дизайн/сайт: <span class="text-blue-400">@M1rotv0rets</span></li>
-                    <li>Код/функционал: <span class="text-blue-400">@WaterBucket_smt</span></li>
-                  </ul>
-                </li>
-              </ol>
-            </div>
-            
-            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
-              <i class="fab fa-telegram-plane mr-2"></i> Сообщить об ошибке
-            </a>
-          </div>
-        `,
-        
-        // Предложение идей
-        "идея": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Как предложить идею?</h3>
-            <p class="mb-3">Используйте тему для идей в Telegram-чате:</p>
-            
-            <div class="bg-dark/50 p-4 rounded-lg mb-3">
-              <h4 class="font-semibold text-blue-300 mb-2">Форма анкеты:</h4>
-              <ol class="list-decimal pl-5 space-y-1">
-                <li>Ваш пинг</li>
-                <li>Ваша идея</li>
-                <li>Версия лаунчера (компьютерная/мобильная)</li>
-                <li>Пинг разработчика:
-                  <ul class="list-disc pl-5 mt-1">
-                    <li>Дизайн/сайт: <span class="text-blue-400">@M1rotv0rets</span></li>
-                    <li>Код/функционал: <span class="text-blue-400">@WaterBucket_smt</span></li>
-                  </ul>
-                </li>
-              </ol>
-            </div>
-            
-            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
-              <i class="fab fa-telegram-plane mr-2"></i> Предложить идею
-            </a>
-          </div>
-        `,
-        
-        // Голосования
-        "голосование": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Участие в голосованиях</h3>
-            <p class="mb-3">Рекомендуем участвовать в голосованиях в теме "Опросы по лаунчеру" (поллы).</p>
-            <p class="mb-3">Там вы можете проголосовать за добавление чего-либо в лаунчер или на сайт.</p>
-            <p class="mb-4">Чтобы предложить тему для опроса - напишите <span class="text-blue-400 font-semibold">@M1rotv0rets</span></p>
-            
-            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
-              <i class="fab fa-telegram-plane mr-2"></i> Участвовать в голосованиях
-            </a>
-          </div>
-        `,
-        
-        // Кто может помочь
-        "помощь": `
-          <div class="info-card">
-            <h3 class="font-bold text-blue-300 mb-2">Кто может помочь?</h3>
-            <p class="mb-3">Чтобы получить помощь, пишите в тему <span class="bg-blue-900/40 px-2 py-1 rounded">Поддержка лаунчера</span>.</p>
-            <p class="text-red-400 font-semibold mb-4">В ДРУГИХ ТЕМАХ ПОМОЩЬ НЕ ОКАЗЫВАЕТСЯ!</p>
-            
-            <a href="https://t.me/atlantis_studio_chat" class="telegram-btn">
-              <i class="fab fa-telegram-plane mr-2"></i> Перейти в Telegram-чат
-            </a>
-          </div>
-        `
-      };
-
-      // Поиск подходящего ответа
-      const lowerMessage = userMessage.toLowerCase();
-      for (const [key, value] of Object.entries(responses)) {
-        if (lowerMessage.includes(key)) {
-          return value;
-        }
-      }
-      
-      // Дополнительные варианты для схожих запросов
-      if (lowerMessage.includes("краш") || lowerMessage.includes("краш-репорт")) {
-        return responses["краш"];
-      }
-      if (lowerMessage.includes("правил")) {
-        return responses["правила"];
-      }
-      if (lowerMessage.includes("читать отчет")) {
-        return responses["читать краш"];
-      }
-      if (lowerMessage.includes("сообщить об ошибке") || lowerMessage.includes("нашел ошибку")) {
-        return responses["ошибка"];
-      }
-      if (lowerMessage.includes("предложить идею") || lowerMessage.includes("есть идея")) {
-        return responses["идея"];
-      }
-      if (lowerMessage.includes("голосование") || lowerMessage.includes("опрос")) {
-        return responses["голосование"];
-      }
-      if (lowerMessage.includes("кто может помочь") || lowerMessage.includes("поддержка")) {
-        return responses["помощь"];
-      }
-
-      // Стандартные ответы
-      const defaultResponses = [
-        "Интересный вопрос! Я еще учусь, но скоро смогу лучше отвечать на такие вопросы.",
-        "Пока я не могу ответить на этот вопрос, но вы можете найти информацию в нашей документации.",
-        "Хороший вопрос! Уточните, пожалуйста, что именно вас интересует?",
-        "Я пока не знаю ответ на этот вопрос, но вы можете спросить что-то другое.",
-        "Попробуйте задать вопрос по-другому или выберите тему из базы знаний выше."
-      ];
-
-      return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
-    }
-
-    // Отправка сообщения
-    function sendMessage(text) {
-      if (!text.trim()) return;
-      
-      // Добавляем сообщение пользователя
-      addMessage(text, true);
-      
-      // Очищаем поле ввода
-      userInput.value = '';
-      userInput.focus();
-      
-      // Показываем индикатор набора
-      const typingIndicator = showTypingIndicator();
-      
-      // Имитируем задержку ответа
-      setTimeout(() => {
-        hideTypingIndicator();
-        
-        // Генерируем ответ
-        const botResponse = generateBotResponse(text);
-        addMessage(botResponse);
-      }, 1500 + Math.random() * 1000);
-    }
-
-    // Обработчики событий
-    sendBtn.addEventListener('click', () => {
-      sendMessage(userInput.value);
-    });
-
-    userInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        sendMessage(userInput.value);
-      }
-    });
-
-    // Прокрутка вниз при загрузке
-    setTimeout(scrollToBottom, 500);
   </script>
 </body>
 </html>
