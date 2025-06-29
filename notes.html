@@ -1,1 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Заметки с напоминаниями | Minecraft Боты</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a',
+            minecraft: '#4CAF50',
+            reminder: '#f59e0b'
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .burger-line {
+      display: block;
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-out;
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .note-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .note-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+    }
+    
+    .note-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
+      z-index: -1;
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .note-card:hover::before {
+      opacity: 1;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-reminder {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+    }
+    
+    .btn-reminder:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+    
+    .glow {
+      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
+    }
+    
+    .minecraft-text {
+      color: #4CAF50;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    }
+    
+    .reminder-icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .grid-pattern {
+      background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    .reminder-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .note-form {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    
+    .form-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: rgba(30, 41, 59, 0.3);
+      border-radius: 12px;
+      border: 2px dashed rgba(14, 165, 233, 0.3);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(30, 41, 59, 0.95);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      border-left: 4px solid #0ea5e9;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: translateX(120%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-title {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #0ea5e9;
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200">
+  <header class="sticky-header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fas fa-sticky-note text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Minecraft Заметки</h1>
+      </div>
+      
+      <button id="burgerBtn" class="text-white focus:outline-none z-50">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-sticky-note mr-3 w-5"></i> Заметки
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-bell mr-3 w-5"></i> Напоминания
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-cog mr-3 w-5"></i> Настройки
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-telegram mr-3 w-5"></i> Сообщество
+        </a>
+      </div>
+    </div>
+  </header>
 
+  <div id="notification" class="notification">
+    <div class="notification-title">
+      <i class="fas fa-bell mr-2"></i> Напоминание!
+    </div>
+    <div id="notificationContent">У вас запланировано событие</div>
+  </div>
+
+  <section class="relative py-16 md:py-20 px-4 overflow-hidden">
+    <div class="absolute inset-0 z-0 grid-pattern"></div>
+    <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-dark/70 to-dark"></div>
+    
+    <div class="max-w-6xl mx-auto relative z-10 text-center px-4" data-aos="fade-up">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 text-white glow" data-aos="fade-up" data-aos-delay="100">
+        <span class="minecraft-text">Minecraft</span> Заметки с напоминаниями
+      </h1>
+      <p class="text-lg max-w-2xl mx-auto mb-8 text-gray-300" data-aos="fade-up" data-aos-delay="150">
+        Создавайте заметки, устанавливайте напоминания и получайте уведомления в браузере. Все данные сохраняются после выхода.
+      </p>
+      <div class="animate-float mt-8" data-aos="fade-up" data-aos-delay="200">
+        <i class="fas fa-arrow-down text-primary text-2xl"></i>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 px-4 relative">
+    <div class="max-w-4xl mx-auto">
+      <div class="note-form" data-aos="fade-up">
+        <h2 class="text-2xl font-bold mb-6 text-white flex items-center">
+          <i class="fas fa-plus-circle mr-3 text-primary"></i> Новая заметка
+        </h2>
+        
+        <div class="mb-6">
+          <label class="block text-gray-300 mb-2">Текст заметки</label>
+          <textarea 
+            id="noteText" 
+            class="w-full form-input" 
+            rows="3" 
+            placeholder="Например: Проверить ферму железных големов..."
+          ></textarea>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <label class="block text-gray-300 mb-2">Дата напоминания</label>
+            <input 
+              type="date" 
+              id="reminderDate" 
+              class="w-full form-input"
+            >
+          </div>
+          
+          <div>
+            <label class="block text-gray-300 mb-2">Время напоминания</label>
+            <input 
+              type="time" 
+              id="reminderTime" 
+              class="w-full form-input"
+            >
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-3">
+          <button 
+            id="addNoteBtn" 
+            class="btn-primary px-6 py-3 rounded-lg font-medium text-white flex items-center"
+          >
+            <i class="fas fa-save mr-2"></i> Сохранить заметку
+          </button>
+          
+          <button 
+            id="addReminderBtn" 
+            class="btn-reminder px-6 py-3 rounded-lg font-medium text-white flex items-center"
+          >
+            <i class="fas fa-bell mr-2"></i> Добавить напоминание
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 px-4 relative">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-2xl font-bold mb-6 text-white flex items-center" data-aos="fade-up">
+        <i class="fas fa-sticky-note mr-3 text-primary"></i> Мои заметки
+        <span id="notesCounter" class="ml-2 bg-primary/20 text-primary text-sm font-medium px-3 py-1 rounded-full">0</span>
+      </h2>
+      
+      <div id="notesContainer" class="grid grid-cols-1 gap-5">
+        <div id="emptyState" class="empty-state" data-aos="fade-up">
+          <div class="text-5xl text-primary/50 mb-4">
+            <i class="fas fa-sticky-note"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-gray-300">У вас пока нет заметок</h3>
+          <p class="text-gray-400 mb-4">Создайте свою первую заметку с напоминанием с помощью формы выше</p>
+          <div class="animate-pulse text-primary">
+            <i class="fas fa-arrow-up text-2xl"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="bg-gray-950 py-8 text-center mt-10">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div class="mb-4 md:mb-0">
+          <h3 class="text-xl font-bold text-white flex items-center justify-center md:justify-start">
+            <i class="fas fa-sticky-note text-primary mr-2"></i> Minecraft Заметки
+          </h3>
+          <p class="text-gray-400 mt-2">Ваш помощник в мире Minecraft</p>
+        </div>
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-telegram text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-discord text-xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-github text-xl"></i>
+          </a>
+        </div>
+      </div>
+      <div class="pt-6 border-t border-gray-800">
+        <p class="text-gray-500 text-sm">© 2025 Minecraft Заметки. Все данные сохраняются локально в вашем браузере.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 50
+    });
+
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    burgerBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('open');
+      
+      const lines = document.querySelectorAll('.burger-line');
+      if (mobileMenu.classList.contains('open')) {
+        lines[0].style.transform = 'translateY(7px) rotate(45deg)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+    
+    const menuItems = mobileMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        const lines = document.querySelectorAll('.burger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      });
+    });
+
+    const notesContainer = document.getElementById('notesContainer');
+    const notesCounter = document.getElementById('notesCounter');
+    const emptyState = document.getElementById('emptyState');
+    const noteText = document.getElementById('noteText');
+    const reminderDate = document.getElementById('reminderDate');
+    const reminderTime = document.getElementById('reminderTime');
+    const addNoteBtn = document.getElementById('addNoteBtn');
+    const addReminderBtn = document.getElementById('addReminderBtn');
+    const notification = document.getElementById('notification');
+    const notificationContent = document.getElementById('notificationContent');
+    
+    let notes = [];
+    
+    function initDateTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      
+      reminderDate.value = `${year}-${month}-${day}`;
+      reminderTime.value = `${hours}:${minutes}`;
+    }
+    
+    function checkNotificationSupport() {
+      if (!("Notification" in window)) {
+        alert("Ваш браузер не поддерживает уведомления");
+        return false;
+      }
+      return true;
+    }
+    
+    function requestNotificationPermission() {
+      if (checkNotificationSupport()) {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            console.log("Разрешение на уведомления получено");
+          }
+        });
+      }
+    }
+    
+    function showNotification(title, body) {
+      if (checkNotificationSupport() && Notification.permission === "granted") {
+        new Notification(title, { body });
+      } else {
+        notificationContent.textContent = body;
+        notification.classList.add('show');
+        
+        setTimeout(() => {
+          notification.classList.remove('show');
+        }, 5000);
+      }
+    }
+    
+    function saveNotes() {
+      localStorage.setItem('minecraftNotes', JSON.stringify(notes));
+      updateNotesCounter();
+    }
+    
+    function loadNotes() {
+      const savedNotes = localStorage.getItem('minecraftNotes');
+      if (savedNotes) {
+        notes = JSON.parse(savedNotes);
+        renderNotes();
+      }
+    }
+    
+    function updateNotesCounter() {
+      notesCounter.textContent = notes.length;
+      emptyState.style.display = notes.length ? 'none' : 'block';
+    }
+    
+    function checkReminders() {
+      const now = new Date();
+      
+      notes.forEach((note, index) => {
+        if (note.reminder && !note.notified) {
+          const reminderTime = new Date(note.reminder);
+          
+          if (reminderTime <= now) {
+            showNotification("Minecraft Заметка", note.text);
+            notes[index].notified = true;
+            saveNotes();
+            renderNotes();
+          }
+        }
+      });
+    }
+    
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    function renderNotes() {
+      notesContainer.innerHTML = '';
+      
+      if (notes.length === 0) {
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      const sortedNotes = [...notes].sort((a, b) => {
+        if (a.reminder && !b.reminder) return -1;
+        if (!a.reminder && b.reminder) return 1;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      
+      sortedNotes.forEach((note, index) => {
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note-card p-5 relative';
+        noteElement.dataset.aos = 'fade-up';
+        noteElement.dataset.aosDelay = (index * 100) + 100;
+        
+        let reminderHtml = '';
+        if (note.reminder) {
+          reminderHtml = `
+            <div class="mt-4 bg-reminder/10 p-3 rounded-lg border border-reminder/30">
+              <div class="flex items-center text-reminder">
+                <i class="fas fa-bell mr-2"></i>
+                <span>Напоминание: ${formatDate(note.reminder)}</span>
+              </div>
+            </div>
+          `;
+        }
+        
+        noteElement.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <p class="whitespace-pre-line">${note.text}</p>
+              ${reminderHtml}
+            </div>
+            <button class="delete-btn text-gray-400 hover:text-red-400 ml-3" data-id="${note.id}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="mt-4 text-xs text-gray-500">
+            ${formatDate(note.timestamp)}
+          </div>
+          ${note.reminder && !note.notified ? '<div class="reminder-indicator"></div>' : ''}
+        `;
+        
+        notesContainer.appendChild(noteElement);
+      });
+      
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          deleteNote(id);
+        });
+      });
+    }
+    
+    function addNote(isReminder = false) {
+      const text = noteText.value.trim();
+      
+      if (!text) {
+        alert('Пожалуйста, введите текст заметки');
+        return;
+      }
+      
+      let reminder = null;
+      if (isReminder) {
+        const date = reminderDate.value;
+        const time = reminderTime.value;
+        
+        if (!date || !time) {
+          alert('Пожалуйста, укажите дату и время напоминания');
+          return;
+        }
+        
+        reminder = new Date(`${date}T${time}`);
+        
+        if (reminder < new Date()) {
+          alert('Пожалуйста, укажите время в будущем');
+          return;
+        }
+      }
+      
+      const newNote = {
+        id: Date.now(),
+        text,
+        reminder: reminder ? reminder.toISOString() : null,
+        notified: false,
+        timestamp: new Date().toISOString()
+      };
+      
+      notes.push(newNote);
+      saveNotes();
+      renderNotes();
+      
+      noteText.value = '';
+      
+      if (isReminder) {
+        requestNotificationPermission();
+      }
+    }
+    
+    function deleteNote(id) {
+      notes = notes.filter(note => note.id != id);
+      saveNotes();
+      renderNotes();
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      initDateTime();
+      loadNotes();
+      
+      addNoteBtn.addEventListener('click', () => addNote(false));
+      addReminderBtn.addEventListener('click', () => addNote(true));
+      
+      setInterval(checkReminders, 60000);
+      
+      checkReminders();
+    });
+  </script>
+</body>
+</html>
