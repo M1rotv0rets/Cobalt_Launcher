@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cobalt Launcher - Анализатор ошибок Minecraft</title>
+  <title>Cobalt Диагностика - Анализатор ошибок Minecraft</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,7 +17,8 @@
             minecraft: '#4CAF50',
             error: '#f87171',
             warning: '#fbbf24',
-            success: '#34d399'
+            success: '#34d399',
+            diagnostic: '#8b5cf6'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -78,55 +79,61 @@
       max-height: 300px;
     }
     
-    .feature-card {
+    .diagnostic-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       background: linear-gradient(145deg, #1e293b, #0f172a);
-      border: 1px solid rgba(14, 165, 233, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.3);
       border-radius: 12px;
       overflow: hidden;
       position: relative;
+      animation: fadeIn 0.5s ease-out;
     }
     
-    .feature-card:hover {
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .diagnostic-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
     }
     
-    .feature-card::before {
+    .diagnostic-card::before {
       content: '';
       position: absolute;
       top: -2px;
       left: -2px;
       right: -2px;
       bottom: -2px;
-      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
+      background: linear-gradient(45deg, #8b5cf6, #7c3aed, #8b5cf6);
       z-index: -1;
       border-radius: 14px;
       opacity: 0;
       transition: opacity 0.3s ease;
     }
     
-    .feature-card:hover::before {
+    .diagnostic-card:hover::before {
       opacity: 1;
     }
     
-    .btn-download {
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    .btn-diagnostic {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
     }
     
-    .btn-download:hover {
+    .btn-diagnostic:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
     }
     
-    .btn-download:active {
+    .btn-diagnostic:active {
       transform: translateY(1px);
     }
     
     .glow {
-      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
+      text-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
     }
     
     .minecraft-text {
@@ -134,42 +141,16 @@
       text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
     }
     
-    .bot-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      transition: transform 0.3s ease;
-    }
-    
-    .feature-card:hover .bot-icon {
-      transform: scale(1.1);
-    }
-    
     .grid-pattern {
       background-image: 
-        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
       background-size: 20px 20px;
-    }
-    
-    .minecraft-block {
-      background-image: 
-        linear-gradient(135deg, 
-          #1a3c1a 0%, 
-          #1a3c1a 25%, 
-          #1e471e 25%, 
-          #1e471e 50%, 
-          #1a3c1a 50%, 
-          #1a3c1a 75%, 
-          #1e471e 75%, 
-          #1e471e 100%);
-      background-size: 40px 40px;
-      border: 2px solid #0f2b0f;
-      border-radius: 4px;
     }
     
     .log-input {
       background: rgba(30, 41, 59, 0.7);
-      border: 2px solid rgba(14, 165, 233, 0.3);
+      border: 2px solid rgba(139, 92, 246, 0.3);
       color: #f1f5f9;
       border-radius: 12px;
       padding: 1.5rem;
@@ -182,15 +163,15 @@
     
     .log-input:focus {
       outline: none;
-      border-color: #0ea5e9;
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
     }
     
     .result-card {
       background: linear-gradient(145deg, #1e293b, #0f172a);
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(14, 165, 233, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.2);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
     
@@ -214,7 +195,7 @@
     }
     
     .file-drop-area {
-      border: 2px dashed rgba(14, 165, 233, 0.5);
+      border: 2px dashed rgba(139, 92, 246, 0.5);
       border-radius: 12px;
       padding: 3rem 2rem;
       text-align: center;
@@ -224,8 +205,8 @@
     }
     
     .file-drop-area.active {
-      border-color: #0ea5e9;
-      background: rgba(14, 165, 233, 0.1);
+      border-color: #8b5cf6;
+      background: rgba(139, 92, 246, 0.1);
     }
     
     .log-line {
@@ -237,7 +218,7 @@
     }
     
     .log-line:hover {
-      background: rgba(14, 165, 233, 0.1);
+      background: rgba(139, 92, 246, 0.1);
     }
     
     .error-tag {
@@ -289,16 +270,97 @@
     .main-content {
       flex: 1;
     }
+    
+    .diagnostic-icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .diagnostic-form {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    
+    .form-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: rgba(30, 41, 59, 0.3);
+      border-radius: 12px;
+      border: 2px dashed rgba(139, 92, 246, 0.3);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(30, 41, 59, 0.95);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      border-left: 4px solid #8b5cf6;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: translateX(120%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-title {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #8b5cf6;
+    }
+    
+    .minecraft-block {
+      background-image: 
+        linear-gradient(135deg, 
+          #1a3c1a 0%, 
+          #1a3c1a 25%, 
+          #1e471e 25%, 
+          #1e471e 50%, 
+          #1a3c1a 50%, 
+          #1a3c1a 75%, 
+          #1e471e 75%, 
+          #1e471e 100%);
+      background-size: 40px 40px;
+      border: 2px solid #0f2b0f;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body class="bg-dark text-gray-200 flex flex-col">
   <header class="sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center">
-        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
-          <i class="fas fa-rocket text-white"></i>
+        <div class="w-10 h-10 rounded-full bg-diagnostic flex items-center justify-center mr-3">
+          <i class="fas fa-bug text-white"></i>
         </div>
-        <h1 class="text-2xl font-bold text-white">Cobalt Launcher</h1>
+        <h1 class="text-2xl font-bold text-white">Cobalt Диагностика</h1>
       </div>
       
       <button id="burgerBtn" class="text-white focus:outline-none z-50">
@@ -310,16 +372,16 @@
     
     <div id="mobileMenu" class="mobile-menu bg-gray-900">
       <div class="flex flex-col px-6 py-4">
-        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+        <a href="index.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
           <i class="fas fa-home mr-3 w-5"></i> Главная
         </a> 
-        <a href="tools.html" class="py-3 hover:text-primary transition-colors flex items-center">
+        <a href="tools.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
           <i class="fas fa-tools mr-3 w-5"></i> Инструменты
         </a>
-        <a href="help.html" class="py-3 hover:text-primary transition-colors flex items-center">
+        <a href="help.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
           <i class="fas fa-headset mr-3 w-5"></i> Поддержка
         </a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors flex items-center">
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-diagnostic transition-colors flex items-center">
           <i class="fab fa-telegram mr-3 w-5"></i> Сообщество
         </a>
       </div>
@@ -329,8 +391,11 @@
   <main class="main-content py-10 px-4">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-16" data-aos="fade-up">
+        <div class="inline-block p-4 rounded-full bg-diagnostic/20 mb-6">
+          <i class="fas fa-bug text-3xl text-diagnostic"></i>
+        </div>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
-          <span class="text-primary">Анализатор</span> ошибок Minecraft
+          Анализатор <span class="text-diagnostic">ошибок</span> Minecraft
         </h1>
         <p class="text-xl max-w-2xl mx-auto text-gray-300">
           Загрузите лог-файл или вставьте текст ошибки для диагностики. Наш бот определит причину сбоя и предложит решение.
@@ -338,23 +403,23 @@
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="feature-card p-6" data-aos="fade-right">
+        <div class="diagnostic-card p-6" data-aos="fade-right">
           <div class="text-center mb-6">
-            <div class="bot-icon text-blue-400">
-              <i class="fas fa-bug"></i>
+            <div class="text-diagnostic text-4xl mb-4">
+              <i class="fas fa-file-upload"></i>
             </div>
-            <h3 class="text-2xl font-bold mb-3 text-white">Анализ логов и краш-репортов</h3>
+            <h3 class="text-2xl font-bold mb-3 text-white">Загрузка логов</h3>
             <p class="text-gray-300 mb-6">
               Определяем более 50 типов ошибок Minecraft: проблемы с модами, видеодрайверами, памятью, конфликты версий и многое другое.
             </p>
           </div>
           
           <div id="fileDropArea" class="file-drop-area mb-6">
-            <i class="fas fa-file-upload text-4xl text-primary mb-4"></i>
+            <i class="fas fa-file-upload text-4xl text-diagnostic mb-4"></i>
             <p class="text-lg font-medium mb-2">Перетащите сюда файл лога</p>
             <p class="text-gray-400 mb-4">Или нажмите для выбора файла</p>
             <input type="file" id="fileInput" class="hidden" accept=".log,.txt">
-            <button id="fileSelectBtn" class="btn-download px-4 py-2 rounded-lg font-medium text-white">
+            <button id="fileSelectBtn" class="btn-diagnostic px-4 py-2 rounded-lg font-medium text-white">
               Выбрать файл
             </button>
           </div>
@@ -368,18 +433,18 @@
             <button id="clearBtn" class="px-4 py-2 rounded-lg font-medium text-gray-300 border border-gray-600 hover:bg-gray-700 transition-colors">
               <i class="fas fa-trash mr-2"></i> Очистить
             </button>
-            <button id="analyzeBtn" class="btn-download px-6 py-2 rounded-lg font-medium text-white">
+            <button id="analyzeBtn" class="btn-diagnostic px-6 py-2 rounded-lg font-medium text-white">
               <i class="fas fa-search mr-2"></i> Анализировать
             </button>
           </div>
         </div>
         
-        <div class="feature-card p-6" data-aos="fade-left">
+        <div class="diagnostic-card p-6" data-aos="fade-left">
           <div class="text-center mb-6">
-            <div class="bot-icon text-green-400">
+            <div class="text-diagnostic text-4xl mb-4">
               <i class="fas fa-lightbulb"></i>
             </div>
-            <h3 class="text-2xl font-bold mb-3 text-white">Результаты анализа</h3>
+            <h3 class="text-2xl font-bold mb-3 text-white">Результаты диагностики</h3>
             <p class="text-gray-300 mb-6">
               Здесь отображаются найденные ошибки и рекомендации по их устранению.
             </p>
@@ -387,10 +452,14 @@
           
           <div id="resultContainer" class="hidden">
             <div class="mb-6">
-              <h4 class="text-lg font-bold text-white mb-3">Сводка ошибок:</h4>
+              <h4 class="text-lg font-bold text-white mb-3 flex items-center">
+                <i class="fas fa-list mr-2 text-diagnostic"></i> Сводка ошибок:
+              </h4>
               <div id="errorSummary" class="mb-6 p-4 rounded-lg bg-gray-800"></div>
               
-              <h4 class="text-lg font-bold text-white mb-3">Детали ошибок:</h4>
+              <h4 class="text-lg font-bold text-white mb-3 flex items-center">
+                <i class="fas fa-bug mr-2 text-diagnostic"></i> Детали ошибок:
+              </h4>
               <div id="errorDetails" class="space-y-4"></div>
             </div>
             
@@ -408,10 +477,69 @@
           </div>
           
           <div class="mt-6">
-            <h4 class="text-lg font-bold text-white mb-3">История анализа:</h4>
+            <h4 class="text-lg font-bold text-white mb-3 flex items-center">
+              <i class="fas fa-history mr-2 text-diagnostic"></i> История анализа:
+            </h4>
             <div class="log-container">
               <div id="logHistory" class="space-y-1"></div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Советы по исправлению проблем с модами -->
+      <div class="mt-16">
+        <h2 class="text-2xl font-bold mb-6 text-white flex items-center" data-aos="fade-up">
+          <i class="fas fa-puzzle-piece text-diagnostic mr-3"></i> Советы по исправлению проблем с модами
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="diagnostic-card p-6" data-aos="fade-up">
+            <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+              <i class="fas fa-exclamation-triangle text-warning mr-2"></i> Решение конфликтов модов
+            </h3>
+            <ul class="space-y-3 text-gray-300">
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Убедитесь, что все моды совместимы с вашей версией Minecraft</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Проверьте зависимости модов - возможно, не хватает библиотек</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Удалите моды по одному, чтобы найти конфликтующий</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Обновите моды до последних версий</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div class="diagnostic-card p-6" data-aos="fade-up" data-aos-delay="100">
+            <h3 class="text-xl font-bold mb-4 text-white flex items-center">
+              <i class="fas fa-sync-alt text-diagnostic mr-2"></i> Оптимизация работы модов
+            </h3>
+            <ul class="space-y-3 text-gray-300">
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Установите моды оптимизации (OptiFine, Sodium)</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Увеличьте выделенную память для Java в настройках лаунчера</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Удалите неиспользуемые моды для уменьшения нагрузки</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fas fa-check-circle text-success mr-2 mt-1"></i>
+                <span>Настройте параметры графики в модах для лучшей производительности</span>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -423,29 +551,29 @@
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="mb-6 md:mb-0">
           <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
-              <i class="fas fa-rocket text-white"></i>
+            <div class="w-10 h-10 rounded-full bg-diagnostic flex items-center justify-center mr-3">
+              <i class="fas fa-bug text-white"></i>
             </div>
-            <h2 class="text-xl font-bold text-white">Cobalt Launcher</h2>
+            <h2 class="text-xl font-bold text-white">Cobalt Диагностика</h2>
           </div>
-          <p class="text-gray-400 mt-2">Продвинутые инструменты для Minecraft</p>
+          <p class="text-gray-400 mt-2">Продвинутые инструменты для диагностики Minecraft</p>
         </div>
         
         <div class="flex space-x-6">
-          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-primary transition-colors">
+          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-diagnostic transition-colors">
             <i class="fab fa-telegram text-2xl"></i>
           </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+          <a href="#" class="text-gray-400 hover:text-diagnostic transition-colors">
             <i class="fab fa-discord text-2xl"></i>
           </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+          <a href="#" class="text-gray-400 hover:text-diagnostic transition-colors">
             <i class="fab fa-github text-2xl"></i>
           </a>
         </div>
       </div>
       
       <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500">
-        <p>© 2023 Cobalt Launcher. Все права защищены.</p>
+        <p>© 2023 Cobalt Диагностика. Все права защищены.</p>
       </div>
     </div>
   </footer>
@@ -513,7 +641,7 @@
     const solutions = document.getElementById('solutions');
     const logHistory = document.getElementById('logHistory');
 
-    // База знаний ошибок и решений
+    // Расширенная база знаний ошибок и решений
     const errorDatabase = {
       // Ошибки памяти
       "OutOfMemoryError": {
@@ -523,7 +651,7 @@
         solutions: [
           "Увеличьте выделенную память в настройках лаунчера",
           "Закройте лишние приложения, использующие память",
-          "Установите мод оптимизации памяти (например, Sodium или OptiFine)"
+          "Установите мод оптимизации памяти (Sodium или OptiFine)"
         ]
       },
       "java.lang.OutOfMemoryError: Java heap space": {
@@ -567,7 +695,8 @@
         solutions: [
           "Определите конфликтующие моды методом исключения",
           "Проверьте совместимость модов на официальных страницах",
-          "Обновите моды до последней версии"
+          "Обновите моды до последней версии",
+          "Убедитесь, что у вас установлены все необходимые библиотеки (Forge, Fabric)"
         ]
       },
       "missing mod dependency": {
@@ -588,6 +717,16 @@
           "Установите мод, указанный в сообщении об ошибке",
           "Убедитесь, что версия требуемого мода совместима",
           "Если мод не нужен, удалите зависимый мод"
+        ]
+      },
+      "NoSuchMethodError": {
+        title: "Ошибка совместимости мода",
+        severity: "high",
+        description: "Мод вызывает метод, который отсутствует в текущей версии.",
+        solutions: [
+          "Обновите мод до последней версии",
+          "Проверьте, совместим ли мод с вашей версией Minecraft",
+          "Временно удалите мод и сообщите разработчику об ошибке"
         ]
       },
       
@@ -664,6 +803,16 @@
           "Убедитесь, что Java установлена корректно",
           "Проверьте аргументы запуска JVM в настройках лаунчера",
           "Переустановите Java"
+        ]
+      },
+      "java.lang.ClassNotFoundException": {
+        title: "Класс не найден",
+        severity: "high",
+        description: "Отсутствует необходимый класс, обычно связанный с модом.",
+        solutions: [
+          "Переустановите проблемный мод",
+          "Проверьте целостность файлов мода",
+          "Убедитесь, что все зависимости установлены"
         ]
       }
     };
