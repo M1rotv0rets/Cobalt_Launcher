@@ -18,7 +18,8 @@
             error: '#f87171',
             warning: '#fbbf24',
             success: '#34d399',
-            diagnostic: '#8b5cf6'
+            diagnostic: '#0ea5e9',
+            reminder: '#f59e0b'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -82,7 +83,7 @@
     .diagnostic-card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       background: linear-gradient(145deg, #1e293b, #0f172a);
-      border: 1px solid rgba(139, 92, 246, 0.3);
+      border: 1px solid rgba(14, 165, 233, 0.2);
       border-radius: 12px;
       overflow: hidden;
       position: relative;
@@ -96,7 +97,7 @@
     
     .diagnostic-card:hover {
       transform: translateY(-8px);
-      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
     }
     
     .diagnostic-card::before {
@@ -106,7 +107,7 @@
       left: -2px;
       right: -2px;
       bottom: -2px;
-      background: linear-gradient(45deg, #8b5cf6, #7c3aed, #8b5cf6);
+      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
       z-index: -1;
       border-radius: 14px;
       opacity: 0;
@@ -118,14 +119,14 @@
     }
     
     .btn-diagnostic {
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
     }
     
     .btn-diagnostic:hover {
       transform: translateY(-3px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
     }
     
     .btn-diagnostic:active {
@@ -133,7 +134,7 @@
     }
     
     .glow {
-      text-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
     }
     
     .minecraft-text {
@@ -143,14 +144,14 @@
     
     .grid-pattern {
       background-image: 
-        linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
       background-size: 20px 20px;
     }
     
     .log-input {
       background: rgba(30, 41, 59, 0.7);
-      border: 2px solid rgba(139, 92, 246, 0.3);
+      border: 2px solid rgba(14, 165, 233, 0.3);
       color: #f1f5f9;
       border-radius: 12px;
       padding: 1.5rem;
@@ -163,15 +164,15 @@
     
     .log-input:focus {
       outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
     }
     
     .result-card {
       background: linear-gradient(145deg, #1e293b, #0f172a);
       border-radius: 12px;
       overflow: hidden;
-      border: 1px solid rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(14, 165, 233, 0.2);
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
     
@@ -195,7 +196,7 @@
     }
     
     .file-drop-area {
-      border: 2px dashed rgba(139, 92, 246, 0.5);
+      border: 2px dashed rgba(14, 165, 233, 0.5);
       border-radius: 12px;
       padding: 3rem 2rem;
       text-align: center;
@@ -205,8 +206,8 @@
     }
     
     .file-drop-area.active {
-      border-color: #8b5cf6;
-      background: rgba(139, 92, 246, 0.1);
+      border-color: #0ea5e9;
+      background: rgba(14, 165, 233, 0.1);
     }
     
     .log-line {
@@ -218,7 +219,7 @@
     }
     
     .log-line:hover {
-      background: rgba(139, 92, 246, 0.1);
+      background: rgba(14, 165, 233, 0.1);
     }
     
     .error-tag {
@@ -282,12 +283,12 @@
       border-radius: 12px;
       backdrop-filter: blur(10px);
       padding: 2rem;
-      border: 1px solid rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(14, 165, 233, 0.2);
     }
     
     .form-input {
       background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(139, 92, 246, 0.3);
+      border: 1px solid rgba(14, 165, 233, 0.3);
       color: white;
       padding: 0.75rem 1rem;
       border-radius: 8px;
@@ -296,8 +297,8 @@
     
     .form-input:focus {
       outline: none;
-      border-color: #8b5cf6;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
     }
     
     .empty-state {
@@ -305,7 +306,7 @@
       padding: 3rem;
       background: rgba(30, 41, 59, 0.3);
       border-radius: 12px;
-      border: 2px dashed rgba(139, 92, 246, 0.3);
+      border: 2px dashed rgba(14, 165, 233, 0.3);
     }
     
     .notification {
@@ -316,7 +317,7 @@
       color: white;
       padding: 1rem 2rem;
       border-radius: 8px;
-      border-left: 4px solid #8b5cf6;
+      border-left: 4px solid #0ea5e9;
       box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       transform: translateX(120%);
       transition: transform 0.4s ease;
@@ -333,7 +334,7 @@
       align-items: center;
       font-weight: bold;
       margin-bottom: 0.5rem;
-      color: #8b5cf6;
+      color: #0ea5e9;
     }
     
     .minecraft-block {
@@ -351,13 +352,25 @@
       border: 2px solid #0f2b0f;
       border-radius: 4px;
     }
+    
+    .reminder-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #f59e0b;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
+      animation: pulse 1.5s infinite;
+    }
   </style>
 </head>
 <body class="bg-dark text-gray-200 flex flex-col">
   <header class="sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center">
-        <div class="w-10 h-10 rounded-full bg-diagnostic flex items-center justify-center mr-3">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
           <i class="fas fa-bug text-white"></i>
         </div>
         <h1 class="text-2xl font-bold text-white">Cobalt Диагностика</h1>
@@ -372,16 +385,16 @@
     
     <div id="mobileMenu" class="mobile-menu bg-gray-900">
       <div class="flex flex-col px-6 py-4">
-        <a href="index.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-home mr-3 w-5"></i> Главная
         </a> 
-        <a href="tools.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
+        <a href="tools.html" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-tools mr-3 w-5"></i> Инструменты
         </a>
-        <a href="help.html" class="py-3 hover:text-diagnostic transition-colors flex items-center">
+        <a href="help.html" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-headset mr-3 w-5"></i> Поддержка
         </a>
-        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-diagnostic transition-colors flex items-center">
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fab fa-telegram mr-3 w-5"></i> Сообщество
         </a>
       </div>
@@ -391,11 +404,11 @@
   <main class="main-content py-10 px-4">
     <div class="max-w-6xl mx-auto">
       <div class="text-center mb-16" data-aos="fade-up">
-        <div class="inline-block p-4 rounded-full bg-diagnostic/20 mb-6">
-          <i class="fas fa-bug text-3xl text-diagnostic"></i>
+        <div class="inline-block p-4 rounded-full bg-primary/20 mb-6">
+          <i class="fas fa-bug text-3xl text-primary"></i>
         </div>
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
-          Анализатор <span class="text-diagnostic">ошибок</span> Minecraft
+          Анализатор <span class="text-primary">ошибок</span> Minecraft
         </h1>
         <p class="text-xl max-w-2xl mx-auto text-gray-300">
           Загрузите лог-файл или вставьте текст ошибки для диагностики. Наш бот определит причину сбоя и предложит решение.
@@ -405,7 +418,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="diagnostic-card p-6" data-aos="fade-right">
           <div class="text-center mb-6">
-            <div class="text-diagnostic text-4xl mb-4">
+            <div class="text-primary text-4xl mb-4">
               <i class="fas fa-file-upload"></i>
             </div>
             <h3 class="text-2xl font-bold mb-3 text-white">Загрузка логов</h3>
@@ -415,7 +428,7 @@
           </div>
           
           <div id="fileDropArea" class="file-drop-area mb-6">
-            <i class="fas fa-file-upload text-4xl text-diagnostic mb-4"></i>
+            <i class="fas fa-file-upload text-4xl text-primary mb-4"></i>
             <p class="text-lg font-medium mb-2">Перетащите сюда файл лога</p>
             <p class="text-gray-400 mb-4">Или нажмите для выбора файла</p>
             <input type="file" id="fileInput" class="hidden" accept=".log,.txt">
@@ -441,7 +454,7 @@
         
         <div class="diagnostic-card p-6" data-aos="fade-left">
           <div class="text-center mb-6">
-            <div class="text-diagnostic text-4xl mb-4">
+            <div class="text-primary text-4xl mb-4">
               <i class="fas fa-lightbulb"></i>
             </div>
             <h3 class="text-2xl font-bold mb-3 text-white">Результаты диагностики</h3>
@@ -453,12 +466,12 @@
           <div id="resultContainer" class="hidden">
             <div class="mb-6">
               <h4 class="text-lg font-bold text-white mb-3 flex items-center">
-                <i class="fas fa-list mr-2 text-diagnostic"></i> Сводка ошибок:
+                <i class="fas fa-list mr-2 text-primary"></i> Сводка ошибок:
               </h4>
               <div id="errorSummary" class="mb-6 p-4 rounded-lg bg-gray-800"></div>
               
               <h4 class="text-lg font-bold text-white mb-3 flex items-center">
-                <i class="fas fa-bug mr-2 text-diagnostic"></i> Детали ошибок:
+                <i class="fas fa-bug mr-2 text-primary"></i> Детали ошибок:
               </h4>
               <div id="errorDetails" class="space-y-4"></div>
             </div>
@@ -478,7 +491,7 @@
           
           <div class="mt-6">
             <h4 class="text-lg font-bold text-white mb-3 flex items-center">
-              <i class="fas fa-history mr-2 text-diagnostic"></i> История анализа:
+              <i class="fas fa-history mr-2 text-primary"></i> История анализа:
             </h4>
             <div class="log-container">
               <div id="logHistory" class="space-y-1"></div>
@@ -490,7 +503,7 @@
       <!-- Советы по исправлению проблем с модами -->
       <div class="mt-16">
         <h2 class="text-2xl font-bold mb-6 text-white flex items-center" data-aos="fade-up">
-          <i class="fas fa-puzzle-piece text-diagnostic mr-3"></i> Советы по исправлению проблем с модами
+          <i class="fas fa-puzzle-piece text-primary mr-3"></i> Советы по исправлению проблем с модами
         </h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -520,7 +533,7 @@
           
           <div class="diagnostic-card p-6" data-aos="fade-up" data-aos-delay="100">
             <h3 class="text-xl font-bold mb-4 text-white flex items-center">
-              <i class="fas fa-sync-alt text-diagnostic mr-2"></i> Оптимизация работы модов
+              <i class="fas fa-sync-alt text-primary mr-2"></i> Оптимизация работы модов
             </h3>
             <ul class="space-y-3 text-gray-300">
               <li class="flex items-start">
@@ -551,7 +564,7 @@
       <div class="flex flex-col md:flex-row justify-between items-center">
         <div class="mb-6 md:mb-0">
           <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-diagnostic flex items-center justify-center mr-3">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
               <i class="fas fa-bug text-white"></i>
             </div>
             <h2 class="text-xl font-bold text-white">Cobalt Диагностика</h2>
@@ -560,13 +573,13 @@
         </div>
         
         <div class="flex space-x-6">
-          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-diagnostic transition-colors">
+          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-primary transition-colors">
             <i class="fab fa-telegram text-2xl"></i>
           </a>
-          <a href="#" class="text-gray-400 hover:text-diagnostic transition-colors">
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
             <i class="fab fa-discord text-2xl"></i>
           </a>
-          <a href="#" class="text-gray-400 hover:text-diagnostic transition-colors">
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
             <i class="fab fa-github text-2xl"></i>
           </a>
         </div>
@@ -1087,7 +1100,6 @@
       }
     }
     
-    // Инициализация истории
     addToLogHistory("Анализатор запущен. Загрузите лог для анализа.");
   </script>
 </body>
