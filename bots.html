@@ -151,10 +151,25 @@
         linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
       background-size: 20px 20px;
     }
+    
+    .minecraft-block {
+      background-image: 
+        linear-gradient(135deg, 
+          #1a3c1a 0%, 
+          #1a3c1a 25%, 
+          #1e471e 25%, 
+          #1e471e 50%, 
+          #1a3c1a 50%, 
+          #1a3c1a 75%, 
+          #1e471e 75%, 
+          #1e471e 100%);
+      background-size: 40px 40px;
+      border: 2px solid #0f2b0f;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body class="bg-dark text-gray-200">
-  <!-- Шапка с бургер-меню -->
   <header class="sticky-header">
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div class="flex items-center">
@@ -164,7 +179,6 @@
         <h1 class="text-2xl font-bold text-white">Cobalt Launcher</h1>
       </div>
       
-      <!-- Кнопка бургер-меню -->
       <button id="burgerBtn" class="text-white focus:outline-none z-50">
         <div class="burger-line"></div>
         <div class="burger-line"></div>
@@ -172,7 +186,6 @@
       </button>
     </div>
     
-    <!-- Выпадающее меню -->
     <div id="mobileMenu" class="mobile-menu bg-gray-900">
       <div class="flex flex-col px-6 py-4">
         <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
@@ -203,7 +216,6 @@
     </div>
   </header>
 
-  <!-- Герой-баннер -->
   <section class="relative py-24 md:py-32 px-4 overflow-hidden">
     <div class="absolute inset-0 z-0 grid-pattern"></div>
     <div class="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-dark/70 to-dark"></div>
@@ -221,7 +233,6 @@
     </div>
   </section>
 
-  <!-- Секция с карточками ботов -->
   <section class="py-16 px-4 relative">
     <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-dark to-transparent z-0"></div>
     <div class="max-w-6xl mx-auto relative z-10">
@@ -230,7 +241,6 @@
       </h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <!-- Карточка 1: Бот-помощник -->
         <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="100">
           <div class="text-center">
             <div class="bot-icon text-blue-400">
@@ -246,7 +256,6 @@
           </div>
         </div>
         
-        <!-- Карточка 2: Бот-анализатор -->
         <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="200">
           <div class="text-center">
             <div class="bot-icon text-green-400">
@@ -262,7 +271,6 @@
           </div>
         </div>
         
-        <!-- Карточка 3: Поисковик модов -->
         <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="300">
           <div class="text-center">
             <div class="bot-icon text-purple-400">
@@ -278,7 +286,6 @@
           </div>
         </div>
         
-        <!-- Карточка 4: Энциклопедия -->
         <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="400">
           <div class="text-center">
             <div class="bot-icon text-yellow-400">
@@ -293,11 +300,70 @@
             </a>
           </div>
         </div>
+        
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="text-center">
+            <div class="bot-icon text-red-400">
+              <i class="fas fa-newspaper"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Новостной Бот</h3>
+            <p class="text-gray-300 mb-5">
+              Следите за последними новостями Minecraft, обновлениями, ивентами и анонсами. Получайте уведомления о выходе новых версий и модов.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="text-center">
+            <div class="bot-icon text-indigo-400">
+              <i class="fas fa-search-plus"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Бот Поиска</h3>
+            <p class="text-gray-300 mb-5">
+              Находите игроков, серверы, гильдии и информацию по всему Minecraft миру. Расширенный поиск по базам данных и сообществам.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="700">
+          <div class="text-center">
+            <div class="bot-icon text-orange-400">
+              <i class="fas fa-project-diagram"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Бот Проектов</h3>
+            <p class="text-gray-300 mb-5">
+              Ищите и создавайте проекты Minecraft: карты, мини-игры, сборки. Организуйте команду и управляйте разработкой через бота.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
+        
+        <div class="feature-card p-6" data-aos="fade-up" data-aos-delay="800">
+          <div class="text-center">
+            <div class="bot-icon text-teal-400">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3 class="text-xl font-bold mb-3 text-white">Бот Серверов</h3>
+            <p class="text-gray-300 mb-5">
+              Управляйте Minecraft серверами, мониторьте онлайн, анализируйте логи и настраивайте автоматические задачи.
+            </p>
+            <a href="#" class="btn-download inline-block px-6 py-3 rounded-full font-medium text-white">
+              Использовать <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Дополнительная информация -->
   <section class="py-16 px-4 bg-dark/70">
     <div class="max-w-4xl mx-auto text-center">
       <div class="inline-block p-4 rounded-full bg-primary/20 mb-8" data-aos="zoom-in">
@@ -309,55 +375,25 @@
       <p class="text-xl text-gray-300 mb-10 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
         Наши боты интегрированы с Cobalt Launcher для максимального удобства. Получайте актуальную информацию, находите лучшие моды и улучшайте игровой процесс без лишних усилий.
       </p>
-      <div data-aos="fade-up" data-aos-delay="200">
+      <div class="flex justify-center gap-6" data-aos="fade-up" data-aos-delay="200">
         <a href="#" class="btn-download inline-block px-8 py-4 rounded-full font-medium text-white text-lg">
-          <i class="fas fa-download mr-3"></i> Скачать Cobalt Launcher
+          <i class="fas fa-download mr-3"></i> Скачать
+        </a>
+        <a href="#" class="inline-block px-8 py-4 rounded-full font-medium text-white text-lg border-2 border-primary hover:bg-primary/20 transition-colors">
+          <i class="fab fa-telegram mr-3"></i> Telegram
         </a>
       </div>
     </div>
   </section>
 
-  <!-- Футер -->
-  <footer class="bg-gray-950 py-8 text-center">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-center mb-6">
-        <div class="mb-4 md:mb-0">
-          <h3 class="text-xl font-bold text-white flex items-center justify-center md:justify-start">
-            <i class="fas fa-rocket text-primary mr-2"></i> Cobalt Launcher
-          </h3>
-          <p class="text-gray-400 mt-2">Лучший опыт Minecraft</p>
-        </div>
-        <div class="flex space-x-4">
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-telegram text-xl"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-discord text-xl"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-youtube text-xl"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-github text-xl"></i>
-          </a>
-        </div>
-      </div>
-      <div class="pt-6 border-t border-gray-800">
-        <p class="text-gray-500 text-sm">© 2025 Atlantis Studio. Все права защищены. Minecraft является товарным знаком Mojang Synergies AB.</p>
-      </div>
-    </div>
-  </footer>
-
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
-    // Инициализация AOS
     AOS.init({
       duration: 800,
       once: true,
       offset: 50
     });
 
-    // Эффект при скролле для шапки
     window.addEventListener('scroll', function() {
       const header = document.querySelector('header');
       if (window.scrollY > 10) {
@@ -367,7 +403,6 @@
       }
     });
     
-    // Логика бургер-меню
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
@@ -386,7 +421,6 @@
       }
     });
     
-    // Закрытие меню при клике на пункт
     const menuItems = mobileMenu.querySelectorAll('a');
     menuItems.forEach(item => {
       item.addEventListener('click', () => {
