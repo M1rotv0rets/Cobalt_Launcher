@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cobalt Диагностика - Анализатор ошибок Minecraft</title>
+  <title>Cobalt Диагностика</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="Images/icon.png">
   <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -560,48 +560,14 @@
     </div>
   </main>
 
-  <footer class="bg-gray-900 py-8 mt-12">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-center">
-        <div class="mb-6 md:mb-0">
-          <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
-              <i class="fas fa-bug text-white"></i>
-            </div>
-            <h2 class="text-xl font-bold text-white">Cobalt Диагностика</h2>
-          </div>
-          <p class="text-gray-400 mt-2">Продвинутые инструменты для диагностики Minecraft</p>
-        </div>
-        
-        <div class="flex space-x-6">
-          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-telegram text-2xl"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-discord text-2xl"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
-            <i class="fab fa-github text-2xl"></i>
-          </a>
-        </div>
-      </div>
-      
-      <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500">
-        <p>© 2023 Cobalt Диагностика. Все права защищены.</p>
-      </div>
-    </div>
-  </footer>
-
   <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
-    // Инициализация библиотеки анимаций
     AOS.init({
       duration: 800,
       once: true,
       offset: 50
     });
 
-    // Обработка скролла для хедера
     window.addEventListener('scroll', function() {
       const header = document.querySelector('header');
       if (window.scrollY > 10) {
@@ -611,7 +577,6 @@
       }
     });
     
-    // Мобильное меню
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
@@ -641,7 +606,6 @@
       });
     });
 
-    // Элементы интерфейса анализатора
     const fileInput = document.getElementById('fileInput');
     const fileSelectBtn = document.getElementById('fileSelectBtn');
     const fileDropArea = document.getElementById('fileDropArea');
@@ -655,9 +619,7 @@
     const solutions = document.getElementById('solutions');
     const logHistory = document.getElementById('logHistory');
 
-    // Расширенная база знаний ошибок и решений
     const errorDatabase = {
-      // Ошибки памяти
       "OutOfMemoryError": {
         title: "Недостаточно памяти",
         severity: "critical",
@@ -679,7 +641,6 @@
         ]
       },
       
-      // Ошибки видеодрайверов
       "OpenGL errors": {
         title: "Ошибки OpenGL",
         severity: "high",
@@ -701,7 +662,6 @@
         ]
       },
       
-      // Ошибки модов
       "mod conflict": {
         title: "Конфликт модов",
         severity: "high",
@@ -744,7 +704,6 @@
         ]
       },
       
-      // Ошибки Java
       "UnsupportedClassVersionError": {
         title: "Неподдерживаемая версия Java",
         severity: "critical",
@@ -766,7 +725,6 @@
         ]
       },
       
-      // Ошибки загрузки
       "Failed to download": {
         title: "Ошибка загрузки",
         severity: "medium",
@@ -788,7 +746,6 @@
         ]
       },
       
-      // Другие ошибки
       "Game crashed": {
         title: "Крах игры",
         severity: "critical",
@@ -831,7 +788,6 @@
       }
     };
 
-    // Обработчики событий
     fileSelectBtn.addEventListener('click', () => fileInput.click());
     
     fileInput.addEventListener('change', (e) => {
@@ -848,7 +804,6 @@
       }
     });
     
-    // Drag and drop для файлов
     fileDropArea.addEventListener('dragover', (e) => {
       e.preventDefault();
       fileDropArea.classList.add('active');
@@ -875,7 +830,6 @@
       }
     });
     
-    // Анализ логов
     analyzeBtn.addEventListener('click', () => {
       const logText = logInput.value.trim();
       
@@ -889,7 +843,6 @@
       addToLogHistory(`Выполнен анализ лога (${analysisResult.errors.length} ошибок)`);
     });
     
-    // Очистка
     clearBtn.addEventListener('click', () => {
       logInput.value = '';
       fileInput.value = '';
@@ -897,18 +850,15 @@
       emptyResult.classList.remove('hidden');
     });
     
-    // Функция анализа лога
     function analyzeLog(logText) {
       const errors = [];
       const lines = logText.split('\n');
       
-      // Поиск известных ошибок
       for (const [pattern, errorInfo] of Object.entries(errorDatabase)) {
         const regex = new RegExp(pattern, 'i');
         const matches = logText.match(regex);
         
         if (matches) {
-          // Находим строки с ошибкой
           const errorLines = lines.filter(line => regex.test(line));
           
           errors.push({
@@ -920,18 +870,15 @@
         }
       }
       
-      // Сортировка по серьезности
       const severityOrder = {critical: 0, high: 1, medium: 2, low: 3};
       errors.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
       
-      // Поиск неизвестных ошибок
       const unknownErrors = [];
       const errorRegex = /error|exception|crash|fail|warning|ошибка|исключение|краш|сбой|предупреждение/gi;
       const knownPatterns = Object.keys(errorDatabase);
       
       lines.forEach((line, index) => {
         if (errorRegex.test(line)) {
-          // Проверяем, не является ли эта ошибка известной
           const isKnown = knownPatterns.some(pattern => {
             const regex = new RegExp(pattern, 'i');
             return regex.test(line);
@@ -939,9 +886,9 @@
           
           if (!isKnown) {
             unknownErrors.push({
-              title: "Неизвестная ошибка",
+              title: "Найдена такая ошибка",
               severity: "medium",
-              description: "Обнаружена нераспознанная ошибка",
+              description: "Обнаружена нераспознанная ошибка. Обратитесь в поддержку",
               pattern: "unknown",
               occurrences: 1,
               lines: [line]
@@ -950,7 +897,6 @@
         }
       });
       
-      // Объединяем результаты
       return {
         errors: [...errors, ...unknownErrors],
         lineCount: lines.length,
@@ -958,28 +904,23 @@
       };
     }
     
-    // Отображение результатов
     function displayResults(result) {
-      // Показываем контейнер результатов
       resultContainer.classList.remove('hidden');
       emptyResult.classList.add('hidden');
       
-      // Очищаем предыдущие результаты
       errorSummary.innerHTML = '';
       errorDetails.innerHTML = '';
       solutions.innerHTML = '';
       
-      // Сводка ошибок
       if (result.errors.length === 0) {
         errorSummary.innerHTML = `
           <div class="bg-success/20 p-4 rounded-lg text-center">
             <i class="fas fa-check-circle text-success text-3xl mb-3"></i>
             <p class="text-lg font-medium">Ошибки не обнаружены!</p>
-            <p class="text-gray-300 mt-2">Ваш лог-файл не содержит известных проблем</p>
+            <p class="text-gray-300 mt-2">Ваш лог-файл не содержит известных проблем. Обратитесь в поддержку.</p>
           </div>
         `;
       } else {
-        // Группируем ошибки по серьезности
         const groupedErrors = {
           critical: result.errors.filter(e => e.severity === 'critical'),
           high: result.errors.filter(e => e.severity === 'high'),
@@ -1021,7 +962,6 @@
         
         errorSummary.innerHTML = summaryHTML;
         
-        // Детали ошибок
         result.errors.forEach((error, index) => {
           const severityClass = `severity-${error.severity}`;
           
@@ -1052,7 +992,6 @@
           errorDetails.innerHTML += errorHTML;
         });
         
-        // Рекомендуемые решения
         const uniqueSolutions = new Set();
         
         result.errors.forEach(error => {
@@ -1073,14 +1012,13 @@
         } else {
           solutions.innerHTML = `
             <div class="text-gray-400 italic">
-              Для данных ошибок нет специфических решений. Попробуйте стандартные методы диагностики.
+              Для данных ошибок нет специфических решений. Обратитесь в поддержку.
             </div>
           `;
         }
       }
     }
     
-    // Добавление записи в историю
     function addToLogHistory(message) {
       const now = new Date();
       const timeString = now.toLocaleTimeString();
@@ -1092,10 +1030,8 @@
         </div>
       `;
       
-      // Добавляем новую запись в начало
       logHistory.innerHTML = logEntry + logHistory.innerHTML;
       
-      // Ограничиваем историю 10 записями
       if (logHistory.children.length > 10) {
         logHistory.removeChild(logHistory.lastChild);
       }
@@ -1104,4 +1040,4 @@
     addToLogHistory("Анализатор запущен. Загрузите лог для анализа.");
   </script>
 </body>
-                                                           </html>
+</html>
