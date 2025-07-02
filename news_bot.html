@@ -1,1 +1,876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cobalt News - Minecraft новости и события</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a',
+            minecraft: '#4CAF50',
+            cobalt: '#3b82f6',
+            nerkin: '#8b5cf6',
+            event: '#f59e0b'
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .burger-line {
+      display: block;
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s ease;
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease-out;
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .news-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      animation: fadeIn 0.5s ease-out;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .news-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+    }
+    
+    .news-card::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
+      z-index: -1;
+      border-radius: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .news-card:hover::before {
+      opacity: 1;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .glow {
+      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
+    }
+    
+    .minecraft-text {
+      color: #4CAF50;
+      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    }
+    
+    .cobalt-text {
+      color: #3b82f6;
+      text-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+    }
+    
+    .nerkin-text {
+      color: #8b5cf6;
+      text-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+    }
+    
+    .event-text {
+      color: #f59e0b;
+      text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+    }
+    
+    .grid-pattern {
+      background-image: 
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    
+    .main-content {
+      flex: 1;
+    }
+    
+    .section-icon {
+      font-size: 1.5rem;
+      margin-right: 0.5rem;
+      transition: transform 0.3s ease;
+    }
+    
+    .new-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #f59e0b, #f87171);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      z-index: 10;
+      animation: pulse 2s infinite;
+    }
+    
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #000;
+    }
+    
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    
+    .category-tag {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .minecraft-tag {
+      background: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+    }
+    
+    .cobalt-tag {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+    
+    .nerkin-tag {
+      background: rgba(139, 92, 246, 0.2);
+      color: #8b5cf6;
+    }
+    
+    .event-tag {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+    }
+    
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    
+    .countdown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(30, 41, 59, 0.7);
+      padding: 0.5rem;
+      border-radius: 8px;
+      min-width: 50px;
+    }
+    
+    .countdown-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #f59e0b;
+    }
+    
+    .countdown-label {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+    
+    .news-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .news-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+    
+    .update-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #0ea5e9;
+      box-shadow: 0 0 10px rgba(14, 165, 233, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .refreshing {
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    
+    .last-updated {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .last-updated i {
+      margin-right: 0.5rem;
+      color: #0ea5e9;
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200 flex flex-col">
+  <header class="sticky-header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fas fa-newspaper text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Cobalt News</h1>
+      </div>
+      
+      <button id="burgerBtn" class="text-white focus:outline-none z-50">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-calendar-alt mr-3 w-5"></i> Ивенты
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-rocket mr-3 w-5"></i> Лаунчер
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-youtube mr-3 w-5"></i> Nerkin
+        </a>
+      </div>
+    </div>
+  </header>
 
+  <main class="main-content py-10 px-4">
+    <div class="max-w-6xl mx-auto">
+      <!-- Баннер с заголовком -->
+      <div class="text-center mb-16" data-aos="fade-up">
+        <div class="inline-block p-4 rounded-full bg-primary/20 mb-6">
+          <i class="fas fa-newspaper text-3xl text-primary"></i>
+        </div>
+        <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-white">
+          Новости и события <span class="text-primary">Minecraft</span>
+        </h1>
+        <p class="text-xl max-w-2xl mx-auto text-gray-300">
+          Самые свежие новости, ивенты, обновления лаунчера Cobalt и видео от Nerkin
+        </p>
+      </div>
+
+      <!-- Секция Новости Minecraft -->
+      <section class="mb-16">
+        <div class="section-header">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-newspaper text-primary section-icon"></i> Новости Minecraft
+          </h2>
+          <div class="flex items-center">
+            <div class="last-updated mr-4">
+              <i class="fas fa-sync-alt"></i>
+              <span>Обновлено: <span id="minecraft-update">только что</span></span>
+            </div>
+            <button id="refresh-minecraft" class="btn-primary px-4 py-2 rounded-lg font-medium text-white flex items-center">
+              <i class="fas fa-sync-alt mr-2"></i> Обновить
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="minecraft-news">
+          <!-- Карточки новостей будут добавляться динамически -->
+        </div>
+      </section>
+
+      <!-- Секция Ивенты -->
+      <section class="mb-16">
+        <div class="section-header">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-calendar-alt text-event section-icon"></i> Ивенты
+          </h2>
+          <div class="flex items-center">
+            <div class="last-updated mr-4">
+              <i class="fas fa-sync-alt"></i>
+              <span>Обновлено: <span id="events-update">только что</span></span>
+            </div>
+            <button id="refresh-events" class="btn-primary px-4 py-2 rounded-lg font-medium text-white flex items-center">
+              <i class="fas fa-sync-alt mr-2"></i> Обновить
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="events-container">
+          <!-- Карточки ивентов будут добавляться динамически -->
+        </div>
+      </section>
+
+      <!-- Секция Новости лаунчера Cobalt -->
+      <section class="mb-16">
+        <div class="section-header">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fas fa-rocket text-cobalt section-icon"></i> Новости лаунчера Cobalt
+          </h2>
+          <div class="flex items-center">
+            <div class="last-updated mr-4">
+              <i class="fas fa-sync-alt"></i>
+              <span>Обновлено: <span id="cobalt-update">только что</span></span>
+            </div>
+            <button id="refresh-cobalt" class="btn-primary px-4 py-2 rounded-lg font-medium text-white flex items-center">
+              <i class="fas fa-sync-alt mr-2"></i> Обновить
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="cobalt-news">
+          <!-- Карточки новостей лаунчера будут добавляться динамически -->
+        </div>
+      </section>
+
+      <!-- Секция Видео с канала Nerkin -->
+      <section>
+        <div class="section-header">
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fab fa-youtube text-nerkin section-icon"></i> Видео с канала Nerkin
+          </h2>
+          <div class="flex items-center">
+            <div class="last-updated mr-4">
+              <i class="fas fa-sync-alt"></i>
+              <span>Обновлено: <span id="nerkin-update">только что</span></span>
+            </div>
+            <button id="refresh-nerkin" class="btn-primary px-4 py-2 rounded-lg font-medium text-white flex items-center">
+              <i class="fas fa-sync-alt mr-2"></i> Обновить
+            </button>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6" id="nerkin-videos">
+          <!-- Карточки видео будут добавляться динамически -->
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="bg-gray-900 py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+              <i class="fas fa-newspaper text-white"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white">Cobalt News</h2>
+          </div>
+          <p class="text-gray-400 mt-2">Новости, ивенты и обновления для сообщества Minecraft</p>
+        </div>
+        
+        <div class="flex space-x-6">
+          <a href="https://t.me/atlantis_studio_chat" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-telegram text-2xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-discord text-2xl"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+            <i class="fab fa-youtube text-2xl"></i>
+          </a>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 mt-8 pt-6 text-center text-gray-500">
+        <p>© 2023 Cobalt News. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <script>
+    // Инициализация библиотеки анимаций
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 50
+    });
+
+    // Обработка скролла для хедера
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    // Мобильное меню
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    burgerBtn.addEventListener('click', function() {
+      mobileMenu.classList.toggle('open');
+      
+      const lines = document.querySelectorAll('.burger-line');
+      if (mobileMenu.classList.contains('open')) {
+        lines[0].style.transform = 'translateY(7px) rotate(45deg)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    });
+    
+    const menuItems = mobileMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', () => {
+        mobileMenu.classList.remove('open');
+        const lines = document.querySelectorAll('.burger-line');
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      });
+    });
+
+    // Элементы для новостей
+    const minecraftNews = document.getElementById('minecraft-news');
+    const eventsContainer = document.getElementById('events-container');
+    const cobaltNews = document.getElementById('cobalt-news');
+    const nerkinVideos = document.getElementById('nerkin-videos');
+    
+    // Кнопки обновления
+    const refreshMinecraft = document.getElementById('refresh-minecraft');
+    const refreshEvents = document.getElementById('refresh-events');
+    const refreshCobalt = document.getElementById('refresh-cobalt');
+    const refreshNerkin = document.getElementById('refresh-nerkin');
+    
+    // Элементы времени обновления
+    const minecraftUpdate = document.getElementById('minecraft-update');
+    const eventsUpdate = document.getElementById('events-update');
+    const cobaltUpdate = document.getElementById('cobalt-update');
+    const nerkinUpdate = document.getElementById('nerkin-update');
+    
+    // База данных новостей Minecraft
+    const minecraftNewsData = [
+      {
+        id: 1,
+        title: "Обновление 1.20: Трейлы и Сказки",
+        description: "Mojang анонсировала крупное обновление 1.20, которое добавит новые биомы, мобы и систему археологии.",
+        category: "minecraft",
+        date: "2 часа назад",
+        new: true
+      },
+      {
+        id: 2,
+        title: "Minecraft Live 2023: Дата и детали",
+        description: "Официально объявлена дата Minecraft Live 2023 - 15 октября. Голосование за нового моба начнётся в сентябре.",
+        category: "minecraft",
+        date: "1 день назад"
+      },
+      {
+        id: 3,
+        title: "Новые скины в Marketplace",
+        description: "В официальном магазине появились скины по мотивам популярных аниме и игр. Ограниченное предложение!",
+        category: "minecraft",
+        date: "3 дня назад"
+      }
+    ];
+    
+    // База данных ивентов
+    const eventsData = [
+      {
+        id: 1,
+        title: "Build Battle Championship",
+        description: "Ежегодный чемпионат по строительству. Призовой фонд 10,000$. Регистрация открыта до 30 сентября.",
+        category: "event",
+        date: "2023-10-15T19:00:00",
+        location: "Сервер: events.cobaltmc.org",
+        new: true
+      },
+      {
+        id: 2,
+        title: "Хэллоуинский ивент",
+        description: "Специальный хэллоуинский ивент с уникальными мобами, лутбоксами и тематическими мини-играми.",
+        category: "event",
+        date: "2023-10-28T20:00:00",
+        location: "Все сервера Cobalt"
+      },
+      {
+        id: 3,
+        title: "Speedrun Challenge",
+        description: "Соревнование по speedrun'у с призами для топ-10 участников. Версия 1.19.4, любые стратегии разрешены.",
+        category: "event",
+        date: "2023-09-20T18:00:00",
+        location: "Discord: discord.cobaltmc.org"
+      }
+    ];
+    
+    // База данных новостей лаунчера Cobalt
+    const cobaltNewsData = [
+      {
+        id: 1,
+        title: "Cobalt Launcher 2.0: Релиз",
+        description: "Вышла новая версия лаунчера с полностью переработанным интерфейсом и оптимизацией производительности.",
+        category: "cobalt",
+        date: "5 часов назад",
+        new: true
+      },
+      {
+        id: 2,
+        title: "Новая система модпаков",
+        description: "Добавлена возможность создавать и делиться собственными сборками модов одним кликом.",
+        category: "cobalt",
+        date: "2 дня назад"
+      },
+      {
+        id: 3,
+        title: "Обновление безопасности",
+        description: "Усилены меры безопасности для защиты аккаунтов. Рекомендуем обновить лаунчер до версии 1.9.3.",
+        category: "cobalt",
+        date: "1 неделю назад"
+      }
+    ];
+    
+    // База данных видео Nerkin
+    const nerkinVideosData = [
+      {
+        id: 1,
+        title: "Строим современный город в Minecraft",
+        description: "Подробный гайд по строительству современного города с использованием новых блоков 1.20.",
+        category: "nerkin",
+        date: "2 дня назад",
+        videoId: "dQw4w9WgXcQ",
+        duration: "24:18",
+        views: "128K"
+      },
+      {
+        id: 2,
+        title: "Топ-10 редких структур",
+        description: "Обзор самых редких и интересных структур, которые можно найти в Minecraft.",
+        category: "nerkin",
+        date: "1 неделю назад",
+        videoId: "dQw4w9WgXcQ",
+        duration: "15:42",
+        views: "324K"
+      }
+    ];
+    
+    // Функция форматирования времени
+    function formatTime(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // Функция отображения новостей Minecraft
+    function displayMinecraftNews() {
+      minecraftNews.innerHTML = '';
+      minecraftNewsData.forEach(item => {
+        const newsCard = document.createElement('div');
+        newsCard.className = 'news-card';
+        newsCard.innerHTML = `
+          ${item.new ? '<span class="new-badge">НОВОЕ</span>' : ''}
+          <div class="p-6 news-content">
+            <div class="category-tag minecraft-tag">Minecraft</div>
+            <h3 class="text-xl font-bold text-white mb-3">${item.title}</h3>
+            <p class="text-gray-300 mb-4">${item.description}</p>
+            <div class="news-footer">
+              <span><i class="far fa-clock mr-1"></i> ${item.date}</span>
+              <span><i class="far fa-comment mr-1"></i> 42</span>
+            </div>
+          </div>
+        `;
+        minecraftNews.appendChild(newsCard);
+      });
+      minecraftUpdate.textContent = new Date().toLocaleTimeString('ru-RU');
+    }
+    
+    // Функция отображения ивентов
+    function displayEvents() {
+      eventsContainer.innerHTML = '';
+      eventsData.forEach(item => {
+        const eventDate = new Date(item.date);
+        const now = new Date();
+        const timeDiff = eventDate - now;
+        
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        const eventCard = document.createElement('div');
+        eventCard.className = 'news-card';
+        eventCard.innerHTML = `
+          ${item.new ? '<span class="new-badge">НОВЫЙ</span>' : ''}
+          <div class="p-6 news-content">
+            <div class="category-tag event-tag">Ивент</div>
+            <h3 class="text-xl font-bold text-white mb-3">${item.title}</h3>
+            <p class="text-gray-300 mb-4">${item.description}</p>
+            
+            <div class="mt-auto">
+              <p class="text-gray-400 text-sm mb-2"><i class="fas fa-map-marker-alt mr-2"></i> ${item.location}</p>
+              <p class="text-gray-400 text-sm mb-3"><i class="fas fa-calendar-alt mr-2"></i> ${formatTime(item.date)}</p>
+              
+              ${timeDiff > 0 ? `
+                <div class="countdown">
+                  <div class="countdown-item">
+                    <span class="countdown-value">${days}</span>
+                    <span class="countdown-label">дней</span>
+                  </div>
+                  <div class="countdown-item">
+                    <span class="countdown-value">${hours}</span>
+                    <span class="countdown-label">часов</span>
+                  </div>
+                  <div class="countdown-item">
+                    <span class="countdown-value">${minutes}</span>
+                    <span class="countdown-label">минут</span>
+                  </div>
+                </div>
+              ` : `
+                <div class="bg-event/20 p-2 rounded text-center">
+                  <span class="text-white font-medium">Ивент завершен</span>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+        eventsContainer.appendChild(eventCard);
+      });
+      eventsUpdate.textContent = new Date().toLocaleTimeString('ru-RU');
+    }
+    
+    // Функция отображения новостей лаунчера Cobalt
+    function displayCobaltNews() {
+      cobaltNews.innerHTML = '';
+      cobaltNewsData.forEach(item => {
+        const newsCard = document.createElement('div');
+        newsCard.className = 'news-card';
+        newsCard.innerHTML = `
+          ${item.new ? '<span class="new-badge">ОБНОВЛЕНИЕ</span>' : ''}
+          <div class="p-6 news-content">
+            <div class="category-tag cobalt-tag">Cobalt Launcher</div>
+            <h3 class="text-xl font-bold text-white mb-3">${item.title}</h3>
+            <p class="text-gray-300 mb-4">${item.description}</p>
+            <div class="news-footer">
+              <span><i class="far fa-clock mr-1"></i> ${item.date}</span>
+              <button class="text-primary hover:underline">Подробнее</button>
+            </div>
+          </div>
+        `;
+        cobaltNews.appendChild(newsCard);
+      });
+      cobaltUpdate.textContent = new Date().toLocaleTimeString('ru-RU');
+    }
+    
+    // Функция отображения видео Nerkin
+    function displayNerkinVideos() {
+      nerkinVideos.innerHTML = '';
+      nerkinVideosData.forEach(item => {
+        const videoCard = document.createElement('div');
+        videoCard.className = 'news-card';
+        videoCard.innerHTML = `
+          <div class="p-6">
+            <div class="category-tag nerkin-tag">Nerkin</div>
+            <div class="video-container mb-4">
+              <div class="plyr__video-embed" id="player-${item.id}">
+                <iframe
+                  src="https://www.youtube.com/embed/${item.videoId}?origin=https://plyr.io&amp;iv_load_policy=3&amp;modestbranding=1&amp;playsinline=1&amp;showinfo=0&amp;rel=0&amp;enablejsapi=1"
+                  allowfullscreen
+                  allowtransparency
+                  allow="autoplay"
+                ></iframe>
+              </div>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">${item.title}</h3>
+            <p class="text-gray-300 mb-3">${item.description}</p>
+            <div class="flex justify-between text-gray-400 text-sm">
+              <span><i class="far fa-clock mr-1"></i> ${item.date}</span>
+              <span><i class="fas fa-eye mr-1"></i> ${item.views} просмотров</span>
+              <span>${item.duration}</span>
+            </div>
+          </div>
+        `;
+        nerkinVideos.appendChild(videoCard);
+      });
+      nerkinUpdate.textContent = new Date().toLocaleTimeString('ru-RU');
+      
+      // Инициализация плееров после добавления в DOM
+      setTimeout(() => {
+        document.querySelectorAll('.plyr__video-embed').forEach(player => {
+          new Plyr(player);
+        });
+      }, 100);
+    }
+    
+    // Функция для имитации обновления данных
+    function simulateUpdate(section, button) {
+      button.querySelector('i').classList.add('refreshing');
+      button.disabled = true;
+      
+      setTimeout(() => {
+        button.querySelector('i').classList.remove('refreshing');
+        button.disabled = false;
+        
+        // В реальном приложении здесь был бы запрос к API
+        // Для демо просто обновим время
+        const now = new Date();
+        section.textContent = now.toLocaleTimeString('ru-RU');
+      }, 1500);
+    }
+    
+    // Инициализация при загрузке
+    document.addEventListener('DOMContentLoaded', () => {
+      displayMinecraftNews();
+      displayEvents();
+      displayCobaltNews();
+      displayNerkinVideos();
+      
+      // Обработчики обновления
+      refreshMinecraft.addEventListener('click', () => {
+        simulateUpdate(minecraftUpdate, refreshMinecraft);
+      });
+      
+      refreshEvents.addEventListener('click', () => {
+        simulateUpdate(eventsUpdate, refreshEvents);
+      });
+      
+      refreshCobalt.addEventListener('click', () => {
+        simulateUpdate(cobaltUpdate, refreshCobalt);
+      });
+      
+      refreshNerkin.addEventListener('click', () => {
+        simulateUpdate(nerkinUpdate, refreshNerkin);
+      });
+      
+      // Автоматическое обновление каждые 5 минут
+      setInterval(() => {
+        const now = new Date();
+        minecraftUpdate.textContent = now.toLocaleTimeString('ru-RU');
+        eventsUpdate.textContent = now.toLocaleTimeString('ru-RU');
+        cobaltUpdate.textContent = now.toLocaleTimeString('ru-RU');
+        nerkinUpdate.textContent = now.toLocaleTimeString('ru-RU');
+      }, 5 * 60 * 1000);
+    });
+  </script>
+</body>
+</html>
