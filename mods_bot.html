@@ -1,1 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cobalt - Поиск модов для Minecraft</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0ea5e9;
+      --primary-dark: #0284c7;
+      --dark: #0f172a;
+      --darker: #0a1120;
+      --light: #f1f5f9;
+      --gray: #94a3b8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --card-bg: #1e293b;
+      --border: rgba(14, 165, 233, 0.2);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, var(--darker), var(--dark));
+      color: var(--light);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Header Styles */
+    header {
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+    
+    .logo-text {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--primary), #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 25px;
+    }
+    
+    nav a {
+      color: var(--light);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    nav a:hover {
+      color: var(--primary);
+    }
+    
+    nav a i {
+      font-size: 14px;
+    }
+    
+    /* Search Section */
+    .search-section {
+      padding: 40px 0;
+    }
+    
+    .search-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .search-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      background: linear-gradient(to right, var(--primary), #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .search-header p {
+      color: var(--gray);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .search-box {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 12px;
+      padding: 25px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .filter-group label {
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: var(--primary);
+      font-size: 14px;
+    }
+    
+    .filter-select, .search-input {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      color: var(--light);
+      font-size: 16px;
+    }
+    
+    .search-input {
+      padding: 14px 20px;
+      font-size: 18px;
+    }
+    
+    .search-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+    
+    .search-actions {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 14px 25px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 16px;
+      border: none;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-secondary {
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--light);
+      border: 1px solid var(--border);
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(56, 69, 97, 0.8);
+    }
+    
+    /* Results Section */
+    .results-section {
+      padding: 30px 0 60px;
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    
+    .section-header h2 {
+      font-size: 26px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .results-counter {
+      background: rgba(14, 165, 233, 0.2);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+    }
+    
+    .sort-options {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .sort-btn {
+      padding: 8px 15px;
+      border-radius: 6px;
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--light);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .sort-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .sort-btn:hover {
+      background: rgba(56, 69, 97, 0.8);
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    
+    .result-card {
+      background: linear-gradient(145deg, var(--card-bg), var(--dark));
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .result-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+      border-color: var(--primary);
+    }
+    
+    .card-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      z-index: 2;
+    }
+    
+    .badge-mod {
+      background: var(--primary);
+    }
+    
+    .badge-resourcepack {
+      background: var(--success);
+    }
+    
+    .badge-datapack {
+      background: var(--warning);
+    }
+    
+    .badge-shader {
+      background: #8b5cf6;
+    }
+    
+    .card-image {
+      height: 160px;
+      width: 100%;
+      background: #0a1120;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .result-card:hover .card-image img {
+      transform: scale(1.05);
+    }
+    
+    .card-content {
+      padding: 20px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: white;
+      display: block;
+      text-decoration: none;
+    }
+    
+    .card-title:hover {
+      color: var(--primary);
+    }
+    
+    .card-description {
+      color: var(--gray);
+      font-size: 14px;
+      margin-bottom: 15px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 15px;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--gray);
+    }
+    
+    .meta-item i {
+      color: var(--primary);
+    }
+    
+    .versions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    
+    .version-tag {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    /* Loader */
+    .loader {
+      text-align: center;
+      padding: 50px 0;
+    }
+    
+    .loader-spinner {
+      border: 4px solid rgba(14, 165, 233, 0.2);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      grid-column: 1 / -1;
+    }
+    
+    .empty-state i {
+      font-size: 60px;
+      color: rgba(14, 165, 233, 0.3);
+      margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: white;
+    }
+    
+    .empty-state p {
+      color: var(--gray);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 40px;
+    }
+    
+    .page-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(30, 41, 59, 0.8);
+      color: var(--light);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .page-btn:hover, .page-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    
+    /* Footer */
+    footer {
+      background: rgba(10, 17, 32, 0.8);
+      padding: 30px 0;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .copyright {
+      color: var(--gray);
+      font-size: 14px;
+    }
+    
+    .footer-links {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .footer-links a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .filters {
+        grid-template-columns: 1fr;
+      }
+      
+      .search-actions {
+        flex-direction: column;
+      }
+      
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .footer-links {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-cube"></i>
+          </div>
+          <div class="logo-text">Cobalt Mods</div>
+        </div>
+        <nav>
+          <ul>
+            <li><a href="#"><i class="fas fa-home"></i> Главная</a></li>
+            <li><a href="#"><i class="fas fa-search"></i> Поиск</a></li>
+            <li><a href="#"><i class="fas fa-star"></i> Избранное</a></li>
+            <li><a href="#"><i class="fas fa-question-circle"></i> Помощь</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
 
+  <!-- Main Content -->
+  <main>
+    <!-- Search Section -->
+    <section class="search-section">
+      <div class="container">
+        <div class="search-header">
+          <h1>Поиск модов, ресурс-паков и шейдеров</h1>
+          <p>Найдите идеальные дополнения для вашей игры Minecraft с помощью нашего продвинутого поиска</p>
+        </div>
+        
+        <div class="search-box">
+          <div class="search-control">
+            <input type="text" class="search-input" placeholder="Введите название мода, ресурспака или шейдера...">
+          </div>
+          
+          <div class="filters">
+            <div class="filter-group">
+              <label><i class="fas fa-filter"></i> Тип контента</label>
+              <select class="filter-select" id="contentType">
+                <option value="mod">Моды</option>
+                <option value="resourcepack">Ресурспаки</option>
+                <option value="datapack">Датапаки</option>
+                <option value="shader">Шейдеры</option>
+                <option value="">Все типы</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label><i class="fas fa-gamepad"></i> Версия Minecraft</label>
+              <select class="filter-select" id="mcVersion">
+                <option value="1.20.1">1.20.1</option>
+                <option value="1.20">1.20</option>
+                <option value="1.19.4">1.19.4</option>
+                <option value="1.19.2">1.19.2</option>
+                <option value="1.18.2">1.18.2</option>
+                <option value="1.17.1">1.17.1</option>
+                <option value="1.16.5">1.16.5</option>
+                <option value="">Любая версия</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label><i class="fas fa-plug"></i> Загрузчик</label>
+              <select class="filter-select" id="loader">
+                <option value="">Любой</option>
+                <option value="forge">Forge</option>
+                <option value="fabric">Fabric</option>
+                <option value="quilt">Quilt</option>
+                <option value="rift">Rift</option>
+              </select>
+            </div>
+            
+            <div class="filter-group">
+              <label><i class="fas fa-sort"></i> Категория</label>
+              <select class="filter-select" id="category">
+                <option value="">Все категории</option>
+                <option value="adventure">Приключения</option>
+                <option value="cursed">Проклятые</option>
+                <option value="decoration">Декорации</option>
+                <option value="equipment">Снаряжение</option>
+                <option value="food">Еда</option>
+                <option value="game-mechanics">Игровая механика</option>
+                <option value="library">Библиотеки</option>
+                <option value="magic">Магия</option>
+                <option value="management">Управление</option>
+                <option value="minigame">Мини-игры</option>
+                <option value="mobs">Мобы</option>
+                <option value="optimization">Оптимизация</option>
+                <option value="social">Социальные</option>
+                <option value="storage">Хранение</option>
+                <option value="technology">Технологии</option>
+                <option value="transportation">Транспорт</option>
+                <option value="utility">Утилиты</option>
+                <option value="worldgen">Генерация мира</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="search-actions">
+            <button class="btn btn-primary" id="searchBtn">
+              <i class="fas fa-search"></i> Поиск контента
+            </button>
+            <button class="btn btn-secondary" id="resetBtn">
+              <i class="fas fa-redo"></i> Сбросить фильтры
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- Results Section -->
+    <section class="results-section">
+      <div class="container">
+        <div class="section-header">
+          <h2><i class="fas fa-cubes"></i> Результаты поиска <span class="results-counter" id="resultsCounter">0</span></h2>
+          <div class="sort-options">
+            <button class="sort-btn active" data-sort="relevance">По релевантности</button>
+            <button class="sort-btn" data-sort="downloads">По загрузкам</button>
+            <button class="sort-btn" data-sort="updated">По обновлению</button>
+          </div>
+        </div>
+        
+        <div class="results-grid" id="resultsGrid">
+          <div class="loader">
+            <div class="loader-spinner"></div>
+            <p>Загрузка данных...</p>
+          </div>
+        </div>
+        
+        <div class="pagination" id="pagination">
+          <!-- Pagination will be generated here -->
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="copyright">
+          © 2023 Cobalt Mods. Не аффилировано с Mojang или Microsoft.
+        </div>
+        <div class="footer-links">
+          <a href="#"><i class="fab fa-github"></i> GitHub</a>
+          <a href="#"><i class="fab fa-discord"></i> Discord</a>
+          <a href="#"><i class="fab fa-telegram"></i> Telegram</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const searchBtn = document.getElementById('searchBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const resultsGrid = document.getElementById('resultsGrid');
+      const resultsCounter = document.getElementById('resultsCounter');
+      const searchInput = document.querySelector('.search-input');
+      const sortButtons = document.querySelectorAll('.sort-btn');
+      const pagination = document.getElementById('pagination');
+      
+      // Current search state
+      let currentPage = 1;
+      let totalPages = 1;
+      let currentSort = 'relevance';
+      let currentQuery = '';
+      
+      // Sample mod data for demonstration
+      const sampleMods = [
+        {
+          id: 'AANobbMI',
+          title: 'Sodium',
+          description: 'Мод для оптимизации графики, значительно повышающий FPS за счет современных технологий рендеринга.',
+          icon_url: 'https://cdn.modrinth.com/data/AANobbMI/icon.png',
+          project_type: 'mod',
+          downloads: 12546789,
+          author: 'jellysquid3',
+          updated: '2023-07-15T14:30:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4', '1.19.2'],
+          categories: ['optimization', 'fabric']
+        },
+        {
+          id: 'P7dR8mSH',
+          title: 'Iris Shaders',
+          description: 'Позволяет использовать шейдеры в Minecraft с поддержкой Fabric.',
+          icon_url: 'https://cdn.modrinth.com/data/P7dR8mSH/icon.png',
+          project_type: 'mod',
+          downloads: 8765432,
+          author: 'coderbot',
+          updated: '2023-07-10T09:15:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4', '1.19.2'],
+          categories: ['optimization', 'fabric']
+        },
+        {
+          id: 'gvQqBUqZ',
+          title: 'Create',
+          description: 'Мод, добавляющий в игру кинетические механизмы, автоматизацию и элементы стимпанка.',
+          icon_url: 'https://cdn.modrinth.com/data/gvQqBUqZ/icon.png',
+          project_type: 'mod',
+          downloads: 6543210,
+          author: 'simibubi',
+          updated: '2023-07-18T11:45:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4', '1.19.2'],
+          categories: ['technology', 'forge', 'fabric']
+        },
+        {
+          id: 'YL57xq9U',
+          title: 'Better Minecraft',
+          description: 'Большой сборник модов, улучшающий геймплей, добавляющий новые измерения, биомы, мобов и предметы.',
+          icon_url: 'https://cdn.modrinth.com/data/YL57xq9U/icon.png',
+          project_type: 'modpack',
+          downloads: 5432109,
+          author: 'BetterMC',
+          updated: '2023-07-05T16:20:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4'],
+          categories: ['adventure', 'worldgen', 'forge']
+        },
+        {
+          id: '8SHdZ1sV',
+          title: 'Complementary Shaders',
+          description: 'Красивый пакет шейдеров с реалистичным освещением, водой и атмосферными эффектами.',
+          icon_url: 'https://cdn.modrinth.com/data/8SHdZ1sV/icon.png',
+          project_type: 'shader',
+          downloads: 4321098,
+          author: 'EminGTR',
+          updated: '2023-07-12T13:10:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4'],
+          categories: ['shaders']
+        },
+        {
+          id: 'Ha28R6CL',
+          title: 'Xaero\'s Minimap',
+          description: 'Миникарта с множеством настроек и возможностью отмечать точки интереса.',
+          icon_url: 'https://cdn.modrinth.com/data/Ha28R6CL/icon.png',
+          project_type: 'mod',
+          downloads: 8765432,
+          author: 'xaero96',
+          updated: '2023-07-08T10:30:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4', '1.19.2'],
+          categories: ['utility', 'forge', 'fabric']
+        },
+        {
+          id: 'uXXizFIs',
+          title: 'JourneyMap',
+          description: 'Полнофункциональная карта, которую можно просматривать в игре или в отдельном окне браузера.',
+          icon_url: 'https://cdn.modrinth.com/data/uXXizFIs/icon.png',
+          project_type: 'mod',
+          downloads: 7654321,
+          author: 'techbrew',
+          updated: '2023-07-14T15:40:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4'],
+          categories: ['utility', 'forge']
+        },
+        {
+          id: '1bZvZjXh',
+          title: 'Biomes O\' Plenty',
+          description: 'Добавляет более 80 новых биомов в Minecraft, делая мир более разнообразным и интересным.',
+          icon_url: 'https://cdn.modrinth.com/data/1bZvZjXh/icon.png',
+          project_type: 'mod',
+          downloads: 6543210,
+          author: 'Forstride',
+          updated: '2023-07-02T12:25:00Z',
+          versions: ['1.20.1', '1.20', '1.19.4'],
+          categories: ['worldgen', 'forge', 'fabric']
+        }
+      ];
+      
+      // Format date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+      
+      // Format number with spaces
+      function formatNumber(num) {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      }
+      
+      // Get badge class by project type
+      function getBadgeClass(type) {
+        switch(type) {
+          case 'mod': return 'badge-mod';
+          case 'resourcepack': return 'badge-resourcepack';
+          case 'datapack': return 'badge-datapack';
+          case 'shader': return 'badge-shader';
+          case 'modpack': return 'badge-mod';
+          default: return 'badge-mod';
+        }
+      }
+      
+      // Get badge text by project type
+      function getBadgeText(type) {
+        switch(type) {
+          case 'mod': return 'Мод';
+          case 'resourcepack': return 'Ресурспак';
+          case 'datapack': return 'Датапак';
+          case 'shader': return 'Шейдер';
+          case 'modpack': return 'Сборка';
+          default: return type;
+        }
+      }
+      
+      // Render mod cards
+      function renderMods(mods) {
+        if (!mods || mods.length === 0) {
+          resultsGrid.innerHTML = `
+            <div class="empty-state">
+              <i class="fas fa-box-open"></i>
+              <h3>Ничего не найдено</h3>
+              <p>Попробуйте изменить параметры поиска или использовать другие ключевые слова</p>
+            </div>
+          `;
+          return;
+        }
+        
+        let html = '';
+        
+        mods.forEach(mod => {
+          html += `
+            <div class="result-card">
+              <div class="card-badge ${getBadgeClass(mod.project_type)}">
+                ${getBadgeText(mod.project_type)}
+              </div>
+              <div class="card-image">
+                <img src="${mod.icon_url || 'https://via.placeholder.com/300x160?text=No+Image'}" alt="${mod.title}">
+              </div>
+              <div class="card-content">
+                <a href="#" class="card-title">${mod.title}</a>
+                <p class="card-description">${mod.description}</p>
+                
+                <div class="card-meta">
+                  <div class="meta-item">
+                    <i class="fas fa-download"></i> ${formatNumber(mod.downloads)} загрузок
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-user"></i> ${mod.author}
+                  </div>
+                  <div class="meta-item">
+                    <i class="fas fa-calendar"></i> ${formatDate(mod.updated)}
+                  </div>
+                </div>
+                
+                <div class="versions">
+                  ${mod.versions.slice(0, 3).map(version => `
+                    <span class="version-tag">${version}</span>
+                  `).join('')}
+                  ${mod.versions.length > 3 ? `<span class="version-tag">+${mod.versions.length - 3}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        resultsGrid.innerHTML = html;
+      }
+      
+      // Update pagination
+      function updatePagination() {
+        let html = '';
+        const maxPages = 5;
+        
+        // Previous button
+        html += `<div class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i></div>`;
+        
+        // Page numbers
+        let startPage = Math.max(1, currentPage - Math.floor(maxPages / 2));
+        let endPage = startPage + maxPages - 1;
+        
+        if (endPage > totalPages) {
+          endPage = totalPages;
+          startPage = Math.max(1, endPage - maxPages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+          html += `<div class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</div>`;
+        }
+        
+        // Next button
+        html += `<div class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></div>`;
+        
+        pagination.innerHTML = html;
+        
+        // Add event listeners
+        document.querySelectorAll('.page-btn[data-page]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            currentPage = parseInt(btn.dataset.page);
+            searchMods();
+          });
+        });
+        
+        document.getElementById('prevPage').addEventListener('click', () => {
+          if (currentPage > 1) {
+            currentPage--;
+            searchMods();
+          }
+        });
+        
+        document.getElementById('nextPage').addEventListener('click', () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            searchMods();
+          }
+        });
+      }
+      
+      // Search mods (in a real app, this would call the Modrinth API)
+      function searchMods() {
+        // Show loader
+        resultsGrid.innerHTML = `
+          <div class="loader">
+            <div class="loader-spinner"></div>
+            <p>Поиск контента...</p>
+          </div>
+        `;
+        
+        // Simulate API delay
+        setTimeout(() => {
+          const query = searchInput.value.toLowerCase();
+          const contentType = document.getElementById('contentType').value;
+          const mcVersion = document.getElementById('mcVersion').value;
+          const loader = document.getElementById('loader').value;
+          const category = document.getElementById('category').value;
+          
+          // Filter sample mods based on search criteria
+          let results = sampleMods.filter(mod => {
+            // Filter by search query
+            if (query && !mod.title.toLowerCase().includes(query) && 
+                !mod.description.toLowerCase().includes(query)) {
+              return false;
+            }
+            
+            // Filter by content type
+            if (contentType && mod.project_type !== contentType) {
+              return false;
+            }
+            
+            // Filter by Minecraft version
+            if (mcVersion && !mod.versions.includes(mcVersion)) {
+              return false;
+            }
+            
+            // Filter by loader
+            if (loader && mod.categories && !mod.categories.includes(loader)) {
+              return false;
+            }
+            
+            // Filter by category
+            if (category && mod.categories && !mod.categories.includes(category)) {
+              return false;
+            }
+            
+            return true;
+          });
+          
+          // Sort results
+          if (currentSort === 'downloads') {
+            results.sort((a, b) => b.downloads - a.downloads);
+          } else if (currentSort === 'updated') {
+            results.sort((a, b) => new Date(b.updated) - new Date(a.updated));
+          }
+          
+          // Pagination
+          const itemsPerPage = 8;
+          totalPages = Math.ceil(results.length / itemsPerPage);
+          const startIndex = (currentPage - 1) * itemsPerPage;
+          const paginatedResults = results.slice(startIndex, startIndex + itemsPerPage);
+          
+          // Update UI
+          resultsCounter.textContent = results.length;
+          renderMods(paginatedResults);
+          updatePagination();
+        }, 800);
+      }
+      
+      // Set up event listeners
+      searchBtn.addEventListener('click', () => {
+        currentPage = 1;
+        searchMods();
+      });
+      
+      resetBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        document.getElementById('contentType').value = 'mod';
+        document.getElementById('mcVersion').value = '1.20.1';
+        document.getElementById('loader').value = '';
+        document.getElementById('category').value = '';
+        currentPage = 1;
+        searchMods();
+      });
+      
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          currentPage = 1;
+          searchMods();
+        }
+      });
+      
+      sortButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          sortButtons.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentSort = btn.dataset.sort;
+          searchMods();
+        });
+      });
+      
+      // Initial search
+      searchMods();
+    });
+  </script>
+</body>
+</html>
