@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cobalt - Поиск модов для Minecraft</title>
+  <title>Cobalt - Моды для Minecraft</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -15,7 +15,11 @@
             dark: '#0f172a',
             reminder: '#f59e0b',
             card: '#1e293b',
-            darker: '#0a1120'
+            darker: '#0a1120',
+            success: '#10b981',
+            warning: '#f59e0b',
+            danger: '#ef4444',
+            shader: '#8b5cf6'
           },
           animation: {
             'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
@@ -67,20 +71,6 @@
       max-height: 300px;
     }
     
-    .note-card {
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      border: 1px solid rgba(14, 165, 233, 0.2);
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
-    
-    .note-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
-    }
-    
     .btn-primary {
       background: linear-gradient(135deg, #0ea5e9, #0284c7);
       transition: all 0.3s ease;
@@ -105,18 +95,6 @@
     .btn-reminder:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
-    }
-    
-    .reminder-indicator {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background-color: #f59e0b;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.7);
-      animation: pulse 1.5s infinite;
     }
     
     .search-form {
@@ -302,6 +280,191 @@
       color: white;
     }
     
+    .chat-bot {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+    
+    .chat-bot:hover {
+      transform: scale(1.1);
+    }
+    
+    .chat-container {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 350px;
+      height: 450px;
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      display: flex;
+      flex-direction: column;
+      z-index: 99;
+      overflow: hidden;
+      transform: translateY(20px);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+    }
+    
+    .chat-container.open {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .chat-header {
+      background: rgba(15, 23, 42, 0.9);
+      padding: 15px;
+      border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+      display: flex;
+      align-items: center;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      font-size: 14px;
+    }
+    
+    .bot-message {
+      background: rgba(14, 165, 233, 0.2);
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+    }
+    
+    .user-message {
+      background: rgba(14, 165, 233, 0.4);
+      border-bottom-right-radius: 5px;
+      align-self: flex-end;
+    }
+    
+    .chat-input-container {
+      padding: 15px;
+      background: rgba(15, 23, 42, 0.9);
+      border-top: 1px solid rgba(14, 165, 233, 0.2);
+    }
+    
+    .download-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    .download-modal.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    .modal-content {
+      background: rgba(30, 41, 59, 0.95);
+      border-radius: 15px;
+      padding: 25px;
+      width: 90%;
+      max-width: 500px;
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    
+    .versions-list {
+      max-height: 300px;
+      overflow-y: auto;
+      margin: 15px 0;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    
+    .version-item {
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .version-item:hover {
+      background: rgba(14, 165, 233, 0.2);
+    }
+    
+    .favorite-btn {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(30, 41, 59, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f1f5f9;
+      cursor: pointer;
+      transition: all 0.3s;
+      z-index: 2;
+    }
+    
+    .favorite-btn.active {
+      color: #f59e0b;
+    }
+    
+    .favorite-btn:hover {
+      background: rgba(245, 158, 11, 0.2);
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: rgba(30, 41, 59, 0.7);
+      color: #f1f5f9;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+    
+    .tab-btn.active {
+      background: #0ea5e9;
+      color: white;
+    }
+    
     @media (min-width: 768px) {
       .desktop-menu {
         display: flex;
@@ -321,6 +484,11 @@
       }
       .filters {
         grid-template-columns: 1fr;
+      }
+      .chat-container {
+        width: 90%;
+        right: 5%;
+        height: 70vh;
       }
     }
   </style>
@@ -342,8 +510,9 @@
         <a href="#" class="hover:text-primary transition-colors flex items-center">
           <i class="fas fa-search mr-2"></i> Поиск
         </a>
-        <a href="#" class="hover:text-primary transition-colors flex items-center">
+        <a href="#" class="hover:text-primary transition-colors flex items-center" id="favoritesTab">
           <i class="fas fa-heart mr-2"></i> Избранное
+          <span id="favoritesCount" class="ml-2 bg-primary/20 text-primary text-xs font-medium px-2 py-0.5 rounded-full">0</span>
         </a>
         <a href="#" class="hover:text-primary transition-colors flex items-center">
           <i class="fas fa-rocket mr-2"></i> Лаунчер
@@ -370,8 +539,9 @@
         <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-search mr-3 w-5"></i> Поиск
         </a>
-        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center" id="mobileFavoritesTab">
           <i class="fas fa-heart mr-3 w-5"></i> Избранное
+          <span id="mobileFavoritesCount" class="ml-2 bg-primary/20 text-primary text-xs font-medium px-2 py-0.5 rounded-full">0</span>
         </a>
         <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-rocket mr-3 w-5"></i> Лаунчер
@@ -388,6 +558,60 @@
       <i class="fas fa-info-circle mr-2"></i> Информация
     </div>
     <div id="notificationContent">Поиск модов выполнен успешно</div>
+  </div>
+
+  <div class="download-modal" id="downloadModal">
+    <div class="modal-content">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-white flex items-center">
+          <i class="fas fa-download mr-2 text-primary"></i> Выбор версии
+        </h3>
+        <button id="closeModal" class="text-gray-400 hover:text-white">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="modTitle" class="font-medium mb-2"></div>
+      <p class="text-gray-400 text-sm mb-4">Выберите версию для скачивания:</p>
+      
+      <div class="versions-list" id="versionsList">
+        <!-- Версии будут добавлены здесь -->
+      </div>
+      
+      <button id="downloadBtn" class="btn-primary w-full py-3 rounded-lg font-medium text-white flex items-center justify-center">
+        <i class="fas fa-download mr-2"></i> Скачать выбранную версию
+      </button>
+    </div>
+  </div>
+
+  <div class="chat-bot" id="chatBotBtn">
+    <i class="fas fa-robot"></i>
+  </div>
+  
+  <div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center mr-3">
+        <i class="fas fa-robot text-white text-sm"></i>
+      </div>
+      <h3 class="font-bold">Помощник по Minecraft</h3>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message bot-message">
+        Привет! Я помогу тебе выбрать моды, ресурспаки и шейдеры для Minecraft. Спроси меня что-нибудь!
+      </div>
+    </div>
+    <div class="chat-input-container">
+      <div class="flex">
+        <input 
+          type="text" 
+          id="chatInput" 
+          class="form-input flex-1" 
+          placeholder="Введите ваш вопрос..."
+        >
+        <button id="sendMessageBtn" class="btn-primary ml-3 px-4">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <section class="py-10 px-4 relative">
@@ -453,13 +677,18 @@
 
   <section class="py-10 px-4 relative">
     <div class="max-w-4xl mx-auto">
+      <div class="flex flex-wrap gap-3 mb-6">
+        <button class="tab-btn active" id="searchTab">Поиск</button>
+        <button class="tab-btn" id="favoritesContentTab">Избранное</button>
+      </div>
+      
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <h2 class="text-2xl font-bold text-white flex items-center mb-4 md:mb-0">
-          <i class="fas fa-cubes mr-3 text-primary"></i> Результаты поиска
+          <i class="fas fa-cubes mr-3 text-primary"></i> <span id="resultsTitle">Результаты поиска</span>
           <span id="resultsCounter" class="ml-2 bg-primary/20 text-primary text-sm font-medium px-3 py-1 rounded-full">0</span>
         </h2>
         
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2" id="sortButtons">
           <button class="sort-btn active" data-sort="relevance">По релевантности</button>
           <button class="sort-btn" data-sort="downloads">По загрузкам</button>
           <button class="sort-btn" data-sort="updated">По обновлению</button>
@@ -550,6 +779,22 @@
     const notificationContent = document.getElementById('notificationContent');
     const pagination = document.getElementById('pagination');
     const sortButtons = document.querySelectorAll('.sort-btn');
+    const favoritesTab = document.getElementById('favoritesTab');
+    const favoritesContentTab = document.getElementById('favoritesContentTab');
+    const searchTab = document.getElementById('searchTab');
+    const chatBotBtn = document.getElementById('chatBotBtn');
+    const chatContainer = document.getElementById('chatContainer');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendMessageBtn = document.getElementById('sendMessageBtn');
+    const downloadModal = document.getElementById('downloadModal');
+    const closeModal = document.getElementById('closeModal');
+    const versionsList = document.getElementById('versionsList');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const modTitle = document.getElementById('modTitle');
+    const favoritesCount = document.getElementById('favoritesCount');
+    const mobileFavoritesCount = document.getElementById('mobileFavoritesCount');
+    const resultsTitle = document.getElementById('resultsTitle');
     
     let currentPage = 1;
     let totalPages = 1;
@@ -557,6 +802,9 @@
     let currentQuery = '';
     let currentType = 'mod';
     let currentVersion = '1.20.1';
+    let favorites = JSON.parse(localStorage.getItem('mcFavorites')) || [];
+    let currentMod = null;
+    let selectedVersion = null;
     
     // Show notification
     function showNotification(message) {
@@ -607,6 +855,40 @@
       }
     }
     
+    // Check if mod is favorited
+    function isFavorited(id) {
+      return favorites.some(mod => mod.id === id);
+    }
+    
+    // Toggle favorite
+    function toggleFavorite(mod) {
+      const index = favorites.findIndex(m => m.id === mod.id);
+      
+      if (index === -1) {
+        favorites.push(mod);
+        showNotification('Добавлено в избранное');
+      } else {
+        favorites.splice(index, 1);
+        showNotification('Удалено из избранного');
+      }
+      
+      localStorage.setItem('mcFavorites', JSON.stringify(favorites));
+      updateFavoritesCount();
+      
+      if (document.getElementById('favoritesContentTab').classList.contains('active')) {
+        showFavorites();
+      } else {
+        renderMods(currentMods);
+      }
+    }
+    
+    // Update favorites count
+    function updateFavoritesCount() {
+      const count = favorites.length;
+      favoritesCount.textContent = count;
+      mobileFavoritesCount.textContent = count;
+    }
+    
     // Render mod cards
     function renderMods(mods) {
       if (!mods || mods.length === 0) {
@@ -625,14 +907,18 @@
       mods.forEach(mod => {
         // Get first 3 versions
         const versions = mod.versions ? mod.versions.slice(0, 3) : [];
+        const isFav = isFavorited(mod.id);
         
         html += `
           <div class="mod-card overflow-hidden">
+            <div class="favorite-btn ${isFav ? 'active' : ''}" data-id="${mod.id}">
+              <i class="fas fa-star"></i>
+            </div>
             <div class="card-badge ${getBadgeClass(mod.project_type)}">
               ${getBadgeText(mod.project_type)}
             </div>
             <div class="card-image">
-              <img src="${mod.icon_url || 'https://via.placeholder.com/300x180?text=No+Image'}" alt="${mod.title}">
+              <img src="${mod.icon_url ? `${mod.icon_url}?format=webp&width=300` : 'https://via.placeholder.com/300x180?text=No+Image'}" alt="${mod.title}">
             </div>
             <div class="p-5">
               <a href="${mod.page_url}" target="_blank" class="text-xl font-bold mb-2 text-white hover:text-primary block">${mod.title}</a>
@@ -659,6 +945,10 @@
                 `).join('')}
                 ${mod.versions && mod.versions.length > 3 ? `<span class="version-tag">+${mod.versions.length - 3}</span>` : ''}
               </div>
+              
+              <button class="btn-primary w-full mt-4 py-2 rounded-lg font-medium text-white flex items-center justify-center download-btn" data-id="${mod.id}">
+                <i class="fas fa-download mr-2"></i> Скачать
+              </button>
             </div>
           </div>
         `;
@@ -666,6 +956,83 @@
       
       resultsContainer.innerHTML = html;
       emptyState.style.display = 'none';
+      
+      // Add event listeners
+      document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const mod = mods.find(m => m.id === id);
+          if (mod) toggleFavorite(mod);
+        });
+      });
+      
+      document.querySelectorAll('.download-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          currentMod = mods.find(m => m.id === id);
+          if (currentMod) openDownloadModal(currentMod);
+        });
+      });
+    }
+    
+    // Open download modal
+    function openDownloadModal(mod) {
+      modTitle.textContent = mod.title;
+      versionsList.innerHTML = '';
+      
+      // Add versions to the list
+      mod.versions.forEach(version => {
+        const versionItem = document.createElement('div');
+        versionItem.className = 'version-item';
+        versionItem.textContent = version;
+        versionItem.setAttribute('data-version', version);
+        
+        versionItem.addEventListener('click', function() {
+          // Remove active class from all items
+          document.querySelectorAll('.version-item').forEach(item => {
+            item.classList.remove('active');
+          });
+          
+          // Add active class to selected item
+          this.classList.add('active');
+          selectedVersion = this.getAttribute('data-version');
+        });
+        
+        versionsList.appendChild(versionItem);
+      });
+      
+      // Select first version by default
+      if (mod.versions.length > 0) {
+        versionsList.firstChild.classList.add('active');
+        selectedVersion = mod.versions[0];
+      }
+      
+      downloadModal.classList.add('open');
+    }
+    
+    // Download mod
+    function downloadMod() {
+      if (!currentMod || !selectedVersion) return;
+      
+      // Simulate download
+      showNotification(`Мод "${currentMod.title}" версии ${selectedVersion} скачивается...`);
+      
+      // In a real app, this would be the actual download link
+      setTimeout(() => {
+        showNotification(`Скачивание завершено! Поместите файл в папку .minecraft/${getFolderByType(currentMod.project_type)}`);
+        downloadModal.classList.remove('open');
+      }, 2000);
+    }
+    
+    // Get folder by mod type
+    function getFolderByType(type) {
+      switch(type) {
+        case 'mod': return 'mods';
+        case 'resourcepack': return 'resourcepacks';
+        case 'datapack': return 'datapacks';
+        case 'shader': return 'shaderpacks';
+        default: return 'mods';
+      }
     }
     
     // Show loading state
@@ -785,6 +1152,9 @@
           page_url: `https://modrinth.com/${mod.project_type}/${mod.slug}`
         }));
         
+        // Save current mods for favorite toggling
+        window.currentMods = mods;
+        
         // Update UI
         resultsCounter.textContent = data.total_hits;
         totalPages = Math.ceil(data.total_hits / 8);
@@ -809,6 +1179,27 @@
       }
     }
     
+    // Show favorites
+    function showFavorites() {
+      if (favorites.length === 0) {
+        resultsContainer.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-heart text-5xl text-red-500 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2 text-gray-300">Избранное пусто</h3>
+            <p class="text-gray-400 mb-4">Добавьте моды в избранное, нажимая на звёздочку</p>
+          </div>
+        `;
+        pagination.innerHTML = '';
+        resultsCounter.textContent = '0';
+        return;
+      }
+      
+      resultsCounter.textContent = favorites.length;
+      resultsTitle.textContent = 'Избранное';
+      renderMods(favorites);
+      pagination.innerHTML = '';
+    }
+    
     // Reset search
     function resetSearch() {
       searchInput.value = '';
@@ -816,6 +1207,7 @@
       document.getElementById('mcVersion').value = '1.20.1';
       currentPage = 1;
       currentSort = 'relevance';
+      resultsTitle.textContent = 'Результаты поиска';
       
       // Reset sort buttons
       sortButtons.forEach(btn => {
@@ -840,14 +1232,60 @@
       resultsCounter.textContent = '0';
     }
     
+    // Chat bot functionality
+    function addMessage(message, isUser = false) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+      messageDiv.textContent = message;
+      chatMessages.appendChild(messageDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function handleUserMessage(message) {
+      message = message.toLowerCase();
+      
+      // Simple responses based on keywords
+      if (message.includes('привет') || message.includes('здравствуй')) {
+        addMessage('Привет! Чем могу помочь?');
+      } 
+      else if (message.includes('оптимизация') || message.includes('фпс')) {
+        addMessage('Для оптимизации рекомендую: Sodium (для Fabric), OptiFine (универсальный), Lithium (серверная оптимизация). Эти моды значительно увеличат FPS.');
+      }
+      else if (message.includes('ресурспак') || message.includes('текстур')) {
+        addMessage('Популярные ресурспаки: Faithful (классические текстуры в HD), Modern HD (современный стиль), BSL Shaders (пакет шейдеров с ресурспаком).');
+      }
+      else if (message.includes('шейдер') || message.includes('график')) {
+        addMessage('Лучшие шейдеры: SEUS Renewed (реалистичная графика), BSL Shaders (баланс красоты и производительности), Complementary Shaders (красивые эффекты).');
+      }
+      else if (message.includes('мод') || message.includes('добавить')) {
+        addMessage('Популярные моды: Create (механизмы), Biomes O\' Plenty (новые биомы), JEI (просмотр рецептов). Что именно вас интересует?');
+      }
+      else if (message.includes('спасибо') || message.includes('благодарю')) {
+        addMessage('Всегда пожалуйста! Обращайтесь, если понадобится помощь.');
+      }
+      else {
+        addMessage('Извините, я не понял ваш вопрос. Вы можете спросить о модах, ресурспаках или шейдерах для Minecraft.');
+      }
+    }
+    
     // Initialize the app
     document.addEventListener('DOMContentLoaded', function() {
       // Set up event listeners
-      searchBtn.addEventListener('click', searchMods);
+      searchBtn.addEventListener('click', function() {
+        searchTab.classList.add('active');
+        favoritesContentTab.classList.remove('active');
+        resultsTitle.textContent = 'Результаты поиска';
+        currentPage = 1;
+        searchMods();
+      });
+      
       resetBtn.addEventListener('click', resetSearch);
       
       searchInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
+          searchTab.classList.add('active');
+          favoritesContentTab.classList.remove('active');
+          resultsTitle.textContent = 'Результаты поиска';
           currentPage = 1;
           searchMods();
         }
@@ -863,7 +1301,78 @@
         });
       });
       
+      // Favorites tabs
+      favoritesTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchTab.classList.remove('active');
+        favoritesContentTab.classList.add('active');
+        showFavorites();
+      });
+      
+      mobileFavoritesTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchTab.classList.remove('active');
+        favoritesContentTab.classList.add('active');
+        showFavorites();
+      });
+      
+      favoritesContentTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        searchTab.classList.remove('active');
+        this.classList.add('active');
+        showFavorites();
+      });
+      
+      searchTab.addEventListener('click', function(e) {
+        e.preventDefault();
+        this.classList.add('active');
+        favoritesContentTab.classList.remove('active');
+        resultsTitle.textContent = 'Результаты поиска';
+        if (searchInput.value) {
+          searchMods();
+        } else {
+          resetSearch();
+        }
+      });
+      
+      // Chat bot
+      chatBotBtn.addEventListener('click', function() {
+        chatContainer.classList.toggle('open');
+      });
+      
+      sendMessageBtn.addEventListener('click', function() {
+        if (chatInput.value.trim() !== '') {
+          addMessage(chatInput.value, true);
+          handleUserMessage(chatInput.value);
+          chatInput.value = '';
+        }
+      });
+      
+      chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+          addMessage(chatInput.value, true);
+          handleUserMessage(chatInput.value);
+          chatInput.value = '';
+        }
+      });
+      
+      // Download modal
+      closeModal.addEventListener('click', function() {
+        downloadModal.classList.remove('open');
+      });
+      
+      downloadBtn.addEventListener('click', downloadMod);
+      
+      // Close modals when clicking outside
+      document.addEventListener('click', function(e) {
+        if (downloadModal.classList.contains('open') && 
+            e.target === downloadModal) {
+          downloadModal.classList.remove('open');
+        }
+      });
+      
       // Initial state
+      updateFavoritesCount();
       resetSearch();
     });
   </script>
