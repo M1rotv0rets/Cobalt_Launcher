@@ -15,18 +15,10 @@
           colors: {
             primary: '#0ea5e9',
             dark: '#0f172a',
-            minecraft: '#4CAF50',
             reminder: '#f59e0b'
           },
           animation: {
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float': 'float 6s ease-in-out infinite',
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-10px)' },
-            }
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
           }
         }
       }
@@ -95,24 +87,6 @@
       box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
     }
     
-    .note-card::before {
-      content: '';
-      position: absolute;
-      top: -2px;
-      left: -2px;
-      right: -2px;
-      bottom: -2px;
-      background: linear-gradient(45deg, #0ea5e9, #0284c7, #0ea5e9);
-      z-index: -1;
-      border-radius: 14px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    .note-card:hover::before {
-      opacity: 1;
-    }
-    
     .btn-primary {
       background: linear-gradient(135deg, #0ea5e9, #0284c7);
       transition: all 0.3s ease;
@@ -137,28 +111,6 @@
     .btn-reminder:hover {
       transform: translateY(-3px);
       box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
-    }
-    
-    .glow {
-      text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
-    }
-    
-    .minecraft-text {
-      color: #4CAF50;
-      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
-    }
-    
-    .reminder-icon {
-      font-size: 1.5rem;
-      margin-right: 0.5rem;
-      transition: transform 0.3s ease;
-    }
-    
-    .grid-pattern {
-      background-image: 
-        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
-      background-size: 20px 20px;
     }
     
     .reminder-indicator {
@@ -243,9 +195,40 @@
         <h1 class="text-2xl font-bold text-white">Cobalt Заметки</h1>
       </div>
       
-      <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
-       <i class="fas fa-home mr-3 w-5"></i> Главная
-      </a> 
+      <div class="hidden md:block">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+      </div>
+      
+      <button id="burgerBtn" class="md:hidden text-white focus:outline-none z-50">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-900 md:hidden">
+      <div class="flex flex-col px-6 py-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-sticky-note mr-3 w-5"></i> Заметки
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-robot mr-3 w-5"></i> Боты
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-tools mr-3 w-5"></i> Инструменты
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-rocket mr-3 w-5"></i> Лаунчер
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-users mr-3 w-5"></i> Сообщество
+        </a>
+      </div>
     </div>
   </header>
 
@@ -462,7 +445,7 @@
           const reminderTime = new Date(note.reminder);
           
           if (reminderTime <= now) {
-            showNotification("Minecraft Заметка", note.text);
+            showNotification("Cobalt Заметки", note.text);
             notes[index].notified = true;
             saveNotes();
             renderNotes();
@@ -501,8 +484,8 @@
       sortedNotes.forEach((note, index) => {
         const noteElement = document.createElement('div');
         noteElement.className = 'note-card p-5 relative';
-        noteElement.dataset.aos = 'fade-up';
-        noteElement.dataset.aosDelay = (index * 100) + 100;
+        noteElement.setAttribute('data-aos', 'fade-up');
+        noteElement.setAttribute('data-aos-delay', (index * 100) + 100);
         
         let reminderHtml = '';
         if (note.reminder) {
@@ -534,6 +517,8 @@
         
         notesContainer.appendChild(noteElement);
       });
+      
+      AOS.refresh();
       
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -601,8 +586,7 @@
       addNoteBtn.addEventListener('click', () => addNote(false));
       addReminderBtn.addEventListener('click', () => addNote(true));
       
-      setInterval(checkReminders, 60000);
-      
+      setInterval(checkReminders, 30000);
       checkReminders();
     });
   </script>
