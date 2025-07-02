@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Wiki Assistant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mc-green: #4CAF50;
+      --mc-dark-green: #388E3C;
+      --mc-brown: #8B4513;
+      --mc-dark: #1E1E1E;
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    
+    .minecraft-bg {
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSg3NiwgMTc1LCA4MCwgMC4xKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+    }
+    
+    .header {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(10px);
+    }
+    
+    .search-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 2px solid rgba(76, 175, 80, 0.3);
+    }
+    
+    .search-box:focus-within {
+      border-color: var(--mc-green);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+    }
+    
+    .result-card {
+      background: rgba(30, 41, 59, 0.8);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(76, 175, 80, 0.3);
+    }
+    
+    .crafting-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      max-width: 300px;
+      margin: 0 auto;
+      background-color: #8B4513;
+      padding: 15px;
+      border-radius: 8px;
+      border: 4px solid #5D2906;
+    }
+    
+    .crafting-slot {
+      width: 60px;
+      height: 60px;
+      background-color: #C4A484;
+      border: 2px solid #8B4513;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+    
+    .item-image {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+      border: 2px solid rgba(76, 175, 80, 0.5);
+    }
+    
+    .tabs button.active {
+      background-color: var(--mc-green);
+      color: white;
+    }
+    
+    .tabs button {
+      transition: all 0.3s ease;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .popular-item {
+      transition: all 0.3s ease;
+    }
+    
+    .popular-item:hover {
+      transform: translateY(-3px);
+      background-color: var(--mc-dark-green) !important;
+    }
+  </style>
+</head>
+<body class="minecraft-bg">
+  <header class="header sticky top-0 z-50 py-4 px-6 shadow-lg">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
+      <div class="flex items-center mb-4 md:mb-0">
+        <div class="w-12 h-12 rounded-lg bg-green-600 flex items-center justify-center mr-3">
+          <i class="fas fa-cube text-white text-2xl"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Minecraft Wiki Assistant</h1>
+      </div>
+      
+      <div class="flex flex-wrap justify-center gap-2">
+        <a href="https://ru.minecraft.wiki" target="_blank" class="px-4 py-2 bg-green-700 hover:bg-green-600 rounded-lg font-medium text-white transition-colors">
+          <i class="fas fa-external-link-alt mr-2"></i> Перейти на Wiki
+        </a>
+      </div>
+    </div>
+  </header>
 
+  <main class="py-8 px-4 max-w-4xl mx-auto">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">Поиск по Minecraft Wiki</h1>
+      <p class="text-xl text-gray-300">Найдите любой блок, предмет или сущность и получите информацию с ru.minecraft.wiki</p>
+    </div>
+    
+    <div class="search-box rounded-xl p-1 mb-8 transition-all duration-300">
+      <div class="flex flex-col md:flex-row gap-2">
+        <div class="flex-grow relative">
+          <input type="text" id="searchInput" class="w-full bg-gray-900 text-white py-4 pl-14 pr-4 rounded-xl focus:outline-none" placeholder="Введите название блока, предмета или сущности..." value="Алмаз">
+          <i class="fas fa-search absolute left-5 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
+        </div>
+        <button id="searchBtn" class="bg-green-600 hover:bg-green-500 px-6 py-4 rounded-xl font-bold text-white transition-colors">
+          <i class="fas fa-search mr-2"></i> Поиск
+        </button>
+      </div>
+      
+      <div class="mt-4 px-2">
+        <h3 class="text-lg font-bold text-white mb-2">Популярные запросы:</h3>
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button class="popular-item bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all" data-item="Алмаз">Алмаз</button>
+          <button class="popular-item bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all" data-item="Верстак">Верстак</button>
+          <button class="popular-item bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all" data-item="Зомби">Зомби</button>
+          <button class="popular-item bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all" data-item="Красный камень">Красный камень</button>
+          <button class="popular-item bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg transition-all" data-item="Эндермен">Эндермен</button>
+        </div>
+      </div>
+    </div>
+    
+    <div id="resultContainer" class="result-card rounded-xl p-6">
+      <div class="flex flex-col md:flex-row gap-6 mb-6">
+        <div class="flex-shrink-0 flex flex-col items-center">
+          <div class="item-image flex items-center justify-center text-5xl">💎</div>
+          <h2 id="itemName" class="text-2xl font-bold text-white text-center mt-4">Алмаз</h2>
+          <div id="itemType" class="mt-2 px-3 py-1 bg-gray-800 rounded-full text-sm">Предмет</div>
+        </div>
+        
+        <div class="flex-grow">
+          <div id="itemDescription" class="text-gray-300 mb-4">
+            Алмаз — редкий минерал, добываемый из алмазной руды. Используется для создания прочных инструментов, оружия и брони.
+          </div>
+          
+          <div class="tabs flex mb-4 border-b border-gray-700">
+            <button class="tab-btn active px-4 py-2 rounded-t-lg" data-tab="craft">Крафт</button>
+            <button class="tab-btn px-4 py-2 rounded-t-lg" data-tab="usage">Использование</button>
+            <button class="tab-btn px-4 py-2 rounded-t-lg" data-tab="info">Информация</button>
+          </div>
+          
+          <div id="craftContent" class="tab-content">
+            <div class="crafting-grid mb-4">
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">💎</div>
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">🪨</div>
+              <div class="crafting-slot">⛏️</div>
+              <div class="crafting-slot">🪨</div>
+            </div>
+            <p id="craftText" class="text-gray-300 text-center">
+              Добывается из алмазной руды железной или алмазной киркой
+            </p>
+          </div>
+          
+          <div id="usageContent" class="tab-content hidden">
+            <div id="usageList" class="space-y-2">
+              <div class="flex items-start">
+                <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                  <span class="text-white text-xs">✓</span>
+                </div>
+                <p>Создание алмазных инструментов и оружия</p>
+              </div>
+              <div class="flex items-start">
+                <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                  <span class="text-white text-xs">✓</span>
+                </div>
+                <p>Крафт алмазной брони</p>
+              </div>
+              <div class="flex items-start">
+                <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                  <span class="text-white text-xs">✓</span>
+                </div>
+                <p>Создание блоков алмаза</p>
+              </div>
+              <div class="flex items-start">
+                <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                  <span class="text-white text-xs">✓</span>
+                </div>
+                <p>Крафт огнива и наковальни</p>
+              </div>
+            </div>
+          </div>
+          
+          <div id="infoContent" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-gray-800/50 p-4 rounded-lg">
+                <p><strong>Тип:</strong> <span id="infoType">Минерал</span></p>
+                <p><strong>Редкость:</strong> <span id="infoRarity">Редкий</span></p>
+              </div>
+              <div class="bg-gray-800/50 p-4 rounded-lg">
+                <p><strong>Прочность:</strong> <span id="infoDurability">Нет</span></p>
+                <p><strong>Складываемость:</strong> <span id="infoStackable">Да (до 64)</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <a id="wikiLink" href="https://ru.minecraft.wiki/wiki/%D0%90%D0%BB%D0%BC%D0%B0%D0%B7" target="_blank" class="bg-green-700 hover:bg-green-600 px-6 py-3 rounded-lg font-bold text-white text-center transition-colors w-full sm:w-auto">
+          <i class="fas fa-book mr-2"></i> Читать на Minecraft Wiki
+        </a>
+        
+        <div class="flex gap-2">
+          <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-white">
+            <i class="fas fa-share-alt"></i>
+          </button>
+          <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-white">
+            <i class="fas fa-copy"></i>
+          </button>
+          <button class="bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg text-white">
+            <i class="fas fa-download"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-8 px-4 mt-10 text-center text-gray-500 border-t border-gray-800">
+    <p>Данные предоставлены ru.minecraft.wiki | Это неофициальный инструмент для сообщества Minecraft</p>
+    <p class="mt-2">© 2023 Minecraft Wiki Assistant | Все права принадлежат Mojang Studios</p>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      const searchBtn = document.getElementById('searchBtn');
+      const resultContainer = document.getElementById('resultContainer');
+      const popularItems = document.querySelectorAll('.popular-item');
+      
+      // Функция для получения информации о предмете
+      function getItemInfo(itemName) {
+        // В реальном приложении здесь будет запрос к API или парсинг данных
+        // Для демонстрации используем статичные данные
+        
+        const items = {
+          "Алмаз": {
+            name: "Алмаз",
+            type: "Предмет",
+            description: "Алмаз — редкий минерал, добываемый из алмазной руды. Используется для создания прочных инструментов, оружия и брони.",
+            image: "💎",
+            crafting: {
+              recipe: "Добывается из алмазной руды железной или алмазной киркой",
+              grid: ["🪨", "🪨", "🪨", "🪨", "💎", "🪨", "🪨", "⛏️", "🪨"]
+            },
+            usage: [
+              "Создание алмазных инструментов и оружия",
+              "Крафт алмазной брони",
+              "Создание блоков алмаза",
+              "Крафт огнива и наковальни"
+            ],
+            info: {
+              type: "Минерал",
+              rarity: "Редкий",
+              durability: "Нет",
+              stackable: "Да (до 64)"
+            },
+            wikiLink: "https://ru.minecraft.wiki/wiki/%D0%90%D0%BB%D0%BC%D0%B0%D0%B7"
+          },
+          "Верстак": {
+            name: "Верстак",
+            type: "Блок",
+            description: "Верстак — блок, используемый для крафта предметов размером 3×3. Без верстака можно создавать только предметы размером 2×2.",
+            image: "🛠️",
+            crafting: {
+              recipe: "4 доски любого типа",
+              grid: ["🪵", "🪵", null, "🪵", "🪵", null, null, null, null]
+            },
+            usage: [
+              "Крафт сложных предметов и инструментов",
+              "Необходим для создания многих предметов",
+              "Можно использовать как декоративный блок"
+            ],
+            info: {
+              type: "Функциональный блок",
+              rarity: "Обычный",
+              durability: "Нет",
+              stackable: "Да (до 64)"
+            },
+            wikiLink: "https://ru.minecraft.wiki/wiki/%D0%92%D0%B5%D1%80%D1%81%D1%82%D0%B0%D0%BA"
+          },
+          "Зомби": {
+            name: "Зомби",
+            type: "Сущность",
+            description: "Зомби — враждебный моб, атакующий игроков и деревенских жителей. Появляются в темных местах ночью и в подземельях.",
+            image: "🧟‍♂️",
+            crafting: null,
+            usage: [
+              "Источник гнилой плоти",
+              "Может носить и ронять предметы",
+              "Может превращать жителей в зомби-жителей"
+            ],
+            info: {
+              type: "Враждебный моб",
+              rarity: "Обычный",
+              durability: "20 HP",
+              stackable: "Нет"
+            },
+            wikiLink: "https://ru.minecraft.wiki/wiki/%D0%97%D0%BE%D0%BC%D0%B1%D0%B8"
+          },
+          "Красный камень": {
+            name: "Красный камень",
+            type: "Предмет",
+            description: "Красный камень — пыль, используемая для создания механизмов, ловушек и сложных систем. Добывается из руды красного камня.",
+            image: "🔴",
+            crafting: {
+              recipe: "Добывается из руды красного камня железной или алмазной киркой",
+              grid: [null, null, null, null, "🔴", null, null, "⛏️", null]
+            },
+            usage: [
+              "Создание красных схем и механизмов",
+              "Крафт повторителей, компараторов",
+              "Создание поршней и раздатчиков",
+              "Активация рельс и других устройств"
+            ],
+            info: {
+              type: "Ресурс",
+              rarity: "Обычный",
+              durability: "Нет",
+              stackable: "Да (до 64)"
+            },
+            wikiLink: "https://ru.minecraft.wiki/wiki/%D0%9A%D1%80%D0%B0%D1%81%D0%BD%D1%8B%D0%B9_%D0%BA%D0%B0%D0%BC%D0%B5%D0%BD%D1%8C"
+          },
+          "Эндермен": {
+            name: "Эндермен",
+            type: "Сущность",
+            description: "Эндермен — высокий враждебный моб, который телепортируется и становится агрессивным, если на него смотреть.",
+            image: "🧿",
+            crafting: null,
+            usage: [
+              "Источник эндер-жемчужин",
+              "Может переносить блоки",
+              "Опасный противник в бою"
+            ],
+            info: {
+              type: "Враждебный моб",
+              rarity: "Редкий",
+              durability: "40 HP",
+              stackable: "Нет"
+            },
+            wikiLink: "https://ru.minecraft.wiki/wiki/%D0%AD%D0%BD%D0%B4%D0%B5%D1%80%D0%BC%D0%B5%D0%BD"
+          }
+        };
+        
+        return items[itemName] || null;
+      }
+      
+      // Функция отображения результата
+      function displayResult(item) {
+        if (!item) {
+          alert("Информация по вашему запросу не найдена. Попробуйте другой запрос.");
+          return;
+        }
+        
+        // Обновляем данные
+        document.getElementById('itemName').textContent = item.name;
+        document.getElementById('itemType').textContent = item.type;
+        document.getElementById('itemDescription').textContent = item.description;
+        document.getElementById('wikiLink').href = item.wikiLink;
+        
+        // Устанавливаем изображение
+        const itemImage = document.querySelector('.item-image');
+        itemImage.innerHTML = item.image;
+        itemImage.classList.add('text-5xl', 'flex', 'items-center', 'justify-center');
+        
+        // Крафт
+        if (item.crafting) {
+          document.getElementById('craftText').textContent = item.crafting.recipe;
+          
+          const grid = document.querySelector('.crafting-grid');
+          grid.innerHTML = '';
+          
+          item.crafting.grid.forEach(ingredient => {
+            const slot = document.createElement('div');
+            slot.className = 'crafting-slot';
+            if (ingredient) {
+              slot.innerHTML = ingredient;
+            }
+            grid.appendChild(slot);
+          });
+        } else {
+          document.getElementById('craftContent').innerHTML = '<p class="text-gray-500 text-center py-4">Этот предмет нельзя скрафтить</p>';
+        }
+        
+        // Использование
+        const usageList = document.getElementById('usageList');
+        usageList.innerHTML = '';
+        
+        if (item.usage && item.usage.length > 0) {
+          item.usage.forEach(use => {
+            const li = document.createElement('div');
+            li.className = 'flex items-start';
+            li.innerHTML = `
+              <div class="w-6 h-6 rounded-full bg-green-600 flex items-center justify-center mr-3 mt-1 flex-shrink-0">
+                <span class="text-white text-xs">✓</span>
+              </div>
+              <p>${use}</p>
+            `;
+            usageList.appendChild(li);
+          });
+        } else {
+          usageList.innerHTML = '<p class="text-gray-500 text-center py-4">Информация об использовании отсутствует</p>';
+        }
+        
+        // Информация
+        if (item.info) {
+          document.getElementById('infoType').textContent = item.info.type;
+          document.getElementById('infoRarity').textContent = item.info.rarity;
+          document.getElementById('infoDurability').textContent = item.info.durability;
+          document.getElementById('infoStackable').textContent = item.info.stackable;
+        }
+        
+        // Показываем результат
+        resultContainer.classList.remove('hidden');
+        
+        // Анимация
+        resultContainer.classList.add('fade-in');
+        setTimeout(() => {
+          resultContainer.classList.remove('fade-in');
+        }, 500);
+      }
+      
+      // Функция для поиска
+      function performSearch() {
+        const query = searchInput.value.trim();
+        if (!query) return;
+        
+        const result = getItemInfo(query);
+        displayResult(result);
+      }
+      
+      // Обработчики событий
+      searchBtn.addEventListener('click', performSearch);
+      
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+      
+      popularItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const itemName = item.getAttribute('data-item');
+          searchInput.value = itemName;
+          performSearch();
+        });
+      });
+      
+      // Обработчики вкладок
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tab = btn.getAttribute('data-tab');
+          
+          // Обновляем активные вкладки
+          tabBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // Показываем соответствующий контент
+          tabContents.forEach(content => content.classList.add('hidden'));
+          document.getElementById(`${tab}Content`).classList.remove('hidden');
+        });
+      });
+      
+      // Инициализация с примером
+      performSearch();
+    });
+  </script>
+</body>
+</html>
