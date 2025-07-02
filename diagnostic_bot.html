@@ -138,45 +138,6 @@
       text-shadow: 0 0 15px rgba(14, 165, 233, 0.7);
     }
     
-    .minecraft-text {
-      color: #4CAF50;
-      text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
-    }
-    
-    .grid-pattern {
-      background-image: 
-        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-    
-    .log-input {
-      background: rgba(30, 41, 59, 0.7);
-      border: 2px solid rgba(14, 165, 233, 0.3);
-      color: #f1f5f9;
-      border-radius: 12px;
-      padding: 1.5rem;
-      font-family: monospace;
-      resize: none;
-      min-height: 300px;
-      width: 100%;
-      transition: border-color 0.3s ease;
-    }
-    
-    .log-input:focus {
-      outline: none;
-      border-color: #0ea5e9;
-      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
-    }
-    
-    .result-card {
-      background: linear-gradient(145deg, #1e293b, #0f172a);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid rgba(14, 165, 233, 0.2);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-    
     .error-highlight {
       background: rgba(248, 113, 113, 0.2);
       border-left: 3px solid #f87171;
@@ -338,20 +299,38 @@
       color: #0ea5e9;
     }
     
-    .minecraft-block {
+    .log-input {
+      background: rgba(30, 41, 59, 0.7);
+      border: 2px solid rgba(14, 165, 233, 0.3);
+      color: #f1f5f9;
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: monospace;
+      resize: none;
+      min-height: 300px;
+      width: 100%;
+      transition: border-color 0.3s ease;
+    }
+    
+    .log-input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+    
+    .result-card {
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .grid-pattern {
       background-image: 
-        linear-gradient(135deg, 
-          #1a3c1a 0%, 
-          #1a3c1a 25%, 
-          #1e471e 25%, 
-          #1e471e 50%, 
-          #1a3c1a 50%, 
-          #1a3c1a 75%, 
-          #1e471e 75%, 
-          #1e471e 100%);
-      background-size: 40px 40px;
-      border: 2px solid #0f2b0f;
-      border-radius: 4px;
+        linear-gradient(rgba(14, 165, 233, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14, 165, 233, 0.1) 1px, transparent 1px);
+      background-size: 20px 20px;
     }
     
     .reminder-indicator {
@@ -377,7 +356,7 @@
         <h1 class="text-2xl font-bold text-white">Cobalt Диагностика</h1>
       </div>
       
-      <div class="desktop-menu">
+      <div class="desktop-menu hidden md:flex space-x-6">
         <a href="index.html" class="hover:text-primary transition-colors flex items-center">
           <i class="fas fa-home mr-2"></i> Главная
         </a> 
@@ -395,7 +374,7 @@
         </a>
       </div>
       
-      <div class="burger-btn-container">
+      <div class="md:hidden">
         <button id="burgerBtn" class="text-white focus:outline-none z-50">
           <div class="burger-line"></div>
           <div class="burger-line"></div>
@@ -404,7 +383,7 @@
       </div>
     </div>
     
-    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+    <div id="mobileMenu" class="mobile-menu bg-gray-900 md:hidden">
       <div class="flex flex-col px-6 py-4">
         <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
           <i class="fas fa-home mr-3 w-5"></i> Главная
@@ -461,6 +440,10 @@
               <i class="fas fa-search mr-2"></i> Анализировать
             </button>
           </div>
+          
+          <button id="sendLogBtn" class="btn-diagnostic w-full py-2 rounded-lg font-medium text-white mt-4">
+            <i class="fas fa-paper-plane mr-2"></i> Отправить лог в поддержку
+          </button>
         </div>
         
         <div class="diagnostic-card p-6" data-aos="fade-left">
@@ -622,6 +605,7 @@
     const logInput = document.getElementById('logInput');
     const analyzeBtn = document.getElementById('analyzeBtn');
     const clearBtn = document.getElementById('clearBtn');
+    const sendLogBtn = document.getElementById('sendLogBtn');
     const resultContainer = document.getElementById('resultContainer');
     const emptyResult = document.getElementById('emptyResult');
     const errorSummary = document.getElementById('errorSummary');
@@ -860,6 +844,24 @@
       emptyResult.classList.remove('hidden');
     });
     
+    sendLogBtn.addEventListener('click', () => {
+      const logText = logInput.value.trim();
+      if (logText.length === 0) {
+        alert("Пожалуйста, введите или загрузите лог для отправки");
+        return;
+      }
+      
+      navigator.clipboard.writeText(logText)
+        .then(() => {
+          alert('Лог скопирован в буфер. Перейдите в телеграм и вставьте его в чат.');
+          window.open('https://t.me/atlantis_studio_chat/937', '_blank');
+        })
+        .catch(err => {
+          console.error('Ошибка копирования: ', err);
+          alert('Не удалось скопировать лог. Скопируйте его вручную и отправьте в телеграм.');
+        });
+    });
+    
     function analyzeLog(logText) {
       const errors = [];
       const lines = logText.split('\n');
@@ -896,7 +898,7 @@
           
           if (!isKnown) {
             unknownErrors.push({
-              title: "Найдена такая ошибка",
+              title: "Неизвестная ошибка",
               severity: "medium",
               description: "Обнаружена нераспознанная ошибка. Скопируйте и отправьте в поддержку",
               pattern: "unknown",
