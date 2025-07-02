@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Заметки с напоминаниями</title>
+  <title>Cobalt Заметки с напоминаниями</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="Images/icon.png">
-  <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
     tailwind.config = {
@@ -54,13 +52,13 @@
       width: 25px;
       background: white;
       margin: 5px auto;
-      transition: all 0.3s ease;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .mobile-menu {
       max-height: 0;
       overflow: hidden;
-      transition: max-height 0.5s ease-out;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .mobile-menu.open {
@@ -183,6 +181,13 @@
       margin-bottom: 0.5rem;
       color: #0ea5e9;
     }
+    
+    @media (min-width: 768px) {
+      #mobileMenu {
+        max-height: none !important;
+        display: none;
+      }
+    }
   </style>
 </head>
 <body class="bg-dark text-gray-200">
@@ -232,7 +237,7 @@
 
   <section class="py-10 px-4 relative">
     <div class="max-w-4xl mx-auto">
-      <div class="note-form" data-aos="fade-up">
+      <div class="note-form">
         <h2 class="text-2xl font-bold mb-6 text-white flex items-center">
           <i class="fas fa-plus-circle mr-3 text-primary"></i> Новая заметка
         </h2>
@@ -288,13 +293,13 @@
 
   <section class="py-10 px-4 relative">
     <div class="max-w-4xl mx-auto">
-      <h2 class="text-2xl font-bold mb-6 text-white flex items-center" data-aos="fade-up">
+      <h2 class="text-2xl font-bold mb-6 text-white flex items-center">
         <i class="fas fa-sticky-note mr-3 text-primary"></i> Мои заметки
         <span id="notesCounter" class="ml-2 bg-primary/20 text-primary text-sm font-medium px-3 py-1 rounded-full">0</span>
       </h2>
       
       <div id="notesContainer" class="grid grid-cols-1 gap-5">
-        <div id="emptyState" class="empty-state" data-aos="fade-up">
+        <div id="emptyState" class="empty-state">
           <div class="text-5xl text-primary/50 mb-4">
             <i class="fas fa-sticky-note"></i>
           </div>
@@ -308,27 +313,11 @@
     </div>
   </section>
 
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
   <script>
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 50
-    });
-
-    window.addEventListener('scroll', function() {
-      const header = document.querySelector('header');
-      if (window.scrollY > 10) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
-    
     const burgerBtn = document.getElementById('burgerBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     
-    burgerBtn.addEventListener('click', function() {
+    function toggleMobileMenu() {
       mobileMenu.classList.toggle('open');
       
       const lines = document.querySelectorAll('.burger-line');
@@ -341,19 +330,47 @@
         lines[1].style.opacity = '1';
         lines[2].style.transform = 'none';
       }
+    }
+
+    burgerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleMobileMenu();
     });
     
+    document.addEventListener('click', function(e) {
+      if (mobileMenu.classList.contains('open') && 
+          !mobileMenu.contains(e.target) && 
+          !burgerBtn.contains(e.target)) {
+        toggleMobileMenu();
+      }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+        toggleMobileMenu();
+      }
+    });
+
     const menuItems = mobileMenu.querySelectorAll('a');
     menuItems.forEach(item => {
-      item.addEventListener('click', () => {
-        mobileMenu.classList.remove('open');
-        const lines = document.querySelectorAll('.burger-line');
-        lines[0].style.transform = 'none';
-        lines[1].style.opacity = '1';
-        lines[2].style.transform = 'none';
+      item.addEventListener('click', function() {
+        setTimeout(() => {
+          if (mobileMenu.classList.contains('open')) {
+            toggleMobileMenu();
+          }
+        }, 300);
       });
     });
 
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
     const notesContainer = document.getElementById('notesContainer');
     const notesCounter = document.getElementById('notesCounter');
     const emptyState = document.getElementById('emptyState');
@@ -456,6 +473,17 @@
       });
     }
     
+    function animateNote(element) {
+      element.style.opacity = 0;
+      element.style.transform = 'translateY(20px)';
+      
+      setTimeout(() => {
+        element.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        element.style.opacity = 1;
+        element.style.transform = 'translateY(0)';
+      }, 10);
+    }
+    
     function renderNotes() {
       notesContainer.innerHTML = '';
       
@@ -475,8 +503,6 @@
       sortedNotes.forEach((note, index) => {
         const noteElement = document.createElement('div');
         noteElement.className = 'note-card p-5 relative';
-        noteElement.setAttribute('data-aos', 'fade-up');
-        noteElement.setAttribute('data-aos-delay', (index * 100) + 100);
         
         let reminderHtml = '';
         if (note.reminder) {
@@ -507,9 +533,8 @@
         `;
         
         notesContainer.appendChild(noteElement);
+        animateNote(noteElement);
       });
-      
-      AOS.refresh();
       
       document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
