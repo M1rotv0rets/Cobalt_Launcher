@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Система аккаунтов</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a',
+            success: '#10b981',
+            error: '#ef4444'
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .burger-line {
+      display: block;
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .auth-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .auth-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-secondary {
+      background: linear-gradient(135deg, #64748b, #475569);
+      transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3);
+    }
+    
+    .form-input {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      color: white;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.3);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(30, 41, 59, 0.95);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      border-left: 4px solid #0ea5e9;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: translateX(120%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-title {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #0ea5e9;
+    }
+    
+    .avatar-upload {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      cursor: pointer;
+    }
+    
+    .avatar-preview {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #0ea5e9;
+      background: rgba(15, 23, 42, 0.6);
+    }
+    
+    .avatar-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .avatar-upload:hover .avatar-overlay {
+      opacity: 1;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .profile-card {
+      background: rgba(30, 41, 59, 0.7);
+      border-radius: 16px;
+      padding: 2rem;
+      border: 1px solid rgba(14, 165, 233, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    @media (min-width: 768px) {
+      .desktop-menu {
+        display: flex;
+        gap: 20px;
+      }
+      .burger-btn-container {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 767px) {
+      .desktop-menu {
+        display: none;
+      }
+      .burger-btn-container {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200">
+  <header class="sticky-header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fas fa-user text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Аккаунт система</h1>
+      </div>
+      
+      <div class="desktop-menu">
+        <a href="#" class="hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-2"></i> Главная
+        </a> 
+        <a href="#" class="hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-info-circle mr-2"></i> О нас
+        </a>
+        <a href="#" class="hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-cog mr-2"></i> Настройки
+        </a>
+      </div>
+      
+      <div id="authState" class="flex items-center">
+        <!-- Здесь будет отображаться состояние авторизации -->
+      </div>
+      
+      <div class="burger-btn-container">
+        <button id="burgerBtn" class="text-white focus:outline-none z-50">
+          <div class="burger-line"></div>
+          <div class="burger-line"></div>
+          <div class="burger-line"></div>
+        </button>
+      </div>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-info-circle mr-3 w-5"></i> О нас
+        </a>
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-cog mr-3 w-5"></i> Настройки
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div id="notification" class="notification">
+    <div class="notification-title">
+      <i class="fas fa-bell mr-2"></i> Уведомление
+    </div>
+    <div id="notificationContent">Сообщение</div>
+  </div>
+
+  <main class="py-10 px-4 min-h-screen">
+    <div id="authContainer" class="max-w-md mx-auto">
+      <!-- Форма входа -->
+      <div id="loginForm" class="auth-card p-8">
+        <h2 class="text-2xl font-bold mb-6 text-white text-center">
+          <i class="fas fa-sign-in-alt mr-2 text-primary"></i> Вход в аккаунт
+        </h2>
+        
+        <div class="mb-5">
+          <label class="block text-gray-300 mb-2">Никнейм или Email</label>
+          <input 
+            id="loginIdentifier" 
+            type="text" 
+            class="form-input" 
+            placeholder="Введите ваш никнейм или email"
+          >
+        </div>
+        
+        <div class="mb-5">
+          <label class="block text-gray-300 mb-2">Пароль</label>
+          <input 
+            id="loginPassword" 
+            type="password" 
+            class="form-input" 
+            placeholder="Введите ваш пароль"
+          >
+        </div>
+        
+        <div class="mb-6 flex justify-between items-center">
+          <div class="flex items-center">
+            <input 
+              id="rememberMe" 
+              type="checkbox" 
+              class="form-checkbox h-4 w-4 text-primary rounded"
+            >
+            <label for="rememberMe" class="ml-2 text-gray-300 text-sm">Запомнить меня</label>
+          </div>
+          
+          <button 
+            id="forgotPasswordBtn" 
+            class="text-primary text-sm hover:underline"
+          >
+            Забыли пароль?
+          </button>
+        </div>
+        
+        <button 
+          id="loginBtn" 
+          class="btn-primary w-full py-3 rounded-lg font-medium text-white mb-4"
+        >
+          <i class="fas fa-sign-in-alt mr-2"></i> Войти
+        </button>
+        
+        <div class="text-center text-gray-400">
+          Нет аккаунта? 
+          <button 
+            id="showRegisterBtn" 
+            class="text-primary hover:underline"
+          >
+            Зарегистрироваться
+          </button>
+        </div>
+      </div>
+      
+      <!-- Форма регистрации -->
+      <div id="registerForm" class="auth-card p-8 hidden">
+        <h2 class="text-2xl font-bold mb-6 text-white text-center">
+          <i class="fas fa-user-plus mr-2 text-primary"></i> Регистрация
+        </h2>
+        
+        <div class="mb-5">
+          <label class="block text-gray-300 mb-2">Никнейм</label>
+          <input 
+            id="registerNickname" 
+            type="text" 
+            class="form-input" 
+            placeholder="Придумайте уникальный никнейм"
+          >
+        </div>
+        
+        <div class="mb-5">
+          <label class="block text-gray-300 mb-2">Email</label>
+          <input 
+            id="registerEmail" 
+            type="email" 
+            class="form-input" 
+            placeholder="Введите ваш email"
+          >
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+          <div>
+            <label class="block text-gray-300 mb-2">Пароль</label>
+            <input 
+              id="registerPassword" 
+              type="password" 
+              class="form-input" 
+              placeholder="Придумайте пароль"
+            >
+          </div>
+          
+          <div>
+            <label class="block text-gray-300 mb-2">Повторите пароль</label>
+            <input 
+              id="registerPasswordConfirm" 
+              type="password" 
+              class="form-input" 
+              placeholder="Повторите пароль"
+            >
+          </div>
+        </div>
+        
+        <div class="mb-6">
+          <label class="block text-gray-300 mb-2 text-center">Аватарка (необязательно)</label>
+          <div class="avatar-upload">
+            <img id="avatarPreview" src="" class="avatar-preview" alt="Превью аватарки">
+            <div class="avatar-overlay">
+              <i class="fas fa-camera text-white text-2xl"></i>
+            </div>
+            <input 
+              id="avatarInput" 
+              type="file" 
+              accept="image/*" 
+              class="hidden"
+            >
+          </div>
+        </div>
+        
+        <button 
+          id="registerBtn" 
+          class="btn-primary w-full py-3 rounded-lg font-medium text-white mb-4"
+        >
+          <i class="fas fa-user-plus mr-2"></i> Зарегистрироваться
+        </button>
+        
+        <div class="text-center text-gray-400">
+          Уже есть аккаунт? 
+          <button 
+            id="showLoginBtn" 
+            class="text-primary hover:underline"
+          >
+            Войти
+          </button>
+        </div>
+      </div>
+      
+      <!-- Форма сброса пароля -->
+      <div id="resetPasswordForm" class="auth-card p-8 hidden">
+        <h2 class="text-2xl font-bold mb-6 text-white text-center">
+          <i class="fas fa-key mr-2 text-primary"></i> Сброс пароля
+        </h2>
+        
+        <div class="mb-6">
+          <p class="text-gray-300 mb-4 text-center">
+            Введите email вашего аккаунта. Мы отправим ссылку для сброса пароля.
+          </p>
+          <label class="block text-gray-300 mb-2">Email</label>
+          <input 
+            id="resetEmail" 
+            type="email" 
+            class="form-input" 
+            placeholder="Введите email вашего аккаунта"
+          >
+        </div>
+        
+        <button 
+          id="resetPasswordBtn" 
+          class="btn-primary w-full py-3 rounded-lg font-medium text-white mb-4"
+        >
+          <i class="fas fa-paper-plane mr-2"></i> Отправить ссылку
+        </button>
+        
+        <div class="text-center">
+          <button 
+            id="backToLoginBtn" 
+            class="text-primary hover:underline"
+          >
+            <i class="fas fa-arrow-left mr-2"></i> Вернуться к входу
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Профиль пользователя -->
+    <div id="profileContainer" class="max-w-3xl mx-auto hidden">
+      <div class="profile-card">
+        <h2 class="text-2xl font-bold mb-6 text-white text-center">
+          <i class="fas fa-user-circle mr-2 text-primary"></i> Ваш профиль
+        </h2>
+        
+        <div class="flex flex-col items-center mb-8">
+          <div class="relative mb-4">
+            <img id="profileAvatar" src="" class="w-32 h-32 rounded-full border-4 border-primary object-cover" alt="Аватар">
+            <button 
+              id="changeAvatarBtn" 
+              class="absolute bottom-0 right-0 bg-primary rounded-full p-2 hover:bg-blue-600 transition"
+            >
+              <i class="fas fa-camera text-white"></i>
+            </button>
+            <input 
+              id="newAvatarInput" 
+              type="file" 
+              accept="image/*" 
+              class="hidden"
+            >
+          </div>
+          <h3 id="profileNickname" class="text-xl font-bold text-white"></h3>
+          <p id="profileEmail" class="text-gray-400"></p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="bg-gray-800/50 p-4 rounded-lg text-center">
+            <div class="text-primary text-2xl mb-2">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+            <p class="text-gray-300">Дата регистрации</p>
+            <p id="signupDate" class="font-bold"></p>
+          </div>
+          
+          <div class="bg-gray-800/50 p-4 rounded-lg text-center">
+            <div class="text-primary text-2xl mb-2">
+              <i class="fas fa-clock"></i>
+            </div>
+            <p class="text-gray-300">Последний вход</p>
+            <p id="lastLogin" class="font-bold"></p>
+          </div>
+          
+          <div class="bg-gray-800/50 p-4 rounded-lg text-center">
+            <div class="text-primary text-2xl mb-2">
+              <i class="fas fa-user-shield"></i>
+            </div>
+            <p class="text-gray-300">Статус аккаунта</p>
+            <p id="accountStatus" class="font-bold text-success">Активен</p>
+          </div>
+        </div>
+        
+        <div class="flex justify-center">
+          <button 
+            id="logoutBtn" 
+            class="btn-secondary px-6 py-3 rounded-lg font-medium text-white"
+          >
+            <i class="fas fa-sign-out-alt mr-2"></i> Выйти
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Инициализация Firebase
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    
+    // Инициализируем Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    
+    // DOM элементы
+    const notification = document.getElementById('notification');
+    const notificationContent = document.getElementById('notificationContent');
+    
+    // Формы
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const resetPasswordForm = document.getElementById('resetPasswordForm');
+    const profileContainer = document.getElementById('profileContainer');
+    const authContainer = document.getElementById('authContainer');
+    
+    // Кнопки
+    const showRegisterBtn = document.getElementById('showRegisterBtn');
+    const showLoginBtn = document.getElementById('showLoginBtn');
+    const forgotPasswordBtn = document.getElementById('forgotPasswordBtn');
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const changeAvatarBtn = document.getElementById('changeAvatarBtn');
+    
+    // Поля ввода
+    const loginIdentifier = document.getElementById('loginIdentifier');
+    const loginPassword = document.getElementById('loginPassword');
+    const registerNickname = document.getElementById('registerNickname');
+    const registerEmail = document.getElementById('registerEmail');
+    const registerPassword = document.getElementById('registerPassword');
+    const registerPasswordConfirm = document.getElementById('registerPasswordConfirm');
+    const resetEmail = document.getElementById('resetEmail');
+    
+    // Аватарки
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const newAvatarInput = document.getElementById('newAvatarInput');
+    const profileAvatar = document.getElementById('profileAvatar');
+    
+    // Профиль
+    const profileNickname = document.getElementById('profileNickname');
+    const profileEmail = document.getElementById('profileEmail');
+    const signupDate = document.getElementById('signupDate');
+    const lastLogin = document.getElementById('lastLogin');
+    
+    // Состояние авторизации в хедере
+    const authState = document.getElementById('authState');
+    
+    // Показываем уведомление
+    function showNotification(message, isError = false) {
+      notificationContent.textContent = message;
+      notification.classList.add('show');
+      
+      if (isError) {
+        notification.style.borderLeftColor = '#ef4444';
+      } else {
+        notification.style.borderLeftColor = '#0ea5e9';
+      }
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+    
+    // Переключение между формами
+    showRegisterBtn.addEventListener('click', () => {
+      loginForm.classList.add('hidden');
+      registerForm.classList.remove('hidden');
+      resetPasswordForm.classList.add('hidden');
+    });
+    
+    showLoginBtn.addEventListener('click', () => {
+      registerForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+      resetPasswordForm.classList.add('hidden');
+    });
+    
+    forgotPasswordBtn.addEventListener('click', () => {
+      loginForm.classList.add('hidden');
+      resetPasswordForm.classList.remove('hidden');
+    });
+    
+    backToLoginBtn.addEventListener('click', () => {
+      resetPasswordForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+    });
+    
+    // Загрузка и предпросмотр аватарки
+    avatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          avatarPreview.src = event.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Смена аватарки в профиле
+    changeAvatarBtn.addEventListener('click', () => {
+      newAvatarInput.click();
+    });
+    
+    newAvatarInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          profileAvatar.src = event.target.result;
+          updateUserAvatar(file);
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // Обновление аватарки пользователя
+    async function updateUserAvatar(file) {
+      try {
+        const user = auth.currentUser;
+        if (!user) return;
+        
+        // Загружаем изображение в Firebase Storage
+        const storageRef = storage.ref();
+        const avatarRef = storageRef.child(`avatars/${user.uid}`);
+        await avatarRef.put(file);
+        
+        // Получаем URL загруженного изображения
+        const downloadURL = await avatarRef.getDownloadURL();
+        
+        // Обновляем URL аватарки в Firestore
+        await db.collection('users').doc(user.uid).update({
+          avatarUrl: downloadURL
+        });
+        
+        // Обновляем аватар в UI
+        showNotification('Аватар успешно обновлен!');
+      } catch (error) {
+        console.error('Ошибка обновления аватарки:', error);
+        showNotification('Ошибка обновления аватарки', true);
+      }
+    }
+    
+    // Регистрация нового пользователя
+    registerBtn.addEventListener('click', async () => {
+      const nickname = registerNickname.value.trim();
+      const email = registerEmail.value.trim();
+      const password = registerPassword.value;
+      const passwordConfirm = registerPasswordConfirm.value;
+      const avatarFile = avatarInput.files[0];
+      
+      // Валидация
+      if (!nickname) {
+        showNotification('Введите никнейм', true);
+        return;
+      }
+      
+      if (!email) {
+        showNotification('Введите email', true);
+        return;
+      }
+      
+      if (password.length < 6) {
+        showNotification('Пароль должен быть не менее 6 символов', true);
+        return;
+      }
+      
+      if (password !== passwordConfirm) {
+        showNotification('Пароли не совпадают', true);
+        return;
+      }
+      
+      try {
+        // Создаем пользователя в Firebase Auth
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+        
+        // Загружаем аватарку, если она есть
+        let avatarUrl = '';
+        if (avatarFile) {
+          const storageRef = storage.ref();
+          const avatarRef = storageRef.child(`avatars/${user.uid}`);
+          await avatarRef.put(avatarFile);
+          avatarUrl = await avatarRef.getDownloadURL();
+        }
+        
+        // Сохраняем данные пользователя в Firestore
+        await db.collection('users').doc(user.uid).set({
+          nickname,
+          email,
+          avatarUrl,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // Очищаем форму
+        registerNickname.value = '';
+        registerEmail.value = '';
+        registerPassword.value = '';
+        registerPasswordConfirm.value = '';
+        avatarInput.value = '';
+        avatarPreview.src = '';
+        
+        // Показываем профиль
+        showProfile();
+        showNotification('Регистрация прошла успешно!');
+      } catch (error) {
+        console.error('Ошибка регистрации:', error);
+        showNotification(`Ошибка регистрации: ${error.message}`, true);
+      }
+    });
+    
+    // Вход в систему
+    loginBtn.addEventListener('click', async () => {
+      const identifier = loginIdentifier.value.trim();
+      const password = loginPassword.value;
+      
+      if (!identifier) {
+        showNotification('Введите никнейм или email', true);
+        return;
+      }
+      
+      if (!password) {
+        showNotification('Введите пароль', true);
+        return;
+      }
+      
+      try {
+        // Пытаемся войти по email
+        await auth.signInWithEmailAndPassword(identifier, password);
+        showProfile();
+        showNotification('Вход выполнен успешно!');
+      } catch (emailError) {
+        // Если не получилось по email, пробуем найти пользователя по никнейму
+        try {
+          const usersSnapshot = await db.collection('users')
+            .where('nickname', '==', identifier)
+            .limit(1)
+            .get();
+          
+          if (usersSnapshot.empty) {
+            showNotification('Неверный никнейм или пароль', true);
+            return;
+          }
+          
+          const userDoc = usersSnapshot.docs[0];
+          const userData = userDoc.data();
+          
+          // Входим по email пользователя
+          await auth.signInWithEmailAndPassword(userData.email, password);
+          showProfile();
+          showNotification('Вход выполнен успешно!');
+        } catch (nicknameError) {
+          console.error('Ошибка входа:', nicknameError);
+          showNotification('Неверный никнейм или пароль', true);
+        }
+      }
+    });
+    
+    // Сброс пароля
+    resetPasswordBtn.addEventListener('click', async () => {
+      const email = resetEmail.value.trim();
+      
+      if (!email) {
+        showNotification('Введите email', true);
+        return;
+      }
+      
+      try {
+        await auth.sendPasswordResetEmail(email);
+        showNotification('Ссылка для сброса пароля отправлена на ваш email');
+        resetEmail.value = '';
+        resetPasswordForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+      } catch (error) {
+        console.error('Ошибка сброса пароля:', error);
+        showNotification(`Ошибка: ${error.message}`, true);
+      }
+    });
+    
+    // Выход из системы
+    logoutBtn.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        showAuthForms();
+        showNotification('Вы вышли из системы');
+      }).catch((error) => {
+        console.error('Ошибка выхода:', error);
+        showNotification('Ошибка выхода из системы', true);
+      });
+    });
+    
+    // Показать формы авторизации
+    function showAuthForms() {
+      profileContainer.classList.add('hidden');
+      authContainer.classList.remove('hidden');
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      resetPasswordForm.classList.add('hidden');
+      
+      // Обновляем хедер
+      updateAuthHeader(null);
+    }
+    
+    // Показать профиль пользователя
+    async function showProfile() {
+      const user = auth.currentUser;
+      if (!user) return;
+      
+      // Получаем данные пользователя из Firestore
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data();
+      
+      // Обновляем данные профиля
+      profileNickname.textContent = userData.nickname || 'Без имени';
+      profileEmail.textContent = user.email;
+      
+      // Форматируем даты
+      const signupDateValue = userData.createdAt?.toDate();
+      if (signupDateValue) {
+        signupDate.textContent = signupDateValue.toLocaleDateString('ru-RU');
+      } else {
+        signupDate.textContent = 'Неизвестно';
+      }
+      
+      const lastLoginValue = userData.lastLogin?.toDate();
+      if (lastLoginValue) {
+        lastLogin.textContent = lastLoginValue.toLocaleString('ru-RU');
+      } else {
+        lastLogin.textContent = 'Неизвестно';
+      }
+      
+      // Устанавливаем аватар
+      if (userData.avatarUrl) {
+        profileAvatar.src = userData.avatarUrl;
+      } else {
+        profileAvatar.src = 'https://via.placeholder.com/150?text=No+Avatar';
+      }
+      
+      // Показываем профиль
+      authContainer.classList.add('hidden');
+      profileContainer.classList.remove('hidden');
+      
+      // Обновляем хедер
+      updateAuthHeader(userData);
+    }
+    
+    // Обновление информации в хедере
+    function updateAuthHeader(userData) {
+      if (!userData) {
+        authState.innerHTML = `
+          <button id="headerLoginBtn" class="flex items-center text-gray-300 hover:text-primary transition">
+            <i class="fas fa-sign-in-alt mr-2"></i> Войти
+          </button>
+        `;
+        document.getElementById('headerLoginBtn').addEventListener('click', () => {
+          showAuthForms();
+        });
+      } else {
+        authState.innerHTML = `
+          <div class="flex items-center">
+            <div class="flex items-center mr-4">
+              <img src="${userData.avatarUrl || 'https://via.placeholder.com/40?text=AV'}" 
+                   class="w-8 h-8 rounded-full mr-2" alt="Аватар">
+              <span class="text-white">${userData.nickname || 'Пользователь'}</span>
+            </div>
+            <span class="text-gray-400 text-sm">${new Date().toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+        `;
+      }
+    }
+    
+    // Отслеживаем состояние авторизации
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Обновляем время последнего входа
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          await db.collection('users').doc(user.uid).update({
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          showProfile();
+        }
+      } else {
+        showAuthForms();
+      }
+    });
+    
+    // Инициализация страницы
+    document.addEventListener('DOMContentLoaded', () => {
+      // Проверяем состояние авторизации при загрузке
+      const user = auth.currentUser;
+      if (user) {
+        showProfile();
+      } else {
+        showAuthForms();
+      }
+    });
+  </script>
+</body>
+</html>
