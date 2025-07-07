@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Новости Minecraft и Cobalt Launcher</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/732/732238.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0ea5e9',
+            dark: '#0f172a',
+            minecraft: '#5db152',
+            cobalt: '#4c8bf5'
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      scroll-behavior: smooth;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f1f5f9;
+      min-height: 100vh;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.85);
+    }
+    
+    .scrolled {
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .burger-line {
+      display: block;
+      height: 2px;
+      width: 25px;
+      background: white;
+      margin: 5px auto;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .mobile-menu.open {
+      max-height: 300px;
+    }
+    
+    .news-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .news-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 10px 25px -5px rgba(14, 165, 233, 0.3);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5);
+    }
+    
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+    
+    .btn-minecraft {
+      background: linear-gradient(135deg, #5db152, #4a9e42);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(93, 177, 82, 0.3);
+    }
+    
+    .btn-minecraft:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(93, 177, 82, 0.5);
+    }
+    
+    .btn-cobalt {
+      background: linear-gradient(135deg, #4c8bf5, #3a75d6);
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(76, 139, 245, 0.3);
+    }
+    
+    .btn-cobalt:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(76, 139, 245, 0.5);
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(30, 41, 59, 0.95);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      border-left: 4px solid #0ea5e9;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transform: translateX(120%);
+      transition: transform 0.4s ease;
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    .notification-title {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: #0ea5e9;
+    }
+    
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    
+    .tag-minecraft {
+      background-color: rgba(93, 177, 82, 0.2);
+      color: #5db152;
+    }
+    
+    .tag-cobalt {
+      background-color: rgba(76, 139, 245, 0.2);
+      color: #4c8bf5;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @media (min-width: 768px) {
+      .desktop-menu {
+        display: flex;
+        gap: 20px;
+      }
+      .burger-btn-container {
+        display: none;
+      }
+    }
+    
+    @media (max-width: 767px) {
+      .desktop-menu {
+        display: none;
+      }
+      .burger-btn-container {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body class="bg-dark text-gray-200">
+  <header class="sticky-header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+          <i class="fab fa-telegram text-white"></i>
+        </div>
+        <h1 class="text-2xl font-bold text-white">Cobalt News Bot</h1>
+      </div>
+      
+      <div class="desktop-menu">
+        <a href="index.html" class="hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-2"></i> Главная
+        </a> 
+        <a href="#" class="hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-microsoft mr-2"></i> Лаунчер
+        </a>
+        <a href="https://t.me/atlantis_studio_chat" class="hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-users mr-2"></i> Сообщество
+        </a>
+      </div>
+      
+      <div class="burger-btn-container">
+        <button id="burgerBtn" class="text-white focus:outline-none z-50">
+          <div class="burger-line"></div>
+          <div class="burger-line"></div>
+          <div class="burger-line"></div>
+        </button>
+      </div>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu bg-gray-900">
+      <div class="flex flex-col px-6 py-4">
+        <a href="index.html" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-home mr-3 w-5"></i> Главная
+        </a> 
+        <a href="#" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fab fa-microsoft mr-3 w-5"></i> Лаунчер
+        </a>
+        <a href="https://t.me/atlantis_studio_chat" class="py-3 hover:text-primary transition-colors flex items-center">
+          <i class="fas fa-users mr-3 w-5"></i> Сообщество
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div id="notification" class="notification">
+    <div class="notification-title">
+      <i class="fas fa-bell mr-2"></i> Обновление!
+    </div>
+    <div id="notificationContent">Новые новости загружены</div>
+  </div>
+
+  <section class="py-12 px-4 relative">
+    <div class="max-w-6xl mx-auto text-center">
+      <div class="inline-block bg-gradient-to-r from-primary to-cobalt p-1 rounded-full mb-6">
+        <div class="bg-dark rounded-full px-5 py-2">
+          <span class="text-white font-bold">Бот для Telegram новостей</span>
+        </div>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold mb-6 text-white">
+        Последние новости из мира <span class="text-minecraft">Minecraft</span> и <span class="text-cobalt">Cobalt Launcher</span>
+      </h1>
+      <p class="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+        Автоматически обновляемые новости из Telegram каналов. Всегда свежая информация в удобном формате.
+      </p>
+      
+      <div class="flex flex-wrap justify-center gap-4 mb-16">
+        <button id="refreshBtn" class="btn-primary px-6 py-3 rounded-lg font-medium text-white flex items-center">
+          <i class="fas fa-sync-alt mr-2"></i> Обновить новости
+        </button>
+        <a href="https://t.me/nerkinboat" target="_blank" class="btn-minecraft px-6 py-3 rounded-lg font-medium text-white flex items-center">
+          <i class="fab fa-telegram mr-2"></i> Minecraft News
+        </a>
+        <a href="https://t.me/atlantis_studio_chat/15" target="_blank" class="btn-cobalt px-6 py-3 rounded-lg font-medium text-white flex items-center">
+          <i class="fab fa-telegram mr-2"></i> Cobalt News
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 px-4 relative">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-white flex items-center">
+        <i class="fas fa-cube mr-3 text-minecraft"></i> Новости Minecraft
+        <span id="minecraftCounter" class="ml-2 bg-minecraft/20 text-minecraft text-sm font-medium px-3 py-1 rounded-full">0</span>
+      </h2>
+      
+      <div id="minecraftLoading" class="text-center py-10">
+        <div class="inline-block">
+          <div class="loading-spinner mb-4"></div>
+          <p class="text-gray-400">Загрузка новостей Minecraft...</p>
+        </div>
+      </div>
+      
+      <div id="minecraftNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Карточки новостей будут здесь -->
+      </div>
+    </div>
+  </section>
+
+  <section class="py-10 px-4 relative">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 text-white flex items-center">
+        <i class="fas fa-rocket mr-3 text-cobalt"></i> Новости Cobalt Launcher
+        <span id="cobaltCounter" class="ml-2 bg-cobalt/20 text-cobalt text-sm font-medium px-3 py-1 rounded-full">0</span>
+      </h2>
+      
+      <div id="cobaltLoading" class="text-center py-10">
+        <div class="inline-block">
+          <div class="loading-spinner mb-4"></div>
+          <p class="text-gray-400">Загрузка новостей Cobalt...</p>
+        </div>
+      </div>
+      
+      <div id="cobaltNews" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Карточки новостей будут здесь -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-10 px-4 border-t border-gray-800 mt-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center">
+            <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
+              <i class="fab fa-telegram text-white"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white">Cobalt News Bot</h2>
+          </div>
+          <p class="text-gray-400 mt-2">Автоматические новости из Telegram каналов</p>
+        </div>
+        
+        <div class="flex flex-col items-center md:items-end">
+          <div class="flex space-x-4 mb-4">
+            <a href="https://t.me/nerkinboat" target="_blank" class="text-gray-400 hover:text-minecraft transition-colors">
+              <i class="fab fa-telegram fa-lg"></i>
+            </a>
+            <a href="https://t.me/atlantis_studio_chat" target="_blank" class="text-gray-400 hover:text-cobalt transition-colors">
+              <i class="fab fa-telegram fa-lg"></i>
+            </a>
+          </div>
+          <p class="text-gray-500 text-sm">© 2023 Cobalt News Bot. Все права защищены.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore-compat.js"></script>
+  
+  <script>
+    // Firebase конфигурация
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Инициализация Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Элементы DOM
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const notification = document.getElementById('notification');
+    const notificationContent = document.getElementById('notificationContent');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const minecraftNews = document.getElementById('minecraftNews');
+    const cobaltNews = document.getElementById('cobaltNews');
+    const minecraftLoading = document.getElementById('minecraftLoading');
+    const cobaltLoading = document.getElementById('cobaltLoading');
+    const minecraftCounter = document.getElementById('minecraftCounter');
+    const cobaltCounter = document.getElementById('cobaltCounter');
+
+    // Функции для меню
+    function toggleMobileMenu() {
+      mobileMenu.classList.toggle('open');
+      const lines = document.querySelectorAll('.burger-line');
+      if (mobileMenu.classList.contains('open')) {
+        lines[0].style.transform = 'translateY(7px) rotate(45deg)';
+        lines[1].style.opacity = '0';
+        lines[2].style.transform = 'translateY(-7px) rotate(-45deg)';
+      } else {
+        lines[0].style.transform = 'none';
+        lines[1].style.opacity = '1';
+        lines[2].style.transform = 'none';
+      }
+    }
+
+    burgerBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleMobileMenu();
+    });
+    
+    document.addEventListener('click', function(e) {
+      if (mobileMenu.classList.contains('open') && 
+          !mobileMenu.contains(e.target) && 
+          !burgerBtn.contains(e.target)) {
+        toggleMobileMenu();
+      }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && mobileMenu.classList.contains('open')) {
+        toggleMobileMenu();
+      }
+    });
+
+    const menuItems = mobileMenu.querySelectorAll('a');
+    menuItems.forEach(item => {
+      item.addEventListener('click', function() {
+        setTimeout(() => {
+          if (mobileMenu.classList.contains('open')) {
+            toggleMobileMenu();
+          }
+        }, 300);
+      });
+    });
+
+    window.addEventListener('scroll', function() {
+      const header = document.querySelector('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    // Функция показа уведомления
+    function showNotification(message) {
+      notificationContent.textContent = message;
+      notification.classList.add('show');
+      
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+    
+    // Функция форматирования даты
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    
+    // Функция создания карточки новости
+    function createNewsCard(news, type) {
+      const card = document.createElement('div');
+      card.className = 'news-card p-6';
+      
+      let tagClass, tagText, borderClass;
+      if (type === 'minecraft') {
+        tagClass = 'tag-minecraft';
+        tagText = 'Minecraft';
+        borderClass = 'border-minecraft';
+      } else {
+        tagClass = 'tag-cobalt';
+        tagText = 'Cobalt';
+        borderClass = 'border-cobalt';
+      }
+      
+      card.innerHTML = `
+        <div class="border-l-4 ${borderClass} pl-4 mb-4">
+          <div class="flex justify-between items-start mb-2">
+            <h3 class="text-xl font-bold text-white">${news.title}</h3>
+            <span class="${tagClass} tag">${tagText}</span>
+          </div>
+          <div class="text-sm text-gray-400 mb-4">${formatDate(news.date)}</div>
+        </div>
+        <div class="mb-4 text-gray-300 line-clamp-3">${news.content}</div>
+        <div class="flex items-center justify-between">
+          <a href="${news.link}" target="_blank" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium">
+            <i class="fab fa-telegram mr-2"></i> Читать в Telegram
+          </a>
+          <div class="text-gray-500 text-sm">
+            <i class="far fa-eye mr-1"></i> ${news.views || 'N/A'}
+          </div>
+        </div>
+      `;
+      
+      return card;
+    }
+    
+    // Загрузка новостей Minecraft
+    function loadMinecraftNews() {
+      minecraftLoading.style.display = 'block';
+      minecraftNews.innerHTML = '';
+      
+      db.collection('news')
+        .where('type', '==', 'minecraft')
+        .orderBy('date', 'desc')
+        .limit(9)
+        .get()
+        .then((querySnapshot) => {
+          minecraftLoading.style.display = 'none';
+          const newsCount = querySnapshot.size;
+          minecraftCounter.textContent = newsCount;
+          
+          if (newsCount === 0) {
+            minecraftNews.innerHTML = `
+              <div class="col-span-full text-center py-10">
+                <div class="inline-block">
+                  <i class="fas fa-newspaper text-4xl text-gray-500 mb-4"></i>
+                  <p class="text-gray-400">Новостей Minecraft пока нет</p>
+                </div>
+              </div>
+            `;
+            return;
+          }
+          
+          querySnapshot.forEach((doc) => {
+            const news = doc.data();
+            const card = createNewsCard(news, 'minecraft');
+            minecraftNews.appendChild(card);
+          });
+        })
+        .catch((error) => {
+          minecraftLoading.style.display = 'none';
+          minecraftNews.innerHTML = `
+            <div class="col-span-full text-center py-10">
+              <div class="inline-block">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <p class="text-gray-400">Ошибка загрузки новостей Minecraft</p>
+              </div>
+            </div>
+          `;
+          console.error("Ошибка загрузки новостей Minecraft: ", error);
+        });
+    }
+    
+    // Загрузка новостей Cobalt
+    function loadCobaltNews() {
+      cobaltLoading.style.display = 'block';
+      cobaltNews.innerHTML = '';
+      
+      db.collection('news')
+        .where('type', '==', 'cobalt')
+        .orderBy('date', 'desc')
+        .limit(9)
+        .get()
+        .then((querySnapshot) => {
+          cobaltLoading.style.display = 'none';
+          const newsCount = querySnapshot.size;
+          cobaltCounter.textContent = newsCount;
+          
+          if (newsCount === 0) {
+            cobaltNews.innerHTML = `
+              <div class="col-span-full text-center py-10">
+                <div class="inline-block">
+                  <i class="fas fa-newspaper text-4xl text-gray-500 mb-4"></i>
+                  <p class="text-gray-400">Новостей Cobalt пока нет</p>
+                </div>
+              </div>
+            `;
+            return;
+          }
+          
+          querySnapshot.forEach((doc) => {
+            const news = doc.data();
+            const card = createNewsCard(news, 'cobalt');
+            cobaltNews.appendChild(card);
+          });
+        })
+        .catch((error) => {
+          cobaltLoading.style.display = 'none';
+          cobaltNews.innerHTML = `
+            <div class="col-span-full text-center py-10">
+              <div class="inline-block">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <p class="text-gray-400">Ошибка загрузки новостей Cobalt</p>
+              </div>
+            </div>
+          `;
+          console.error("Ошибка загрузки новостей Cobalt: ", error);
+        });
+    }
+    
+    // Обновление всех новостей
+    function refreshAllNews() {
+      refreshBtn.innerHTML = '<div class="loading-spinner mr-2"></div> Обновление...';
+      refreshBtn.disabled = true;
+      
+      // Вызов Cloud Function для обновления новостей
+      // В реальном приложении здесь будет вызов HTTP функции Firebase
+      
+      // Эмуляция задержки
+      setTimeout(() => {
+        loadMinecraftNews();
+        loadCobaltNews();
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Обновить новости';
+        refreshBtn.disabled = false;
+        showNotification('Новости успешно обновлены!');
+      }, 2000);
+    }
+    
+    // Инициализация при загрузке страницы
+    document.addEventListener('DOMContentLoaded', function() {
+      loadMinecraftNews();
+      loadCobaltNews();
+      
+      // Обработчики событий
+      refreshBtn.addEventListener('click', refreshAllNews);
+      
+      // Автоматическое обновление каждые 30 минут
+      setInterval(() => {
+        showNotification('Автоматическое обновление новостей...');
+        refreshAllNews();
+      }, 30 * 60 * 1000);
+    });
+  </script>
+</body>
+</html>
