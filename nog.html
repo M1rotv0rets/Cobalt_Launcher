@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cobalt Launcher</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0c1220 0%, #1a243a 50%, #0c1220 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px 12px 0 0;
+            border-bottom: 2px solid #3b82f6;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.7);
+        }
+
+        .logo-icon::before {
+            content: "C";
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(to right, #60a5fa, #93c5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 10px rgba(96, 165, 250, 0.3);
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(30, 41, 59, 0.7);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status.online {
+            color: #4ade80;
+        }
+
+        .status.offline {
+            color: #f87171;
+        }
+
+        .status i {
+            font-size: 18px;
+        }
+
+        .tabwidget {
+            display: flex;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 0 0 12px 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            font-size: 15px;
+        }
+
+        .tab:hover {
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+        }
+
+        .tab.active {
+            background: rgba(30, 41, 59, 0.9);
+            color: #60a5fa;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .tab i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .play-section {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .combobox {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .combobox label {
+            display: block;
+            margin-bottom: 8px;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .combobox select {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid #1e293b;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 16px;
+            transition: all 0.3s;
+            appearance: none;
+        }
+
+        .combobox select:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .combobox::after {
+            content: "▼";
+            position: absolute;
+            right: 15px;
+            top: 40px;
+            color: #60a5fa;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            background: linear-gradient(to bottom, #3b82f6, #2563eb);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:hover {
+            background: linear-gradient(to bottom, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn i {
+            font-size: 18px;
+        }
+
+        .btn.play {
+            background: linear-gradient(to bottom, #10b981, #059669);
+            padding: 15px 30px;
+            font-size: 18px;
+        }
+
+        .btn.play:hover {
+            background: linear-gradient(to bottom, #059669, #047857);
+        }
+
+        .progress-section {
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #0f172a;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #3b82f6, #60a5fa);
+            width: 65%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0) 0%, 
+                rgba(255,255,255,0.2) 50%, 
+                rgba(255,255,255,0) 100%);
+            animation: shine 2s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .tab-content {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.85);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            display: none;
+            overflow-y: auto;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .tab-content h2 {
+            color: #60a5fa;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tab-content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+
+        .empty-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .empty-content i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #3b82f6;
+        }
+
+        .empty-content h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .tab {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            .logo-text {
+                font-size: 20px;
+            }
+            
+            .action-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <div class="logo-text">Cobalt Launcher</div>
+            </div>
+            <div class="status online" id="connectionStatus">
+                <i class="wifi-icon">📶</i>
+                <span>Online</span>
+            </div>
+        </div>
+        
+        <div class="tabwidget">
+            <div class="tab active" data-tab="home">
+                <i>🏠</i>
+                <span>Главная</span>
+            </div>
+            <div class="tab" data-tab="notes">
+                <i>📝</i>
+                <span>Заметки</span>
+            </div>
+            <div class="tab" data-tab="logs">
+                <i>📋</i>
+                <span>Логи</span>
+            </div>
+            <div class="tab" data-tab="news">
+                <i>📰</i>
+                <span>Новости</span>
+            </div>
+            <div class="tab" data-tab="settings">
+                <i>⚙️</i>
+                <span>Настройки</span>
+            </div>
+            <div class="tab" data-tab="tools">
+                <i>🛠️</i>
+                <span>Инструменты</span>
+            </div>
+            <div class="tab" data-tab="cobalt">
+                <i>🤖</i>
+                <span>Cobalt Ассистент</span>
+            </div>
+            <div class="tab" data-tab="library">
+                <i>📚</i>
+                <span>Библиотека</span>
+            </div>
+            <div class="tab" data-tab="mods">
+                <i>🧩</i>
+                <span>Моды</span>
+            </div>
+            <div class="tab" data-tab="builds">
+                <i>🧱</i>
+                <span>Сборки</span>
+            </div>
+            <div class="tab" data-tab="search">
+                <i>🔍</i>
+                <span>Поиск</span>
+            </div>
+            <div class="tab" data-tab="projects">
+                <i>📁</i>
+                <span>Проекты</span>
+            </div>
+            <div class="tab" data-tab="encyclopedia">
+                <i>📖</i>
+                <span>Энциклопедия</span>
+            </div>
+            <div class="tab" data-tab="community">
+                <i>👥</i>
+                <span>Сообщество</span>
+            </div>
+            <div class="tab" data-tab="folders">
+                <i>📂</i>
+                <span>Папки</span>
+            </div>
+            <div class="tab" data-tab="support">
+                <i>🆘</i>
+                <span>Поддержка</span>
+            </div>
+            <div class="tab" data-tab="updates">
+                <i>🔄</i>
+                <span>Обновления</span>
+            </div>
+            <div class="tab" data-tab="about">
+                <i>ℹ️</i>
+                <span>О нас</span>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Главная вкладка -->
+            <div id="home" class="play-section tab-content active">
+                <div class="controls">
+                    <div class="combobox">
+                        <label for="accounts">Аккаунты</label>
+                        <select id="accounts">
+                            <option>Player_1</option>
+                            <option>Steve42</option>
+                            <option>AlexMiner</option>
+                            <option>CreeperHunter</option>
+                        </select>
+                    </div>
+                    
+                    <div class="combobox">
+                        <label for="versions">Версии</label>
+                        <select id="versions">
+                            <option>1.20.1 (Latest)</option>
+                            <option>1.19.4</option>
+                            <option>1.18.2</option>
+                            <option>1.17.1</option>
+                            <option>1.16.5</option>
+                        </select>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="btn">
+                            <span>🔄</span>
+                            Обновить версии
+                        </button>
+                        <button class="btn">
+                            <span>⬇️</span>
+                            Запрос версии
+                        </button>
+                        <button class="btn">
+                            <span>⏱️</span>
+                            Отложенный запуск
+                        </button>
+                    </div>
+                    
+                    <button class="btn play">
+                        <span>▶️</span>
+                        Играть
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Прогресс бар -->
+            <div class="progress-section">
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>Загрузка ресурсов...</span>
+                        <span>65%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Заметки -->
+            <div id="notes" class="tab-content">
+                <h2><span>📝</span> Заметки</h2>
+                <div class="empty-content">
+                    <span>📋</span>
+                    <h3>Пока что здесь пусто</h3>
+                    <p>Ваши заметки появятся здесь, когда вы их создадите</p>
+                </div>
+            </div>
+            
+            <!-- Новости -->
+            <div id="news" class="tab-content">
+                <h2><span>📰</span> Новости</h2>
+                <div class="empty-content">
+                    <span>📡</span>
+                    <h3>Нет доступных новостей</h3>
+                    <p>Обновите ленту новостей, чтобы получить актуальную информацию</p>
+                </div>
+            </div>
+            
+            <!-- О нас -->
+            <div id="about" class="tab-content">
+                <h2><span>ℹ️</span> О лаунчере Cobalt</h2>
+                <p>Cobalt Launcher - это современный, удобный и функциональный лаунчер для Minecraft, созданный для улучшения вашего игрового опыта.</p>
+                
+                <h3>Особенности:</h3>
+                <ul>
+                    <li>Управление всеми версиями Minecraft</li>
+                    <li>Быстрая загрузка и установка модов</li>
+                    <li>Удобное управление сборками</li>
+                    <li>Встроенный ассистент Cobalt для помощи игрокам</li>
+                    <li>Поддержка сообщества и регулярные обновления</li>
+                </ul>
+                
+                <h3>Системные требования:</h3>
+                <p>Лаунчер работает на Windows, macOS и Linux. Для работы требуется Java 17 или выше.</p>
+                
+                <p>Версия лаунчера: 3.2.1</p>
+            </div>
+            
+            <!-- Остальные вкладки -->
+            <div id="logs" class="tab-content">
+                <h2><span>📋</span> Логи игры</h2>
+                <div class="empty-content">
+                    <span>📊</span>
+                    <h3>Логи не найдены</h3>
+                    <p>После запуска игры здесь появятся логи игрового процесса</p>
+                </div>
+            </div>
+            
+            <div id="settings" class="tab-content">
+                <h2><span>⚙️</span> Настройки</h2>
+                <div class="empty-content">
+                    <span>🔧</span>
+                    <h3>Настройки лаунчера</h3>
+                    <p>Здесь вы сможете настроить параметры лаунчера и игры</p>
+                </div>
+            </div>
+            
+            <div id="tools" class="tab-content">
+                <h2><span>🛠️</span> Инструменты</h2>
+                <div class="empty-content">
+                    <span>🔨</span>
+                    <h3>Инструменты разработчика</h3>
+                    <p>Доступные инструменты появятся здесь после установки</p>
+                </div>
+            </div>
+            
+            <div id="cobalt" class="tab-content">
+                <h2><span>🤖</span> Cobalt Ассистент</h2>
+                <div class="empty-content">
+                    <span>💬</span>
+                    <h3>Ваш игровой помощник</h3>
+                    <p>Задайте вопрос Cobalt Ассистенту для получения помощи</p>
+                </div>
+            </div>
+            
+            <div id="library" class="tab-content">
+                <h2><span>📚</span> Библиотека</h2>
+                <div class="empty-content">
+                    <span>📖</span>
+                    <h3>Ваша библиотека пуста</h3>
+                    <p>Добавьте миры, текстуры или скины в библиотеку</p>
+                </div>
+            </div>
+            
+            <div id="mods" class="tab-content">
+                <h2><span>🧩</span> Моды</h2>
+                <div class="empty-content">
+                    <span>🧰</span>
+                    <h3>Моды не установлены</h3>
+                    <p>Установите моды для улучшения игрового процесса</p>
+                </div>
+            </div>
+            
+            <div id="builds" class="tab-content">
+                <h2><span>🧱</span> Сборки</h2>
+                <div class="empty-content">
+                    <span>🏗️</span>
+                    <h3>Сборки отсутствуют</h3>
+                    <p>Создайте или импортируйте сборки для игры</p>
+                </div>
+            </div>
+            
+            <div id="search" class="tab-content">
+                <h2><span>🔍</span> Поиск</h2>
+                <div class="empty-content">
+                    <span>🔎</span>
+                    <h3>Поиск по лаунчеру</h3>
+                    <p>Введите запрос для поиска модов, сборок и ресурсов</p>
+                </div>
+            </div>
+            
+            <div id="projects" class="tab-content">
+                <h2><span>📁</span> Проекты</h2>
+                <div class="empty-content">
+                    <span>🏗️</span>
+                    <h3>Проекты не найдены</h3>
+                    <p>Создайте новый проект или импортируйте существующий</p>
+                </div>
+            </div>
+            
+            <div id="encyclopedia" class="tab-content">
+                <h2><span>📖</span> Энциклопедия</h2>
+                <div class="empty-content">
+                    <span>📚</span>
+                    <h3>База знаний Minecraft</h3>
+                    <p>Изучите рецепты, мобов и механику игры</p>
+                </div>
+            </div>
+            
+            <div id="community" class="tab-content">
+                <h2><span>👥</span> Сообщество</h2>
+                <div class="empty-content">
+                    <span>🌐</span>
+                    <h3>Игровое сообщество</h3>
+                    <p>Присоединяйтесь к обсуждениям и делитесь своими достижениями</p>
+                </div>
+            </div>
+            
+            <div id="folders" class="tab-content">
+                <h2><span>📂</span> Папки</h2>
+                <div class="empty-content">
+                    <span>🗂️</span>
+                    <h3>Управление файлами</h3>
+                    <p>Просматривайте и управляйте файлами игры</p>
+                </div>
+            </div>
+            
+            <div id="support" class="tab-content">
+                <h2><span>🆘</span> Поддержка</h2>
+                <div class="empty-content">
+                    <span>💻</span>
+                    <h3>Техническая поддержка</h3>
+                    <p>Найдите решения проблем или свяжитесь с нами</p>
+                </div>
+            </div>
+            
+            <div id="updates" class="tab-content">
+                <h2><span>🔄</span> Обновления</h2>
+                <div class="empty-content">
+                    <span>⏬</span>
+                    <h3>Доступны обновления</h3>
+                    <p>Проверьте наличие обновлений для лаунчера и игровых компонентов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const connectionStatus = document.getElementById('connectionStatus');
+            const wifiIcon = connectionStatus.querySelector('.wifi-icon');
+            
+            function switchTab(tab) {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            }
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => switchTab(tab));
+            });
+            
+            const progressFill = document.querySelector('.progress-fill');
+            const progressPercent = document.querySelector('.progress-label span:last-child');
+            let progress = 65;
+            
+            setInterval(() => {
+                progress = (progress + 1) % 100;
+                progressFill.style.width = `${progress}%`;
+                progressPercent.textContent = `${progress}%`;
+            }, 2000);
+            
+            document.querySelector('.btn.play').addEventListener('click', function() {
+                const originalContent = this.innerHTML;
+                this.innerHTML = '<span>⏳</span> Запуск...';
+                this.disabled = true;
+                
+                setTimeout(() => {
+                    this.innerHTML = originalContent;
+                    this.disabled = false;
+                    alert('Игра запущена!');
+                }, 3000);
+            });
+            
+            function checkInternetConnection() {
+                const isOnline = Math.random() > 0.3;
+                
+                if (isOnline) {
+                    connectionStatus.className = 'status online';
+                    connectionStatus.innerHTML = '<span class="wifi-icon">📶</span> Online';
+                } else {
+                    connectionStatus.className = 'status offline';
+                    connectionStatus.innerHTML = '<span class="wifi-icon">❌</span> Offline';
+                }
+            }
+            
+            checkInternetConnection();
+            setInterval(checkInternetConnection, 10000);
+            
+            window.addEventListener('offline', () => {
+                connectionStatus.className = 'status offline';
+                connectionStatus.innerHTML = '<span class="wifi-icon">❌</span> Offline';
+            });
+            
+            window.addEventListener('online', () => {
+                connectionStatus.className = 'status online';
+                connectionStatus.innerHTML = '<span class="wifi-icon">📶</span> Online';
+            });
+        });
+    </script>
+</body>
+  </html>
