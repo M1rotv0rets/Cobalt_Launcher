@@ -1,0 +1,398 @@
+import sys
+import os
+import json
+import minecraft_launcher_lib
+from PyQt6.QtCore import QUrl, QObject, pyqtSlot, pyqtSignal
+from PyQt6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebChannel import QWebChannel
+
+# Класс для взаимодействия между Python и JavaScript
+class MinecraftLauncher(QObject):
+    statusChanged = pyqtSignal(str)
+    versionsFetched = pyqtSignal(list)
+    launchFinished = pyqtSignal(str, int)
+    
+    def __init__(self):
+        super().__init__()
+        self.minecraft_dir = os.path.expanduser("~/.minecraft")
+        self.process = None
+        
+    @pyqtSlot()
+    def get_versions(self):
+        try:
+            versions = minecraft_launcher_lib.utils.get_version_list()
+            filtered_versions = [
+                v for v in versions 
+                if v["type"] in ["release", "snapshot"]
+            ][:30]  # Берем последние 30 версий
+            self.versionsFetched.emit(filtered_versions)
+        except Exception as e:
+            self.statusChanged.emit(f"Error: {str(e)}")
+
+    @pyqtSlot(str, str)
+    def install_version(self, version_id, player_name):
+        try:
+            self.statusChanged.emit(f"Installing {version_id}...")
+            
+            # Скачиваем версию если нужно
+            if not minecraft_launcher_lib.utils.is_version_valid(version_id, self.minecraft_dir):
+                minecraft_launcher_lib.install.install_minecraft_version(version_id, self.minecraft_dir)
+            
+            options = {
+                'username': player_name,
+                'uuid': '',
+                'token': '',
+                'launcherVersion': 'pyqt-launcher-1.0'
+            }
+            
+            self.statusChanged.emit(f"Launching {version_id}...")
+            command = minecraft_launcher_lib.command.get_minecraft_command(
+                version_id, 
+                self.minecraft_dir,
+                options
+            )
+            
+            # Запускаем игру
+            self.process = minecraft_launcher_lib.utils.launch_minecraft(
+                command, 
+                self.minecraft_dir
+            )
+            self.process.wait()
+            self.launchFinished.emit(version_id, self.process.returncode)
+            
+        except Exception as e:
+            self.statusChanged.emit(f"Launch failed: {str(e)}")
+
+
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Minecraft Launcher")
+        self.setMinimumSize(800, 600)
+        
+        # Создаем веб-движок
+        self.webview = QWebEngineView()
+        
+        # Настраиваем канал для связи
+        self.channel = QWebChannel()
+        self.launcher = MinecraftLauncher()
+        self.channel.registerObject("launcher", self.launcher)
+        self.webview.page().setWebChannel(self.channel)
+        
+        # Загружаем встроенный HTML интерфейс
+        self.webview.setHtml(self.get_interface_html())
+        
+        # Настраиваем главный виджет
+        container = QWidget()
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.webview)
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+        
+        # Подключаем сигналы
+        self.launcher.statusChanged.connect(self.update_status)
+        
+    def update_status(self, message):
+        self.webview.page().runJavaScript(f"updateStatus('{message}')")
+    
+    def get_interface_html(self):
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Minecraft Launcher</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                }
+                
+                body {
+                    background: linear-gradient(135deg, #1a2a6c, #2a4d69);
+                    color: #fff;
+                    min-height: 100vh;
+                    padding: 20px;
+                }
+                
+                .container {
+                    max-width: 1000px;
+                    margin: 0 auto;
+                    padding: 20px;
+                }
+                
+                header {
+                    text-align: center;
+                    margin-bottom: 30px;
+                    padding: 20px;
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 15px;
+                }
+                
+                h1 {
+                    font-size: 2.8rem;
+                    margin-bottom: 10px;
+                    text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+                }
+                
+                .subtitle {
+                    font-size: 1.2rem;
+                    opacity: 0.8;
+                }
+                
+                .panel {
+                    background: rgba(0, 20, 40, 0.7);
+                    border-radius: 15px;
+                    padding: 25px;
+                    margin-bottom: 25px;
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(64, 164, 223, 0.3);
+                }
+                
+                .form-group {
+                    margin-bottom: 20px;
+                }
+                
+                label {
+                    display: block;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                }
+                
+                input, select {
+                    width: 100%;
+                    padding: 14px;
+                    border-radius: 8px;
+                    border: 2px solid #3498db;
+                    background: rgba(0, 30, 60, 0.8);
+                    color: white;
+                    font-size: 1rem;
+                    transition: all 0.3s;
+                }
+                
+                input:focus, select:focus {
+                    border-color: #1abc9c;
+                    outline: none;
+                    box-shadow: 0 0 15px rgba(26, 188, 156, 0.5);
+                }
+                
+                button {
+                    background: linear-gradient(135deg, #3498db, #1abc9c);
+                    color: white;
+                    border: none;
+                    padding: 16px 32px;
+                    font-size: 1.2rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    width: 100%;
+                    font-weight: bold;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                    transition: all 0.3s;
+                    margin-top: 15px;
+                }
+                
+                button:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+                }
+                
+                button:active {
+                    transform: translateY(1px);
+                }
+                
+                #status {
+                    margin-top: 25px;
+                    padding: 15px;
+                    background: rgba(0, 0, 0, 0.3);
+                    border-radius: 10px;
+                    text-align: center;
+                    font-size: 1.1rem;
+                    min-height: 30px;
+                    border-left: 4px solid #1abc9c;
+                }
+                
+                .versions-container {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                    gap: 20px;
+                    margin-top: 20px;
+                }
+                
+                .version-card {
+                    background: rgba(30, 40, 80, 0.6);
+                    border-radius: 10px;
+                    padding: 15px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    border: 1px solid transparent;
+                }
+                
+                .version-card:hover {
+                    transform: translateY(-5px);
+                    border-color: #3498db;
+                    background: rgba(40, 60, 120, 0.7);
+                }
+                
+                .version-card.selected {
+                    border-color: #1abc9c;
+                    background: rgba(26, 188, 156, 0.2);
+                }
+                
+                .version-id {
+                    font-weight: bold;
+                    font-size: 1.2rem;
+                    margin-bottom: 5px;
+                }
+                
+                .version-type {
+                    color: #3498db;
+                    font-size: 0.9rem;
+                }
+                
+                .version-release {
+                    color: #1abc9c;
+                }
+                
+                .footer {
+                    text-align: center;
+                    margin-top: 30px;
+                    opacity: 0.7;
+                    font-size: 0.9rem;
+                }
+                
+                @media (max-width: 768px) {
+                    .versions-container {
+                        grid-template-columns: 1fr;
+                    }
+                    
+                    h1 {
+                        font-size: 2.2rem;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <header>
+                    <h1>MINECRAFT LAUNCHER</h1>
+                    <div class="subtitle">Powered by Python & PyQt6</div>
+                </header>
+                
+                <div class="panel">
+                    <div class="form-group">
+                        <label for="playerName">Player Name</label>
+                        <input 
+                            type="text" 
+                            id="playerName" 
+                            placeholder="Enter your username"
+                            value="Player"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Minecraft Version</label>
+                        <div id="versions-container" class="versions-container">
+                            <div class="loading">Loading versions...</div>
+                        </div>
+                    </div>
+                    
+                    <button id="launchBtn">LAUNCH MINECRAFT</button>
+                    
+                    <div id="status">Ready to play</div>
+                </div>
+                
+                <div class="footer">
+                    Minecraft Launcher v1.0 · Made with PyQt6
+                </div>
+            </div>
+            
+            <script>
+                // Инициализация WebChannel
+                let launcher;
+                new QWebChannel(qt.webChannelTransport, function(channel) {
+                    launcher = channel.objects.launcher;
+                    
+                    // Запрос версий при загрузке
+                    launcher.get_versions();
+                });
+                
+                // Обработчики сигналов
+                launcher.versionsFetched.connect(function(versions) {
+                    const container = document.getElementById('versions-container');
+                    container.innerHTML = '';
+                    
+                    versions.forEach(version => {
+                        const card = document.createElement('div');
+                        card.className = 'version-card';
+                        card.dataset.id = version.id;
+                        
+                        card.innerHTML = `
+                            <div class="version-id">${version.id}</div>
+                            <div class="version-type ${version.type}">${version.type}</div>
+                            <div class="version-date">${version.releaseTime}</div>
+                        `;
+                        
+                        card.addEventListener('click', () => {
+                            document.querySelectorAll('.version-card').forEach(c => {
+                                c.classList.remove('selected');
+                            });
+                            card.classList.add('selected');
+                        });
+                        
+                        container.appendChild(card);
+                    });
+                    
+                    // Выбираем последнюю версию
+                    if (versions.length > 0) {
+                        container.children[0].classList.add('selected');
+                    }
+                });
+                
+                launcher.statusChanged.connect(function(message) {
+                    updateStatus(message);
+                });
+                
+                launcher.launchFinished.connect(function(version, code) {
+                    updateStatus(`Game closed (exit code: ${code})`);
+                });
+                
+                // Функция обновления статуса
+                function updateStatus(message) {
+                    document.getElementById('status').innerText = message;
+                }
+                
+                // Обработчик кнопки запуска
+                document.getElementById('launchBtn').addEventListener('click', () => {
+                    const playerName = document.getElementById('playerName').value;
+                    const selectedCard = document.querySelector('.version-card.selected');
+                    
+                    if (!playerName) {
+                        updateStatus("Please enter player name");
+                        return;
+                    }
+                    
+                    if (!selectedCard) {
+                        updateStatus("Please select a version");
+                        return;
+                    }
+                    
+                    const versionId = selectedCard.dataset.id;
+                    launcher.install_version(versionId, playerName);
+                });
+            </script>
+        </body>
+        </html>
+        """
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
