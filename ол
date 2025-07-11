@@ -1,0 +1,125 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+import subprocess
+import os
+
+class MinecraftLauncher:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Minecraft Launcher")
+        self.root.geometry("500x350")
+        self.root.resizable(False, False)
+        
+        # Стили
+        self.style = ttk.Style()
+        self.style.configure("TFrame", background="#2d2d2d")
+        self.style.configure("TLabel", background="#2d2d2d", foreground="white")
+        self.style.configure("TButton", background="#3d3d3d", foreground="white")
+        self.style.configure("TCombobox", fieldbackground="#3d3d3d", foreground="white")
+        self.style.configure("TEntry", fieldbackground="#3d3d3d", foreground="white")
+        
+        # Главный фрейм
+        main_frame = ttk.Frame(root)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=20)
+        
+        # Заголовок
+        title = ttk.Label(main_frame, text="Minecraft Launcher", font=("Arial", 20))
+        title.pack(pady=(0, 20))
+        
+        # Выбор версии
+        version_frame = ttk.Frame(main_frame)
+        version_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Label(version_frame, text="Версия:").pack(side=tk.LEFT)
+        self.version_var = tk.StringVar()
+        versions = ["1.12.2", "1.16.5", "1.18.2", "1.19.4", "1.20.1"]
+        self.version_combo = ttk.Combobox(version_frame, textvariable=self.version_var, values=versions, state="readonly")
+        self.version_combo.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        self.version_combo.set(versions[0])
+        
+        # Имя пользователя
+        username_frame = ttk.Frame(main_frame)
+        username_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Label(username_frame, text="Имя игрока:").pack(side=tk.LEFT)
+        self.username_var = tk.StringVar(value="Player")
+        username_entry = ttk.Entry(username_frame, textvariable=self.username_var)
+        username_entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        
+        # Параметры памяти
+        memory_frame = ttk.Frame(main_frame)
+        memory_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Label(memory_frame, text="Оперативная память (GB):").pack(side=tk.LEFT)
+        self.memory_var = tk.StringVar(value="2")
+        memory_entry = ttk.Entry(memory_frame, textvariable=self.memory_var)
+        memory_entry.pack(side=tk.RIGHT, fill=tk.X, expand=True)
+        
+        # Дополнительные настройки
+        self.fullscreen_var = tk.BooleanVar(value=True)
+        fullscreen_check = ttk.Checkbutton(main_frame, text="Полноэкранный режим", variable=self.fullscreen_var)
+        fullscreen_check.pack(pady=5)
+        
+        # Кнопка запуска
+        launch_btn = ttk.Button(main_frame, text="Запустить Minecraft", command=self.launch_minecraft)
+        launch_btn.pack(pady=20)
+        
+        # Статус
+        self.status_var = tk.StringVar(value="Готов к запуску")
+        status_label = ttk.Label(main_frame, textvariable=self.status_var, foreground="yellow")
+        status_label.pack()
+
+    def launch_minecraft(self):
+        version = self.version_var.get()
+        username = self.username_var.get()
+        memory = self.memory_var.get()
+        fullscreen = self.fullscreen_var.get()
+        
+        if not username:
+            messagebox.showerror("Ошибка", "Введите имя игрока")
+            return
+        
+        try:
+            memory = int(memory)
+            if memory < 1 or memory > 32:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Ошибка", "Некорректное значение памяти (1-32 GB)")
+            return
+        
+        self.status_var.set("Запуск Minecraft...")
+        self.root.update()
+        
+        try:
+            # Пример команды для запуска (требуется реальный путь к Minecraft)
+            command = [
+                "java",
+                f"-Xmx{memory}G",
+                "-jar",
+                "minecraft.jar",  # Замените на реальный путь
+                "--username", username,
+                "--version", version,
+                "--accessToken", "0"  # Для оффлайн-режима
+            ]
+            
+            if fullscreen:
+                command.append("--fullscreen")
+            
+            # Для реального использования раскомментируйте:
+            # subprocess.Popen(command)
+            
+            # Тестовое сообщение
+            messagebox.showinfo("Запуск", f"Minecraft {version} запускается...\n"
+                                 f"Игрок: {username}\n"
+                                 f"Память: {memory}GB\n"
+                                 f"Полный экран: {'Да' if fullscreen else 'Нет'}")
+            
+        except Exception as e:
+            messagebox.showerror("Ошибка", f"Ошибка запуска: {str(e)}")
+        finally:
+            self.status_var.set("Готов к запуску")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    launcher = MinecraftLauncher(root)
+    root.mainloop()
