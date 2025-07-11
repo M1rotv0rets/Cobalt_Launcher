@@ -1,0 +1,344 @@
+import tkinter as tk
+from tkinter import ttk, messagebox, scrolledtext
+import threading
+import os
+import json
+import subprocess
+import sys
+import minecraft_launcher_lib
+from datetime import datetime
+
+class MinecraftLauncher:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Minecraft Launcher")
+        self.root.geometry("800x600")
+        self.root.resizable(True, True)
+        self.root.configure(bg="#2c3e50")
+        
+        # Стили
+        self.style = ttk.Style()
+        self.style.configure("TFrame", background="#2c3e50")
+        self.style.configure("TLabel", background="#2c3e50", foreground="#ecf0f1", font=("Arial", 10))
+        self.style.configure("TButton", font=("Arial", 10, "bold"), padding=6)
+        self.style.configure("Title.TLabel", font=("Arial", 18, "bold"), foreground="#3498db")
+        self.style.configure("Status.TLabel", font=("Arial", 9), foreground="#bdc3c7")
+        
+        # Папка Minecraft
+        self.minecraft_dir = os.path.expanduser("~/.minecraft")
+        
+        # Создание интерфейса
+        self.create_widgets()
+        
+        # Загрузка версий в отдельном потоке
+        self.load_versions_thread()
+
+    def create_widgets(self):
+        # Основные фреймы
+        header_frame = ttk.Frame(self.root)
+        header_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        main_frame = ttk.Frame(self.root)
+        main_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=5)
+        
+        footer_frame = ttk.Frame(self.root)
+        footer_frame.pack(fill=tk.X, padx=20, pady=10)
+        
+        # Заголовок
+        title_label = ttk.Label(header_frame, text="MINECRAFT LAUNCHER", style="Title.TLabel")
+        title_label.pack(side=tk.LEFT)
+        
+        # Статус
+        self.status_var = tk.StringVar(value="Загрузка списка версий...")
+        status_label = ttk.Label(header_frame, textvariable=self.status_var, style="Status.TLabel")
+        status_label.pack(side=tk.RIGHT)
+        
+        # Левая панель - информация о версии
+        left_frame = ttk.Frame(main_frame)
+        left_frame.pack(side=tk.LEFT, fill=tk.BOTH, padx=(0, 10), expand=True)
+        
+        # Правая панель - список версий
+        right_frame = ttk.Frame(main_frame)
+        right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
+        
+        # Поле для имени игрока
+        player_frame = ttk.Frame(left_frame)
+        player_frame.pack(fill=tk.X, pady=5)
+        
+        player_label = ttk.Label(player_frame, text="Имя игрока:")
+        player_label.pack(side=tk.LEFT)
+        
+        self.player_var = tk.StringVar(value="Player")
+        player_entry = ttk.Entry(player_frame, textvariable=self.player_var, width=25)
+        player_entry.pack(side=tk.RIGHT, padx=(10, 0))
+        
+        # Кнопка запуска
+        launch_button = ttk.Button(
+            left_frame, 
+            text="ЗАПУСТИТЬ MINECRAFT", 
+            command=self.launch_game,
+            style="TButton"
+        )
+        launch_button.pack(fill=tk.X, pady=20)
+        
+        # Поле для вывода логов
+        log_frame = ttk.LabelFrame(left_frame, text="Лог запуска")
+        log_frame.pack(fill=tk.BOTH, expand=True, pady=(10, 0))
+        
+        self.log_area = scrolledtext.ScrolledText(
+            log_frame, 
+            wrap=tk.WORD, 
+            bg="#1e272c", 
+            fg="#ecf0f1",
+            font=("Consolas", 9)
+        )
+        self.log_area.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        self.log_area.config(state=tk.DISABLED)
+        
+        # Список версий
+        versions_frame = ttk.LabelFrame(right_frame, text="Доступные версии")
+        versions_frame.pack(fill=tk.BOTH, expand=True)
+        
+        # Treeview для отображения версий
+        self.versions_tree = ttk.Treeview(
+            versions_frame, 
+            columns=("id", "type", "release_time"), 
+            show="headings",
+            selectmode="browse"
+        )
+        
+        # Настройка столбцов
+        self.versions_tree.heading("id", text="Версия")
+        self.versions_tree.heading("type", text="Тип")
+        self.versions_tree.heading("release_time", text="Дата выпуска")
+        
+        self.versions_tree.column("id", width=150)
+        self.versions_tree.column("type", width=80, anchor=tk.CENTER)
+        self.versions_tree.column("release_time", width=120)
+        
+        # Вертикальный скроллбар
+        vsb = ttk.Scrollbar(versions_frame, orient="vertical", command=self.versions_tree.yview)
+        self.versions_tree.configure(yscrollcommand=vsb.set)
+        
+        # Размещение элементов
+        self.versions_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        vsb.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Подвал
+        footer_label = ttk.Label(
+            footer_frame, 
+            text="Minecraft Launcher v1.0 | Powered by Python & minecraft_launcher_lib",
+            style="Status.TLabel"
+        )
+        footer_label.pack(side=tk.RIGHT)
+        
+        # Бинд на выбор версии
+        self.versions_tree.bind("<<TreeviewSelect>>", self.on_version_select)
+        
+        # Переменная для хранения выбранной версии
+        self.selected_version = None
+        self.version_details = {}
+        
+        # Фрейм с деталями версии
+        details_frame = ttk.LabelFrame(left_frame, text="Детали версии")
+        details_frame.pack(fill=tk.X, pady=(10, 5))
+        
+        self.details_text = tk.Text(
+            details_frame, 
+            height=5, 
+            wrap=tk.WORD, 
+            bg="#1e272c", 
+            fg="#ecf0f1",
+            font=("Arial", 9)
+        )
+        self.details_text.pack(fill=tk.BOTH, expand=False, padx=5, pady=5)
+        self.details_text.config(state=tk.DISABLED)
+    
+    def load_versions_thread(self):
+        """Загружает список версий в отдельном потоке"""
+        threading.Thread(target=self.load_versions, daemon=True).start()
+    
+    def load_versions(self):
+        """Загружает список версий Minecraft"""
+        try:
+            self.update_status("Получение списка версий...")
+            versions = minecraft_launcher_lib.utils.get_version_list()
+            
+            # Фильтруем версии
+            filtered_versions = [
+                v for v in versions 
+                if v["type"] in ["release", "snapshot"] and v.get("releaseTime")
+            ]
+            
+            # Сортируем по дате (новые сверху)
+            filtered_versions.sort(key=lambda v: v["releaseTime"], reverse=True)
+            
+            # Ограничиваем количество
+            filtered_versions = filtered_versions[:50]
+            
+            # Форматируем даты
+            for v in filtered_versions:
+                dt = datetime.fromisoformat(v["releaseTime"].rstrip("Z"))
+                v["formatted_date"] = dt.strftime("%d.%m.%Y %H:%M")
+                self.version_details[v["id"]] = v
+            
+            # Обновляем Treeview в основном потоке
+            self.root.after(0, self.update_versions_tree, filtered_versions)
+            self.update_status(f"Загружено {len(filtered_versions)} версий. Выберите версию для запуска.")
+            
+        except Exception as e:
+            self.update_status(f"Ошибка: {str(e)}")
+            self.log_message(f"Ошибка при загрузке версий: {str(e)}")
+    
+    def update_versions_tree(self, versions):
+        """Обновляет список версий в интерфейсе"""
+        # Очищаем текущий список
+        for item in self.versions_tree.get_children():
+            self.versions_tree.delete(item)
+        
+        # Добавляем новые версии
+        for version in versions:
+            self.versions_tree.insert(
+                "", "end", 
+                values=(
+                    version["id"], 
+                    version["type"], 
+                    version["formatted_date"]
+                )
+            )
+        
+        # Выбираем первую версию
+        if versions:
+            first_item = self.versions_tree.get_children()[0]
+            self.versions_tree.selection_set(first_item)
+            self.versions_tree.focus(first_item)
+            self.on_version_select(None)
+    
+    def on_version_select(self, event):
+        """Обработка выбора версии"""
+        selected = self.versions_tree.selection()
+        if selected:
+            item = selected[0]
+            version_id = self.versions_tree.item(item, "values")[0]
+            self.selected_version = version_id
+            self.show_version_details(version_id)
+    
+    def show_version_details(self, version_id):
+        """Показывает детали выбранной версии"""
+        if version_id in self.version_details:
+            details = self.version_details[version_id]
+            text = f"Версия: {details['id']}\n"
+            text += f"Тип: {details['type']}\n"
+            text += f"Выпущена: {details['formatted_date']}"
+            
+            if "javaVersion" in details:
+                java_ver = details["javaVersion"].get("majorVersion", "N/A")
+                text += f"\nТребуемая Java: {java_ver}"
+            
+            self.details_text.config(state=tk.NORMAL)
+            self.details_text.delete(1.0, tk.END)
+            self.details_text.insert(tk.END, text)
+            self.details_text.config(state=tk.DISABLED)
+    
+    def launch_game(self):
+        """Запускает игру в отдельном потоке"""
+        if not self.selected_version:
+            messagebox.showwarning("Внимание", "Выберите версию Minecraft!")
+            return
+        
+        player_name = self.player_var.get().strip()
+        if not player_name:
+            messagebox.showwarning("Внимание", "Введите имя игрока!")
+            return
+        
+        # Запускаем в отдельном потоке
+        threading.Thread(
+            target=self.install_and_launch, 
+            args=(self.selected_version, player_name),
+            daemon=True
+        ).start()
+    
+    def install_and_launch(self, version_id, player_name):
+        """Устанавливает и запускает выбранную версию"""
+        try:
+            # Проверяем, установлена ли версия
+            if not minecraft_launcher_lib.utils.is_version_valid(version_id, self.minecraft_dir):
+                self.update_status(f"Установка {version_id}...")
+                self.log_message(f"Начата установка версии {version_id}")
+                
+                # Устанавливаем версию
+                minecraft_launcher_lib.install.install_minecraft_version(
+                    version_id, 
+                    self.minecraft_dir,
+                    callback=self.install_callback
+                )
+                
+                self.log_message(f"Версия {version_id} успешно установлена")
+            
+            # Опции для запуска
+            options = {
+                'username': player_name,
+                'uuid': '',
+                'token': '',
+                'launcherName': 'PyLauncher',
+                'launcherVersion': '1.0'
+            }
+            
+            # Получаем команду для запуска
+            command = minecraft_launcher_lib.command.get_minecraft_command(
+                version_id, 
+                self.minecraft_dir,
+                options
+            )
+            
+            self.update_status(f"Запуск Minecraft {version_id}...")
+            self.log_message(f"Запуск игры с параметрами: {' '.join(command)}")
+            
+            # Запускаем игру
+            process = subprocess.Popen(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1,
+                universal_newlines=True
+            )
+            
+            # Читаем вывод процесса
+            for line in process.stdout:
+                self.log_message(line.strip())
+                
+            # Ожидаем завершения
+            process.wait()
+            return_code = process.returncode
+            
+            self.update_status(f"Minecraft завершен с кодом {return_code}")
+            self.log_message(f"Процесс завершен с кодом {return_code}")
+            
+        except Exception as e:
+            self.update_status(f"Ошибка: {str(e)}")
+            self.log_message(f"Ошибка при запуске: {str(e)}")
+            messagebox.showerror("Ошибка", str(e))
+    
+    def install_callback(self, progress, total):
+        """Коллбек для отслеживания прогресса установки"""
+        if total > 0:
+            percent = int((progress / total) * 100)
+            self.update_status(f"Установка: {percent}%")
+    
+    def update_status(self, message):
+        """Обновляет статус в интерфейсе"""
+        self.status_var.set(message)
+    
+    def log_message(self, message):
+        """Добавляет сообщение в лог"""
+        self.log_area.config(state=tk.NORMAL)
+        self.log_area.insert(tk.END, message + "\n")
+        self.log_area.see(tk.END)
+        self.log_area.config(state=tk.DISABLED)
+        self.log_area.update_idletasks()
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = MinecraftLauncher(root)
+    root.mainloop()
